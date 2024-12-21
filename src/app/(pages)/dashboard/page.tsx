@@ -9,7 +9,7 @@ const DashboardPage = () => {
   return (
     <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
       <Typography variant="h4">Welcome to the Dashboard</Typography>
-      <Typography variant="body1">Here is the dashboard content. It will dynamically change based on the route.</Typography>
+      <Typography variant="body1">Our <strong className='underline cursor-pointer'>PulseZest</strong> Team, is Working on this. We close the Project Very Soon</Typography>
     </Box>
   );
 };
