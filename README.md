@@ -1,6 +1,6 @@
 # Next.js Project
 
-This project was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This project was bootstrapped with [`PulseZest`](https://pulsezest.com).
 
 ## Getting Started
 

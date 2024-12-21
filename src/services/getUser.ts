@@ -6,7 +6,7 @@ export const getUser = async () => {
   try {
     // Get the current user from Firebase Authentication
     const currentUser =  auth.currentUser; // Get the current authenticated user
-
+    console.log(currentUser?.uid)
     if (!currentUser) {
       throw new Error('No user is logged in!');
     }

@@ -1,10 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
 
-const AutoIcon = () => {
+const ProductIcon = () => {
   return (
     <Image
-      src="/icons/rickshaw.png" // Path relative to the `public` folder
+      src="/icons/product.png" // Path relative to the `public` folder
       alt='auto-rickshaw'
       width={25}
       height={25}
@@ -14,10 +14,10 @@ const AutoIcon = () => {
   );
 };
 
-const CarIcon = () => {
+const AllProduct = () => {
   return (
     <Image
-      src="/icons/car.png" // Path relative to the `public` folder
+      src="/icons/products.png" // Path relative to the `public` folder
       alt='car'
       width={25}
       height={25}
@@ -27,10 +27,10 @@ const CarIcon = () => {
   );
 };
 
-const AddsIcon = () => {
+const AddProuducts = () => {
   return (
     <Image
-      src="/icons/adds.png" // Path relative to the `public` folder
+      src="/icons/add.png" // Path relative to the `public` folder
       alt='car'
       width={25}
       height={25}
@@ -40,4 +40,44 @@ const AddsIcon = () => {
   );
 };
 
-export { CarIcon, AutoIcon, AddsIcon };
+const ManageCategories = () => {
+  return (
+    <Image
+      src="/icons/customer.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+const OrderIcon = () => {
+  return (
+    <Image
+      src="/icons/order.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+
+const CustomerIcon = () => {
+  return (
+    <Image
+      src="/icons/customer.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+export { AddProuducts, AllProduct, ProductIcon, OrderIcon, CustomerIcon, ManageCategories };

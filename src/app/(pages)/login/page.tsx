@@ -53,7 +53,7 @@ const Login: React.FC = () => {
       if (isLoggedIn) {
         message.success('Login successful!');
         success('Success', 'Login Successful!')
-        router.push('/dashboard'); // Navigate to /dashboard after successful login
+        router.replace('/dashboard'); 
       } else {
         message.error('Invalid credentials! Please try again.');
         error('Error', 'Invalid Credentials!')
