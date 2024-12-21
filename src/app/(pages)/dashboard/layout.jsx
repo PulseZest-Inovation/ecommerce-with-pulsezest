@@ -1,55 +1,45 @@
-'use client'
-import * as React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme, demoSession } from '../../../utils/drawer';
 import AccountSidebarInfo from '../../../components/Drawer/AccountSidebarInfo/index';
-import { useRouter } from 'next/navigation'; // Import useRouter
-import { useEffect, useState } from 'react';
-import {onAuthStateChanged } from 'firebase/auth';
-import {auth } from '@/utils/firbeaseConfig'; // Your Firebase config
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/utils/firbeaseConfig'; // Firebase config
 import Loader from '@/components/Loader';
-import { NotificationProvider } from '@/components/Provider/NotificationProvider';
 
+// Import your route components
+import DashboardContent from './page';
+import Analytics from './Analytics/pgae';
 
-function DemoPageContent({ pathname }) {
-  return (
-    <Box
-      sx={{
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
-      <Typography>Dashboard content for {pathname}</Typography>
-    </Box>
-  );
-}
+// Route-to-component mapping
+const ROUTE_COMPONENTS = {
+  '/dashboard': DashboardContent,
+  '/analytics':Analytics,
+};
 
 function DashboardLayoutWithAccountInfo(props) {
   const { window } = props;
-  const [pathname, setPathname] = React.useState('/dashboard');
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track authentication
-  const router = useRouter(); // Use Next.js useRouter hook
+  const [pathname, setPathname] = useState('/dashboard');
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Listen to authentication state change
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsAuthenticated(true); // User is authenticated
-        setLoading(false); // Loading done
+        setIsAuthenticated(true);
+        setLoading(false);
       } else {
-        setIsAuthenticated(false); // User is not authenticated
-        setLoading(false); // Loading done
-        router.push('/login'); // Redirect to login if not authenticated
+        setIsAuthenticated(false);
+        setLoading(false);
+        router.push('/login');
       }
     });
-  }, [router]); // Trigger this effect on component mount
+  }, [router]);
 
   const routerContext = React.useMemo(() => {
     return {
@@ -59,9 +49,28 @@ function DashboardLayoutWithAccountInfo(props) {
     };
   }, [pathname]);
 
+  const generateBreadcrumbs = () => {
+    const pathSegments = pathname.split('/').filter(Boolean);
+    return pathSegments.map((segment, index) => {
+      const url = '/' + pathSegments.slice(0, index + 1).join('/');
+      return (
+        <Link key={index} href={url}>
+          <Typography color="primary">{segment}</Typography>
+        </Link>
+      );
+    });
+  };
+
+  const renderContent = () => {
+    const Component = ROUTE_COMPONENTS[pathname];
+    if (Component) {
+      return <Component />;
+    }
+    return <Typography>404 - Page Not Found</Typography>;
+  };
+
   if (loading) {
-    // Show loading state while checking authentication
-    return <Loader/>;
+    return <Loader />;
   }
 
   return (
@@ -69,12 +78,12 @@ function DashboardLayoutWithAccountInfo(props) {
       navigation={NAVIGATION}
       router={routerContext}
       theme={demoTheme}
-      window={window} // Using window prop directly
+      window={window}
       session={demoSession}
       branding={{
-        // title: 'Your Applicaiton Name',
         logo: (
-          <Image className='mt-2'
+          <Image
+            className="mt-2"
             src="/apni-mati-vastram-logo.png"
             alt="Apni Mati Vastram Logo"
             width={100}
@@ -82,20 +91,23 @@ function DashboardLayoutWithAccountInfo(props) {
             priority
           />
         ),
-        title: false
+        title: false,
       }}
     >
- 
       <DashboardLayout
         slots={{
-          sidebarFooter: () => (
-            <AccountSidebarInfo /> // User info component
-          ),
+          sidebarFooter: () => <AccountSidebarInfo />,
         }}
       >
-        <DemoPageContent pathname={pathname} />
+        {/* Breadcrumbs */}
+        <Box sx={{ p: 2 }}>
+          <Breadcrumbs aria-label="breadcrumb">{generateBreadcrumbs()}</Breadcrumbs>
+        </Box>
+        {/* Render Content Based on Route */}
+        <Box sx={{ p: 2 }}>
+          {renderContent()}
+        </Box>
       </DashboardLayout>
-    
     </AppProvider>
   );
 }
