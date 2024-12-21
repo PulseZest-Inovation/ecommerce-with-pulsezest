@@ -42,3 +42,20 @@ export const setDataWithAutoID = async <T>(
     return null;
   }
 };
+
+
+
+// import { addDocToCollection } from "./setFirestoreData";
+// import { Customer } from "./types"; // Import Customer type
+
+// const addCustomer = async () => {
+//   const newCustomer: Customer = {
+//     firstName: "John",
+//     lastName: "Doe",
+//     phone: "1234567890",
+//     address: "123 Main St",
+//   };
+
+//   const docId = await addDocToCollection("customers", newCustomer);
+//   console.log("Customer added with ID:", docId);
+// };

@@ -49,3 +49,12 @@ export const getDocByDocName = async <T>(
     return null;
   }
 };
+
+
+// import { getAllDocsFromCollection } from "./getFirestoreData";
+// import { Product } from "./types"; // Import Product type
+
+// const fetchProducts = async () => {
+//   const products = await getAllDocsFromCollection<Product>("products");
+//   console.log(products);
+// };
