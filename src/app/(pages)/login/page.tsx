@@ -69,12 +69,12 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      <Watermark content="Prouto">
-        <div className="flex items-center justify-center h-screen bg-blue-100">
+      <Watermark image='/apni-mati-vastram-logo.png' className='z-0'>
+        <div className="flex items-center justify-center h-screen bg-blue-100 z-10">
           {!isSecurityVerified ? (
             <SecurityCheck onSuccess={handleSecuritySuccess} />
           ) : (
-            <div className="bg-white p-6 shadow-lg rounded-lg w-96">
+            <div className="bg-white p-6 shadow-lg rounded-lg w-96 z-10">
               <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
                 Administration Login
               </h2>

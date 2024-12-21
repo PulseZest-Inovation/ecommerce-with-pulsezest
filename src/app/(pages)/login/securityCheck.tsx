@@ -29,7 +29,7 @@ const SecurityCheck: React.FC<SecurityCheckProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r ">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-r z-10">
       <div className="bg-white p-8 shadow-2xl rounded-xl w-96">
         <h2 className="text-3xl font-semibold text-center text-purple-700 mb-4">Security Check</h2>
         <p className="text-gray-700 text-center mb-6">
