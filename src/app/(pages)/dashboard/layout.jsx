@@ -4,22 +4,15 @@ import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { NAVIGATION, demoTheme, demoSession } from '../../../utils/drawer';
+import { NAVIGATION, demoTheme, } from '../../../utils/menu';
+import ROUTE_COMPONENTS from '@/utils/route';
 import AccountSidebarInfo from '../../../components/Drawer/AccountSidebarInfo/index';
 import { useRouter } from 'next/navigation';
+import { Result } from 'antd';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/utils/firbeaseConfig'; // Firebase config
 import Loader from '@/components/Loader';
 
-// Import your route components
-import DashboardContent from './page';
-import Analytics from './Analytics/pgae';
-
-// Route-to-component mapping
-const ROUTE_COMPONENTS = {
-  '/dashboard': DashboardContent,
-  '/analytics':Analytics,
-};
 
 function DashboardLayoutWithAccountInfo(props) {
   const { window } = props;
@@ -54,9 +47,9 @@ function DashboardLayoutWithAccountInfo(props) {
     return pathSegments.map((segment, index) => {
       const url = '/' + pathSegments.slice(0, index + 1).join('/');
       return (
-        <Link key={index} href={url}>
-          <Typography color="primary">{segment}</Typography>
-        </Link>
+        // <Link key={index} href={url}>
+          <Typography className='cursor-pointer' color="primary">{segment.toUpperCase()}</Typography>
+        // </Link>
       );
     });
   };
@@ -66,7 +59,18 @@ function DashboardLayoutWithAccountInfo(props) {
     if (Component) {
       return <Component />;
     }
-    return <Typography>404 - Page Not Found</Typography>;
+    return   <Result
+    status="500"
+    title="We Are Current Working on this"
+    subTitle="Very Soon It will be active!"
+    // extra={<Button type="primary">Back Home</Button>}
+  />;
+  };
+
+  const handleRouteChange = (newRoute) => {
+    // Dynamically change the route in the browser
+    router.push(newRoute);
+    setPathname(newRoute);
   };
 
   if (loading) {
@@ -79,7 +83,6 @@ function DashboardLayoutWithAccountInfo(props) {
       router={routerContext}
       theme={demoTheme}
       window={window}
-      session={demoSession}
       branding={{
         logo: (
           <Image
@@ -107,6 +110,7 @@ function DashboardLayoutWithAccountInfo(props) {
         <Box sx={{ p: 2 }}>
           {renderContent()}
         </Box>
+        
       </DashboardLayout>
     </AppProvider>
   );
