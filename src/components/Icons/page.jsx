@@ -43,7 +43,7 @@ const AddProuducts = () => {
 const ManageCategories = () => {
   return (
     <Image
-      src="/icons/customer.png" // Path relative to the `public` folder
+      src="/icons/manage-categories.png" // Path relative to the `public` folder
       alt='car'
       width={25}
       height={25}
@@ -80,4 +80,60 @@ const CustomerIcon = () => {
   );
 };
 
-export { AddProuducts, AllProduct, ProductIcon, OrderIcon, CustomerIcon, ManageCategories };
+const ReviewAndRatingIcon = () => {
+  return (
+    <Image
+      src="/icons/reviewsandrating.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+const PendingOrderIcon = () => {
+  return (
+    <Image
+      src="/icons/reviewsandrating.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+const OrderCompeltedIcon = () => {
+  return (
+    <Image
+      src="/icons/reviewsandrating.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+const DiscountIcon = () => {
+  return (
+    <Image
+      src="/icons/discount.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+
+export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
+   CustomerIcon,
+    ManageCategories,
+     ReviewAndRatingIcon,
+     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon };

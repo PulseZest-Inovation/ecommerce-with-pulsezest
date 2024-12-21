@@ -1,15 +1,18 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon, ManageCategories } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon, ManageCategories, ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import LayersIcon from '@mui/icons-material/Layers';
 import GroupsIcon from '@mui/icons-material/Groups';
 import TimerIcon from '@mui/icons-material/Timer';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
+import CategoryIcon from '@mui/icons-material/Category';
+import InsertCommentIcon from '@mui/icons-material/InsertComment';
 
 export const NAVIGATION = [
   {
@@ -64,17 +67,17 @@ export const NAVIGATION = [
           {
             segment: 'manageCategories',
             title: 'Mangae Categories',
-            icon: <ManageCategories />,
+            icon: <CategoryIcon  />,
             children: [
               {
                 segment: 'categories',
                 title: 'Categories',
-                icon: <GroupsIcon />,
+                icon: <CategoryIcon />,
               },
               {
                 segment: 'subCategories',
                 title: 'Sub Categories',
-                icon: <TimerIcon />,
+                icon: <ManageCategories />,
               },
             ],
           },
@@ -88,7 +91,7 @@ export const NAVIGATION = [
               {
                 segment: 'viewAllOrders',
                 title: 'View All Orders',
-                icon: <GroupsIcon />,
+                icon: <AllProduct />,
               },
               {
                 segment: 'orderDetails',
@@ -98,12 +101,12 @@ export const NAVIGATION = [
               {
                 segment: 'pendingOrders',
                 title: 'Pending Orders',
-                icon: <TimerIcon />,
+                icon: <PendingOrderIcon />,
               },
               {
                 segment: 'completedOrders',
                 title: 'Compelted Orders',
-                icon: <TimerIcon />,
+                icon: <OrderCompeltedIcon />,
               },
               {
                 segment: 'canceled/Returned Order',
@@ -121,13 +124,13 @@ export const NAVIGATION = [
           {
             segment: 'tags',
             title: 'Tags',
-            icon: <LayersIcon />,
+            icon: <LocalOfferIcon  />,
           },
 
           {
             segment: 'productReviewsRating',
             title: 'Product Review and Raiting',
-            icon: <LayersIcon />,
+            icon: <ReviewAndRatingIcon />,
           },
   {
     kind: 'divider',
@@ -150,7 +153,7 @@ export const NAVIGATION = [
       {
         segment: 'addNewCustomer',
         title: 'Add New Customer',
-        icon: <TimerIcon />,
+        icon: <PersonAddAltIcon  />,
       },
      
     ],
@@ -159,12 +162,12 @@ export const NAVIGATION = [
    {
         segment: 'customerGroup',
         title: 'Customer Group (eg. vip,Regular)',
-        icon: <TimerIcon />,
+        icon: <GroupsIcon />,
       },
       {
         segment: 'customerFeedback',
         title: 'Customer Feedback',
-        icon: <TimerIcon />,
+        icon: <InsertCommentIcon color='primary'/>,
       },
 
       {
@@ -178,7 +181,7 @@ export const NAVIGATION = [
        {
         segment: 'discounts & Cupons',
         title: 'Discounts & Coupons',
-        icon: <TimerIcon />,
+        icon: <DiscountIcon/>,
       },
       {
         segment: 'giftCard',
