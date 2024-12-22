@@ -1,5 +1,5 @@
-import DashboardContent from '@/app/(pages)/dashboardold/page';
-import AnalyticsContent from '@/app/(pages)/dashboardold/Analytics/pgae';
+import DashboardContent from '@/app/(pages)/Main/page';
+import AnalyticsContent from '@/app/(pages)/Analytics/pgae';
 
 // Route-to-component mapping
 const ROUTE_COMPONENTS = {
