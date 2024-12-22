@@ -24,6 +24,20 @@ export const getAllDocsFromCollection = async <T>(
   }
 };
 
+
+/**   
+ * Get all the doc of collection of collection
+ * @param firstCollectionName;
+ * @param docId;
+ * @param secondCollection;
+ * 
+ * 
+*/
+
+ 
+
+
+
 /**
  * Get a specific document from a collection by document name.
  * @param collectionName - Name of the collection.
