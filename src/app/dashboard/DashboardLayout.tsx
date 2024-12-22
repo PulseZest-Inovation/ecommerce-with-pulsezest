@@ -8,6 +8,7 @@ export default function DashboardLayout({ Component, pageProps }: any) {
     <AuthProvider>
       <RouterProvider>
         <Component {...pageProps} />
+        <h1>hello</h1>
       </RouterProvider>
     </AuthProvider>
   );

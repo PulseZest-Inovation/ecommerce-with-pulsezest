@@ -1,80 +1,77 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography, Breadcrumbs } from "@mui/material";
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { NAVIGATION, demoTheme, } from '@/utils/menu';
+import { NAVIGATION, demoTheme } from '@/utils/menu';
 import ROUTE_COMPONENTS from '@/utils/route';
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { useRouter } from 'next/navigation';
 import { Result } from 'antd';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/utils/firbeaseConfig'; // Firebase config
+import { auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
 
-
-function Dashboard(props) {
-  const { window } = props;
+function Dashboard({ window }) {
   const [pathname, setPathname] = useState('/dashboard');
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // Initially loading
+  const [user, setUser] = useState(null); // Store authenticated user
   const router = useRouter();
 
+  // Handle authentication state
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsAuthenticated(true);
-        setLoading(false);
+        setUser(user); // Set authenticated user
       } else {
-        setIsAuthenticated(false);
-        setLoading(false);
-        router.push('/login');
+        router.push('/login'); // Redirect if unauthenticated
       }
+      setLoading(false); // Stop loading once check is complete
     });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
   }, [router]);
 
-  const routerContext = React.useMemo(() => {
-    return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => setPathname(String(path)),
-    };
+  // Memoize router context
+  const routerContext = useMemo(() => ({
+    pathname,
+    searchParams: new URLSearchParams(),
+    navigate: (path) => setPathname(path),
+  }), [pathname]);
+
+  // Generate breadcrumbs from the current pathname
+  const generateBreadcrumbs = useMemo(() => {
+    const pathSegments = pathname.split('/').filter(Boolean);
+    return pathSegments.map((segment, index) => (
+      <Typography key={index} className="cursor-pointer" color="primary">
+        {segment.toUpperCase()}
+      </Typography>
+    ));
   }, [pathname]);
 
-  const generateBreadcrumbs = () => {
-    const pathSegments = pathname.split('/').filter(Boolean);
-    return pathSegments.map((segment, index) => {
-      const url = '/' + pathSegments.slice(0, index + 1).join('/');
-      return (
-        // <Link key={index} href={url}>
-          <Typography className='cursor-pointer' color="primary">{segment.toUpperCase()}</Typography>
-        // </Link>
-      );
-    });
-  };
-
+  // Render dynamic content based on the current route
   const renderContent = () => {
     const Component = ROUTE_COMPONENTS[pathname];
     if (Component) {
       return <Component />;
     }
-    return   <Result
-    status="500"
-    title="We Are Current Working on this"
-    subTitle="Very Soon It will be active!"
-    // extra={<Button type="primary">Back Home</Button>}
-  />;
-  };
-
-  const handleRouteChange = (newRoute) => {
-    // Dynamically change the route in the browser
-    router.push(newRoute);
-    setPathname(newRoute);
+    return (
+      <Result
+        status="500"
+        title="We Are Currently Working on This"
+        subTitle="Very Soon It Will Be Active!"
+      />
+    );
   };
 
   if (loading) {
-    return <Loader />;
+    return <Loader />; // Show loader while checking authentication
+  }
+
+  if (!user) {
+    return null; // Prevent rendering if the user is not authenticated
   }
 
   return (
@@ -102,15 +99,13 @@ function Dashboard(props) {
           sidebarFooter: () => <AccountSidebarInfo />,
         }}
       >
-        {/* Breadcrumbs */}
+        {/* Breadcrumbs Section */}
         <Box sx={{ p: 2 }}>
-          <Breadcrumbs aria-label="breadcrumb">{generateBreadcrumbs()}</Breadcrumbs>
+          <Breadcrumbs aria-label="breadcrumb">{generateBreadcrumbs}</Breadcrumbs>
         </Box>
-        {/* Render Content Based on Route */}
-        <Box sx={{ p: 2 }}>
-          {renderContent()}
-        </Box>
-        
+
+        {/* Render Content Section */}
+        <Box sx={{ p: 2 }}>{renderContent()}</Box>
       </DashboardLayout>
     </AppProvider>
   );

@@ -26,14 +26,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
+        setLoading(false); // Stop loading when user is found
       } else {
         setUser(null);
-        router.push('/login');
+        setLoading(false); // Stop loading even when no user is found
+        router.push('/login'); // Redirect if not authenticated
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Cleanup the subscription
   }, [router]);
 
   return (
