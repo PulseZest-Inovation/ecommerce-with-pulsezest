@@ -1,6 +1,6 @@
 export interface app{
-    appName: string;
-    appLog: string;
+    app_name: string;
+    app_logo: string;
     redirectUrl: string;
     returnUrl: string;
     scope: string;

@@ -2,20 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Button, message, Watermark } from 'antd';
 import SecurityCheck from './securityCheck'; // Ensure the path is correct
-import { adminLogin } from './adminlogin'; // Import the adminLogin function
+import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
-import {  onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
-import { auth } from '@/utils/firbeaseConfig';
-import { useNotification } from '@/components/Provider/NotificationProvider'
+import { onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
+import { auth, storage } from '@/utils/firbeaseConfig';
+import { app } from '@/types/app';
+import { useNotification } from '@/components/Provider/NotificationProvider';
+import LoginToEcommerce from './login';
+import { getDocByDocName } from '@/services/getFirestoreData';
 
 const Login: React.FC = () => {
-  const router = useRouter(); // Get the router instance here
+  const router = useRouter(); // Get the router instance
   const [isSecurityVerified, setIsSecurityVerified] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const {success, error} = useNotification();
-
+  const [email, setEmail] = useState<string>(''); // Added email state
+  const [password, setPassword] = useState<string>(''); // Added password state
+  const [appData, setAppData] = useState<app | null>(null); // State to store the app data
+  const { success, error } = useNotification();
 
   useEffect(() => {
     // Check if the user is already authenticated when the component mounts
@@ -32,7 +35,25 @@ const Login: React.FC = () => {
 
   const handleSecuritySuccess = () => {
     message.success('Security check passed!');
+    fetchAppData(); // Fetch app data when security check passes
     setIsSecurityVerified(true);
+  };
+
+  const fetchAppData = async () => {
+    try {
+      // Fetch data from Firestore using the 'getDocByDocName' function
+      const fetchedData = await getDocByDocName<app>("app_name", localStorage.getItem('securityKey') || '');
+
+      if (fetchedData) {
+        setAppData(fetchedData); // Set the fetched data in state
+        console.log("Fetched App Data:", fetchedData);
+      } else {
+        message.error('App data not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching app data:', error);
+      message.error('Failed to fetch app data. Please try again later.');
+    }
   };
 
   const handleLogin = async () => {
@@ -52,11 +73,11 @@ const Login: React.FC = () => {
 
       if (isLoggedIn) {
         message.success('Login successful!');
-        success('Success', 'Login Successful!')
-        router.replace('/dashboard'); 
+        success('Success', 'Login Successful!');
+        router.replace('/dashboard');
       } else {
         message.error('Invalid credentials! Please try again.');
-        error('Error', 'Invalid Credentials!')
+        error('Error', 'Invalid Credentials!');
       }
     } catch (error) {
       // Catch and display error during login process
@@ -69,49 +90,23 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      <Watermark content={isSecurityVerified ? "Verifed user": "Ecommerce with pulsezest"}   className='z-0'>
+      <Watermark
+        content={isSecurityVerified && appData ? appData.app_name : 'Ecommerce with PulseZest'}
+        className="z-0"
+        image={appData?.app_logo}
+      >
         <div className="flex items-center justify-center h-screen bg-blue-100 z-10">
           {!isSecurityVerified ? (
             <SecurityCheck onSuccess={handleSecuritySuccess} />
           ) : (
-            <div className="bg-white p-6 shadow-lg rounded-lg w-96 z-10">
-              <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
-                Administration Login
-              </h2>
-              <form>
-                <div className="mb-4">
-                  <label className="block text-gray-700 font-bold mb-2">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border-gray-300 focus:border-blue-600 focus:ring-blue-600"
-                    size="large"
-                  />
-                </div>
-                <div className="mb-6">
-                  <label className="block text-gray-700 font-bold mb-2">Password</label>
-                  <Input.Password
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-gray-300 focus:border-blue-600 focus:ring-blue-600"
-                    size="large"
-                  />
-                </div>
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  onClick={handleLogin}
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-none"
-                  loading={loading}
-                >
-                  Login
-                </Button>
-              </form>
-            </div>
+            <LoginToEcommerce
+              handleLogin={handleLogin} // Pass the handleLogin function
+              loading={loading} // Pass the loading state
+              email={email} // Pass email state
+              setEmail={setEmail} // Pass email setter
+              password={password} // Pass password state
+              setPassword={setPassword} // Pass password setter
+            />
           )}
         </div>
       </Watermark>
