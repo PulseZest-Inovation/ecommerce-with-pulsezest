@@ -6,7 +6,7 @@ import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 import { onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 import { auth, storage } from '@/utils/firbeaseConfig';
-import { app } from '@/types/app';
+import { app } from '@/types/AppData';
 import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
 import { getDocByDocName } from '@/services/getFirestoreData';

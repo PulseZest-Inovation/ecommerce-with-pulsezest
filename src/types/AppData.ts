@@ -1,4 +1,4 @@
-export interface app{
+export interface AppData{
     app_name: string;
     app_logo: string;
     redirectUrl: string;
