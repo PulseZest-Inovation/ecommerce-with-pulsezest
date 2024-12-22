@@ -9,7 +9,7 @@ import { db } from "../../../utils/firbeaseConfig";
 const getSecurityCheck = async (securityKey: string): Promise<boolean> => {
   try {
     // Reference the document using the security key as the document ID
-    const docRef = doc(db, "securityCheck", securityKey);
+    const docRef = doc(db, "app_name", securityKey);
 
     // Fetch the document
     const docSnap = await getDoc(docRef);
