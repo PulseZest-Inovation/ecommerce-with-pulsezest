@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Dashboard from '@/components/Dashbaord/page'; // Corrected the typo in the import
-import { getDocByDocName } from '@/services/getFirestoreData'; // Adjust the path as necessary
+import { getAppData } from './getApp'; // Adjust the path as necessary
 import { AppData } from '@/types/AppData';
 import Loader from '@/components/Loader';
 
@@ -20,7 +20,7 @@ const DashboardWrapper = () => {
       }
 
       try {
-        const data = await getDocByDocName<AppData>('app_name', securityKey); // Fetch data
+        const data = await getAppData<AppData>('app_name', securityKey); // Fetch data
         setAppData(data);
       } catch (error) {
         console.error('Error fetching app data:', error);

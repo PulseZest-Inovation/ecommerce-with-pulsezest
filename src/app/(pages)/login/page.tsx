@@ -9,7 +9,7 @@ import { auth, storage } from '@/utils/firbeaseConfig';
 import { app } from '@/types/AppData';
 import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
-import { getDocByDocName } from '@/services/getFirestoreData';
+import { getDocByDocName } from '@/services/FirestoreData/getFirestoreData';
 
 const Login: React.FC = () => {
   const router = useRouter(); // Get the router instance
