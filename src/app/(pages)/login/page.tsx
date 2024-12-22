@@ -69,7 +69,7 @@ const Login: React.FC = () => {
 
   return (
     <div>
-      <Watermark image='/apni-mati-vastram-logo.png' className='z-0'>
+      <Watermark content={isSecurityVerified ? "Verifed user": "Ecommerce with pulsezest"}   className='z-0'>
         <div className="flex items-center justify-center h-screen bg-blue-100 z-10">
           {!isSecurityVerified ? (
             <SecurityCheck onSuccess={handleSecuritySuccess} />

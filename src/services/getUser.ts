@@ -12,7 +12,7 @@ export const getUser = async () => {
     }
 
     // Reference to the user document using the current user's ID
-    const userDocRef = doc(db, 'securityCheck', currentUser.uid); // 'users' is the collection name in Firestore
+    const userDocRef = doc(db, 'app_name', currentUser.uid); // 'users' is the collection name in Firestore
     const userDoc = await getDoc(userDocRef);
 
     if (userDoc.exists()) {

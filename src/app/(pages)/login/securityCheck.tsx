@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Input, Button, message } from 'antd';
-import getSecurityCheck from './getSecurity'; // Import the getSecurityCheck function
+import { verifySecurityKey } from '@/services/securityCheckService';
 
 interface SecurityCheckProps {
   onSuccess: () => void;
@@ -13,8 +13,9 @@ const SecurityCheck: React.FC<SecurityCheckProps> = ({ onSuccess }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const handleContinue = async (): Promise<void> => {
-    const isValid = true; // Check if the key is valid using Firestore
+    const isValid = await verifySecurityKey(key); // Check if the key is valid using Firestore
     if (isValid) {
+
       message.success('Key verified successfully!');
       onSuccess(); // Trigger success callback if key is valid
     } else {
