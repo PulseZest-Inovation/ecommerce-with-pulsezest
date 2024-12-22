@@ -6,10 +6,10 @@ import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 import { onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
 import { auth, storage } from '@/utils/firbeaseConfig';
-import { app } from '@/types/AppData';
+import { AppData } from '@/types/AppData';
 import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
-import { getDocByDocName } from '@/services/FirestoreData/getFirestoreData';
+import { getAppData } from '@/services/getApp';
 
 const Login: React.FC = () => {
   const router = useRouter(); // Get the router instance
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>(''); // Added email state
   const [password, setPassword] = useState<string>(''); // Added password state
-  const [appData, setAppData] = useState<app | null>(null); // State to store the app data
+  const [appData, setAppData] = useState<AppData | null>(null); // State to store the app data
   const { success, error } = useNotification();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   const fetchAppData = async () => {
     try {
       // Fetch data from Firestore using the 'getDocByDocName' function
-      const fetchedData = await getDocByDocName<app>("app_name", localStorage.getItem('securityKey') || '');
+      const fetchedData = await getAppData<AppData>("app_name", localStorage.getItem('securityKey') || '');
 
       if (fetchedData) {
         setAppData(fetchedData); // Set the fetched data in state
