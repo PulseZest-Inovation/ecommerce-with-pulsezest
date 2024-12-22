@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  reactStrictMode: true, // Optionally enable React Strict Mode
+  images: {
+    domains: ['storage.googleapis.com', 'storage.cloud.google.com', 'firebasestorage.googleapis.com'], // Allow both domains
+  },
 };
 
 module.exports = nextConfig;

@@ -1,9 +1,9 @@
-import { getDocByDocName } from "./getFirestoreData";
+import { getAppDoc } from "./FirestoreData/getFirestoreData";
 import { message } from "antd";
 
 export const verifySecurityKey = async (key: string): Promise<boolean> => {
   try {
-    const result = await getDocByDocName<{ key: string }>('app_name', key);
+    const result = await getAppDoc<{ key: string }>('app_name', key);
     if (result) {
       localStorage.setItem('securityKey', key);
       return true;
