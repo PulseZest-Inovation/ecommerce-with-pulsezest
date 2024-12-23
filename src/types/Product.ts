@@ -11,12 +11,12 @@ export interface Product {
     featured: boolean;
     catalog_visibility: string;
     description: string;
-    short_description: string;
+    shortDescription: string;
     sku: string;
     price: string;
     regularPrice: string;
     salePrice: string;
-    dateOnSaleTo: Timestamp;
+    dateOnSaleTo: Timestamp | null;
     price_html: string;
     onSale: boolean;
     purchaseSale: boolean;
@@ -24,17 +24,19 @@ export interface Product {
     manageStatus: boolean;
     stockQuantity: number;
     stockStatus: string;
-    backdoers: string;
-    backordersAllowrd: boolean;
+    backorders: boolean; // Fixed spelling issue
+    backordersAllowed: boolean; // Fixed spelling issue
     shipping_taxable: string;
     reviewsAllowed: boolean;
     averageRating: string;
     ratingCount: number;
-    categories: string[];  // Array of strings (e.g., category names)
-    tag: string[];         // Array of strings (e.g., tag names)
-    image: string[];       // Array of image URLs or file paths
-    variation: any[];      // Array of any type (for product variations, could be objects)
-    attributes: any[];     // Array of attributes (could be objects with specific properties)
+    categories: string[];
+    tags: string[];
+    featuredImage: string;
+    galleryImages: string[];
+    variation: any[];
+    attributes: any[];
     menuOrder: number;
-    metaData: any[];       // Array of metadata (could be objects)
-}
+    metaData: any[];
+  }
+  

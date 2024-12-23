@@ -14,6 +14,7 @@ export interface MetaData {
 
 
 export interface Customer {
+    id: string
     fullName: string;
     phone: string;
     address: string;
