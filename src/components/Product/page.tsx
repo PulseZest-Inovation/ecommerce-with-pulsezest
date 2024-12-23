@@ -5,12 +5,16 @@ import { Product } from "@/types/Product";
 import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
 import { Timestamp } from "firebase/firestore";
 
+// Import your Firebase functions
+import { UploadImageToFirebase, UploadMultipleImagesToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
+
 import "tailwindcss/tailwind.css";
 
 const { Option } = Select;
 
 interface ProductWrapperProps {
-  initialData?: Product; // Pass initial data if available
+  initialData?: Product;
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
@@ -48,14 +52,108 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     categories: [],
     tags: [],
     featuredImage: "",
-    galleryImages: [],
+    galleryImages: [], // Initialize as empty array
     variation: [],
     attributes: [],
     menuOrder: 0,
     metaData: [],
   });
 
-  // Update formData and selectedCategories when initialData is provided or changed
+  // Generate slug from product name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  // Handle form data changes
+  const handleInputChange = (key: keyof Product, value: any) => {
+    if (key === "id") {
+      const generatedSlug = generateSlug(value);
+      setFormData((prev) => ({
+        ...prev,
+        [key]: value,
+        slug: generatedSlug,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [key]: value }));
+    }
+  };
+
+  // Handle category change
+  const handleCategoryChange = (categories: string[]) => {
+    setSelectedCategories(categories);
+    handleInputChange("categories", categories); // Update formData with selected categories
+  };
+
+  // Upload featured image
+  const handleFeaturedUpload = async ({ file }: any) => {
+    const docId = formData.slug;
+    try {
+      const uploadedUrl = await UploadImageToFirebase(file, `products/${docId}/featuredImage`);
+      if (uploadedUrl) {
+        handleInputChange("featuredImage", uploadedUrl);
+        message.success("Featured image uploaded successfully!");
+      }
+    } catch (error) {
+      message.error("Error uploading featured image.");
+    }
+  };
+
+ 
+// Upload gallery images one by one
+const handleGalleryUpload = async ({ fileList }: any) => {
+  const docId = formData.slug;
+  const newGalleryImages: string[] = [...formData.galleryImages]; // Keep existing categories intact
+
+  // Loop over each file in the fileList
+  for (const file of fileList) {
+    // Validate file type (check if it's an image)
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('You can only upload image files!');
+      return false; // Prevent upload
+    }
+
+    try {
+      // Upload the single image using UploadImageToFirebase
+      const uploadedUrl = await UploadImageToFirebase(file.originFileObj, `products/${docId}/galleryImages`);
+      if (uploadedUrl) {
+        // Push the uploaded URL into the categories array
+        console.log("Gallery image upload", uploadedUrl);
+        newGalleryImages.push(uploadedUrl);
+      }
+    } catch (error) {
+      message.error("Error uploading gallery images.");
+    }
+  }
+
+  // Update the form data with the new categories (which now include image URLs)
+  handleInputChange("galleryImages", newGalleryImages);
+  message.success("Gallery images uploaded successfully!");
+};
+
+
+
+
+  // Submit product form data to Firestore
+  const handleSubmit = async () => {
+    if (!formData.id) {
+      message.error("Product name is required!");
+      return;
+    }
+
+    try {
+      const docId = formData.slug;
+      await setDocWithCustomId("products", docId, formData);
+      message.success("Product Added Successfully!");
+    } catch (error) {
+      message.error("Error adding product.");
+    }
+  };
+
+  // Update formData with initial data if available
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -63,56 +161,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         createdAt: initialData.createdAt || Timestamp.now(),
         ModifiedAt: initialData.ModifiedAt || Timestamp.now(),
       });
-
-      // Set selected categories from initialData
       setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
 
-  const handleCategoryChange = (categories: string[]) => {
-    setSelectedCategories(categories);
-    console.log("Selected Categories:", categories); // Logs selected categories for debugging
-  };
-
-  const handleInputChange = (key: keyof Product, value: any) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleFeaturedUpload = ({ file }: any) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      handleInputChange("featuredImage", reader.result as string);
-      message.success("Featured image uploaded successfully!");
-    };
-    reader.readAsDataURL(file.originFileObj);
-  };
-
-  const handleGalleryUpload = ({ fileList }: any) => {
-    const newImages: string[] = [];
-    fileList.forEach((file: any) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        newImages.push(reader.result as string);
-        if (newImages.length === fileList.length) {
-          handleInputChange("galleryImages", newImages);
-          message.success("Gallery images uploaded successfully!");
-        }
-      };
-      reader.readAsDataURL(file.originFileObj);
-    });
-  };
-
-  const handleSubmit = () => {
-    console.log("Form Data:", formData);
-    message.success("Product Added Successfully!");
-  };
-
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4">Add Product</h2>
-
       <Row gutter={16}>
-        {/* Left Column */}
         <Col xs={24} md={14}>
           <Input
             placeholder="Product Name"
@@ -136,20 +192,18 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           />
         </Col>
 
-        {/* Right Column */}
         <Col xs={24} md={10}>
           <Input
             placeholder="Slug"
             value={formData.slug}
             onChange={(e) => handleInputChange("slug", e.target.value)}
             className="mb-4"
+            disabled
           />
-
           <MultipleCategoriesSelector
-            value={selectedCategories} // Pass the current selected categories
-            onChange={handleCategoryChange} // Pass the handler for updates
+            value={selectedCategories}
+            onChange={handleCategoryChange}
           />
-
           <Select
             mode="multiple"
             placeholder="Select Tags"
@@ -168,9 +222,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           >
             <Button icon={<PlusOutlined />}>Upload Featured Image</Button>
           </Upload>
-          {formData.featuredImage && (
-            <img src={formData.featuredImage} alt="Featured" className="w-full mb-4" />
-          )}
+          {formData.featuredImage && <img src={formData.featuredImage} alt="Featured" className="w-full mb-4" />}
           <Upload
             listType="picture-card"
             multiple
@@ -187,7 +239,11 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       </Row>
 
       <div className="text-right">
-        <Button type="primary" onClick={handleSubmit}>
+        <Button
+          type="primary"
+          onClick={handleSubmit}
+          disabled={!formData.id}
+        >
           Submit
         </Button>
       </div>
