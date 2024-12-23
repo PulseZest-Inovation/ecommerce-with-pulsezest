@@ -1,8 +1,8 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { UploadImageToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
-import { createDocWithAutoId, setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Update path as needed
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Update path as needed
 import { Categories } from "@/types/Categories";
 import CategoriesSelector from "../Selector/CategorySelector";
 
@@ -11,32 +11,43 @@ const CreateCategory = () => {
   const [loading, setLoading] = useState(false); // Loading state for the spinner
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility
 
+  // Function to create a valid slug from the category name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()                    // Convert to lowercase
+      .trim()                           // Remove leading/trailing spaces
+      .replace(/\s+/g, "-")             // Replace spaces with hyphens
+      .replace(/[^\w-]+/g, "");         // Remove non-alphanumeric characters except hyphens
+  };
+
   const handleFinish = async (values: any) => {
     try {
       setLoading(true);
       setModalVisible(true); // Show the modal/loader
-  
+
       const { image, ...otherValues } = values;
-  
+
       // Upload image to Firebase and get the URL
       const imageFile = image?.[0]?.originFileObj;
       if (!imageFile) throw new Error("Image file is required!");
-  
+
       const imageUrl = await UploadImageToFirebase(imageFile, "categories/images");
-  
+
       // Add the image URL to form values
       const formData: Categories = {
         ...otherValues,
+        cid: otherValues.slug,
         image: imageUrl,
         count: 0, // Default count value
       };
-  
+
       console.log(formData);
       // Save the form data to Firestore
-      const docId = await createDocWithAutoId("categories", formData);
-      if (docId) {
+      const docId = formData.slug;
+      const status = await setDocWithCustomId('categories', docId, formData);
+
+      if (status) {
         // Add the cid without overwriting the existing document
-        await setDocWithCustomId('categories', docId, { cid: docId });
         message.success("Category created successfully!");
         form.resetFields();
       } else {
@@ -54,11 +65,18 @@ const CreateCategory = () => {
     }
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    const slug = generateSlug(name); // Generate the slug from the category name
+    form.setFieldsValue({ slug });    // Update the slug field
+  };
+
   return (
     <div className="p-6 bg-gray-100 rounded-md shadow-md">
       <h2 className="text-xl font-bold mb-4">Create Category</h2>
-         {/* Modal for displaying loader */}
-         <Modal
+
+      {/* Modal for displaying loader */}
+      <Modal
         visible={modalVisible}
         footer={null}
         closable={false}
@@ -80,7 +98,11 @@ const CreateCategory = () => {
           name="name"
           rules={[{ required: true, message: "Please enter the category name!" }]}
         >
-          <Input placeholder="Enter category name" className="rounded-md" />
+          <Input
+            placeholder="Enter category name"
+            className="rounded-md"
+            onChange={handleNameChange} // Update slug when the name changes
+          />
         </Form.Item>
 
         {/* Slug Field */}
