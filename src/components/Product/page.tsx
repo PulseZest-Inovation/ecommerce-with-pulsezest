@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Col, Row, Input, Button, Select, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Product } from "@/types/Product";
+import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
 import { Timestamp } from "firebase/firestore";
+
 import "tailwindcss/tailwind.css";
 
 const { Option } = Select;
@@ -12,6 +14,7 @@ interface ProductWrapperProps {
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
     slug: "",
@@ -36,8 +39,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     manageStatus: false,
     stockQuantity: 0,
     stockStatus: "in-stock",
-    backorders: false, 
-    backordersAllowed: false, 
+    backorders: false,
+    backordersAllowed: false,
     shipping_taxable: "",
     reviewsAllowed: true,
     averageRating: "0",
@@ -52,7 +55,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     metaData: [],
   });
 
-  // Update formData when initialData is provided or changed
+  // Update formData and selectedCategories when initialData is provided or changed
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -60,8 +63,16 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         createdAt: initialData.createdAt || Timestamp.now(),
         ModifiedAt: initialData.ModifiedAt || Timestamp.now(),
       });
+
+      // Set selected categories from initialData
+      setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
+
+  const handleCategoryChange = (categories: string[]) => {
+    setSelectedCategories(categories);
+    console.log("Selected Categories:", categories); // Logs selected categories for debugging
+  };
 
   const handleInputChange = (key: keyof Product, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -133,16 +144,12 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             onChange={(e) => handleInputChange("slug", e.target.value)}
             className="mb-4"
           />
-          <Select
-            mode="multiple"
-            placeholder="Select Categories"
-            value={formData.categories}
-            onChange={(value) => handleInputChange("categories", value)}
-            className="mb-4 w-full"
-          >
-            <Option value="electronics">Electronics</Option>
-            <Option value="fashion">Fashion</Option>
-          </Select>
+
+          <MultipleCategoriesSelector
+            value={selectedCategories} // Pass the current selected categories
+            onChange={handleCategoryChange} // Pass the handler for updates
+          />
+
           <Select
             mode="multiple"
             placeholder="Select Tags"

@@ -48,3 +48,31 @@ const CategoriesSelector: React.FC<ParentCategorySelectorProps> = ({ value, onCh
 };
 
 export default CategoriesSelector;
+
+
+
+
+ //how to use the categories;
+
+// const ParentComponent: React.FC = () => {
+//   const [selectedCategory, setSelectedCategory] = useState<string>("none");
+
+//   const handleCategoryChange = (value: string) => {
+//     setSelectedCategory(value);
+//     console.log("Selected Category ID:", value);
+//   };
+
+//   return (
+//     <div className="p-6 bg-gray-100 rounded-md shadow-md">
+//       <h2 className="text-xl font-bold mb-4">Select a Category</h2>
+//       <CategoriesSelector value={selectedCategory} onChange={handleCategoryChange} />
+//       {selectedCategory !== "none" && (
+//         <div className="mt-4 text-green-600">
+//           Selected Category ID: <strong>{selectedCategory}</strong>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ParentComponent;
