@@ -6,7 +6,7 @@ import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
 import { Timestamp } from "firebase/firestore";
 
 // Import your Firebase functions
-import { UploadImageToFirebase, UploadMultipleImagesToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
+import { UploadImageToFirebase, } from "@/services/FirebaseStorage/UploadImageToFirebase";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 
 import "tailwindcss/tailwind.css";
