@@ -1,6 +1,7 @@
 'use client';
+
 import React, { useEffect, useState, useMemo } from 'react';
-import { AppData } from '@/types/AppData'; // Adjust the path as necessary
+import { AppData } from '@/types/AppData';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs } from '@mui/material';
@@ -10,11 +11,11 @@ import ROUTE_COMPONENTS from '@/utils/route';
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { useRouter } from 'next/navigation';
 import { Result } from 'antd';
-import { onAuthStateChanged, User } from 'firebase/auth'; // Import User type from Firebase
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { app, auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
 
-// Define the type for route keys (inferred from ROUTE_COMPONENTS)
+// Define the type for route keys
 type RouteKey = keyof typeof ROUTE_COMPONENTS;
 
 interface DashboardProps {
@@ -22,9 +23,9 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
-  const [pathname, setPathname] = useState<RouteKey>('/dashboard'); // Use a valid key as the initial state
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null); // Ensure user is typed correctly
+  const [user, setUser] = useState<User | null>(null); // Auth user state
+  const [pathname, setPathname] = useState<RouteKey>('/dashboard'); // Default route
   const router = useRouter();
 
   // Handle authentication state
@@ -33,28 +34,32 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
       if (user) {
         setUser(user);
       } else {
-        router.push('/login');
+        router.push('/login'); // Redirect to login page if no user
       }
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
+    return () => unsubscribe(); // Cleanup on unmount
   }, [router]);
 
+  // Dynamically set the route and component using the router
+  const setRoute = (route: RouteKey) => {
+    setPathname(route); // Update the pathname state
+    router.push(route);  // Programmatically navigate to the new route
+  };
 
-  useEffect(()=>{
-    console.log(appData.app_name, appData.app_logo)
-  })
+  useEffect(() => {
+    console.log(appData.app_name, appData.app_logo); // Log app data for debugging
+  }, [appData]);
 
-  // Memoize router context
+  // Memoize the router context to prevent unnecessary re-renders
   const routerContext = useMemo(() => ({
     pathname,
     searchParams: new URLSearchParams(),
-    // Change navigate to accept only valid route keys (RouteKey)
-    navigate: (path: RouteKey) => setPathname(path),
+    navigate: setRoute, // Use setRoute for navigation
   }), [pathname]);
 
-  // Generate breadcrumbs from the current pathname
+  // Generate breadcrumbs dynamically based on the current route
   const generateBreadcrumbs = useMemo(() => {
     const pathSegments = pathname.split('/').filter(Boolean);
     return pathSegments.map((segment, index) => (
@@ -64,11 +69,11 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     ));
   }, [pathname]);
 
-  // Render dynamic content based on the current route
+  // Render content based on the current route
   const renderContent = () => {
     const Component = ROUTE_COMPONENTS[pathname]; // Safe lookup based on RouteKey
     if (Component) {
-      return <Component />;
+      return <Component />; // Render the selected component
     }
     return (
       <Result
@@ -79,6 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     );
   };
 
+  // Loading state and user authentication check
   if (loading) {
     return <Loader />; // Show loader while checking authentication
   }
@@ -90,20 +96,20 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   return (
     <AppProvider
       navigation={NAVIGATION as any} // You can cast this if necessary
-      router={routerContext as any} // You can cast this if necessary
+      router={routerContext as any}
       theme={demoTheme}
       window={window}
       branding={{
         logo: (
           <Image
-            src={appData.app_logo} // Use the app's logo
-            alt={`${appData.app_name} Logo`} // Dynamically set the alt text
+            src={appData.app_logo}
+            alt={`${appData.app_name} Logo`}
             width={70}
             height={70}
             priority
           />
         ),
-        title: appData.app_name, // Use the app's name as the title
+        title: appData.app_name,
       }}
     >
       <DashboardLayout

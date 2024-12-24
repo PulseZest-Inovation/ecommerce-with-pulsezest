@@ -5,10 +5,12 @@ import Dashboard from '@/components/Dashbaord/page'; // Corrected the typo in th
 import { getAppData } from './getApp'; // Adjust the path as necessary
 import { AppData } from '@/types/AppData';
 import Loader from '@/components/Loader';
+import { useRouter } from 'next/navigation';
 
 const DashboardWrapper = () => {
   const [appData, setAppData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchAppData = async () => {
@@ -38,7 +40,8 @@ const DashboardWrapper = () => {
   }
 
   if (!appData) {
-    return <div>Error: App data not found!</div>; // Handle the case where data is null or error
+    router.push('/login')
+    return  null; // Handle the case where data is null or error
   }
 
   return <Dashboard appData={appData} />; // Pass the fetched appData to the Dashboard component

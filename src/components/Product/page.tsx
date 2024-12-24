@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from "react";
 import { Col, Row, Input, Button, Select, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
