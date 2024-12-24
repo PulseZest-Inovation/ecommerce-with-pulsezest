@@ -5,6 +5,7 @@ import { Product } from '@/types/Product';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import moment from 'moment';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector'; // Adjust path accordingly
+import { Search } from '@mui/icons-material';
 
 type Props = {};
 
@@ -149,6 +150,7 @@ const ViewProduct = (props: Props) => {
 
         <div className='flex space-x-3 pt-5'>
             <Input
+              prefix={<Search/>}
               placeholder="Search by ID or Description"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
