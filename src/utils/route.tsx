@@ -5,12 +5,14 @@ import AddProduct from  '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import Tags from '@/app/dashboard/tags/page';
 import Customers from '@/app/dashboard/customers/page';
+import RecentOrder from '@/app/dashboard/recent-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
 // Route-to-component mapping
 
 const ROUTE_COMPONENTS = {
   '/dashboard': DashboardContent,
   '/dashboard/analytics': AnalyticsContent,
+  '/dashboard/recent-order':RecentOrder,
   '/dashboard/manage-category/categories': Categories,
   '/dashboard/manage-product/add-new-product': AddProduct,
   '/dashboard/manage-product/view-all-product': ViewProduct,

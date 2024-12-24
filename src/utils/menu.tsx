@@ -30,8 +30,8 @@ export const NAVIGATION = [
     icon: <AnalyticsIcon />,
   },
   {
-    segment: 'orders',
-    title: 'Orders',
+    segment: 'dashboard/recent-order',
+    title: 'Recent Orders',
     icon: <InventoryIcon />,
   },
   {

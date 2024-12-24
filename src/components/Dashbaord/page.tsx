@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AppData } from '@/types/AppData';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -9,14 +9,11 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme } from '@/utils/menu';
 import ROUTE_COMPONENTS from '@/utils/route';
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Result } from 'antd';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { app, auth } from '@/utils/firbeaseConfig';
+import { auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
-
-// Define the type for route keys
-type RouteKey = keyof typeof ROUTE_COMPONENTS;
 
 interface DashboardProps {
   appData: AppData;
@@ -25,7 +22,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null); // Auth user state
-  const [pathname, setPathname] = useState<RouteKey>('/dashboard'); // Default route
+  const pathname = usePathname(); // Get the current route
   const router = useRouter();
 
   // Handle authentication state
@@ -42,12 +39,6 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     return () => unsubscribe(); // Cleanup on unmount
   }, [router]);
 
-  // Dynamically set the route and component using the router
-  const setRoute = (route: RouteKey) => {
-    setPathname(route); // Update the pathname state
-    router.push(route);  // Programmatically navigate to the new route
-  };
-
   useEffect(() => {
     console.log(appData.app_name, appData.app_logo); // Log app data for debugging
   }, [appData]);
@@ -56,12 +47,12 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   const routerContext = useMemo(() => ({
     pathname,
     searchParams: new URLSearchParams(),
-    navigate: setRoute, // Use setRoute for navigation
-  }), [pathname]);
+    navigate: (route: string) => router.push(route), // Simplify navigation logic
+  }), [pathname, router]);
 
   // Generate breadcrumbs dynamically based on the current route
   const generateBreadcrumbs = useMemo(() => {
-    const pathSegments = pathname.split('/').filter(Boolean);
+    const pathSegments = pathname?.split('/').filter(Boolean) || [];
     return pathSegments.map((segment, index) => (
       <Typography key={index} className="cursor-pointer" color="primary">
         {segment.toUpperCase()}
@@ -71,7 +62,7 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
 
   // Render content based on the current route
   const renderContent = () => {
-    const Component = ROUTE_COMPONENTS[pathname]; // Safe lookup based on RouteKey
+    const Component = ROUTE_COMPONENTS[pathname as keyof typeof ROUTE_COMPONENTS];
     if (Component) {
       return <Component />; // Render the selected component
     }
