@@ -4,6 +4,7 @@ import { Product } from '@/types/Product';
 import {getDataByDocName} from '@/services/FirestoreData/getFirestoreData'
 import ProductWrapper from '@/components/Product/page';
 import { useParams } from 'next/navigation';
+import { Spin } from 'antd';
 
 const EditProduct = () => {
   const params = useParams();
@@ -29,18 +30,18 @@ const EditProduct = () => {
   }
  
   if (loading) {
-    return <p>Loading...</p>; // Show loading state while fetching
+    return <Spin/>;  
   }
 
   if (!product) {
-    return <p>Product not found.{productId}</p>; // Handle case where product is not found
+    return <p>Product not found.{productId}</p>;  
   }
 
   return (
     <div>
-      <div className="flex">
+      <div className="flex justify-between">
         <h2 className="text-2xl font-semibold mb-4">Edit Product</h2>
-        <p className="font-mono">{productId}</p>
+        <p className="font-mono">/{productId}</p>
       </div>
       <ProductWrapper initialData={product}/>
     </div>

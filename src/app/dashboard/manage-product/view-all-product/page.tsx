@@ -150,9 +150,14 @@ const ViewProduct = (props: Props) => {
   return (
     <div>
 
-      <h1 className='font-bold text-2xl'>Product List</h1>
+      <div className='justify-between flex'>
+        <h1 className='font-bold text-2xl'>Product List</h1>
+        <Button type='primary' onClick={()=>{
+          router.push('add-new-product')
+        }}>Add New Product</Button>
+      </div>
 
-        <div className='flex space-x-3 pt-5'>
+        <div className='flex space-x-3 mt-2 mb-4'>
             <Input
               prefix={<Search/>}
               placeholder="Search by ID or Description"
