@@ -16,6 +16,7 @@ import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import Shipping from "./Shipping";
 import LinkedProduct from "./LinkedProduct";
+import Tags from "./Tags";
 type MenuItem = Required<MenuProps>['items'][number];
 
 const { Option } = Select;
@@ -219,8 +220,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             onChange={(e) => handleInputChange("description", e.target.value)}
             className="mb-4"
           />
-
-          {/* Menu Option */}
+ 
           
           {/* Menu */}
          
@@ -267,16 +267,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
           />
-          <Select
-            mode="multiple"
-            placeholder="Select Tags"
-            value={formData.tags}
-            onChange={(value) => handleInputChange("tags", value)}
-            className="mb-4 w-full"
-          >
-            <Option value="sale">Sale</Option>
-            <Option value="new">New</Option>
-          </Select>
+          <Tags
+            selectedTags={formData.tags}
+            onTagsChange={(value) => handleInputChange("tags", value)}
+          />
         </Col>
       </Row>
     </div>
