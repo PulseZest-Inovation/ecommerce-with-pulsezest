@@ -1,13 +1,15 @@
-"use client";
+'use client'
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Select, message, Card } from "antd";
+import { Row, Col, Input, Button, Select, message, Card, DatePicker } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
+import Price from "./Price"; // Import the new Price component
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import "tailwindcss/tailwind.css";
+import moment from 'moment'; // Add moment.js for handling date formats
 
 const { Option } = Select;
 
@@ -34,6 +36,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),
     dateOnSaleTo: null,
+    dateOnSaleFrom: null,
     price_html: "",
     onSale: false,
     purchaseSale: false,
@@ -132,8 +135,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     }
   }, [initialData]);
 
+  // Handle Date change for Sale Start and End Date
+  const handleDateChange = (date: moment.Moment | null, dateType: 'dateOnSaleFrom' | 'dateOnSaleTo') => {
+    const updatedDate = date ? Timestamp.fromDate(date.toDate()) : null;
+    handleInputChange(dateType, updatedDate);
+  };
+
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto">
       <div className="flex justify-between my-2">
         <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
 
@@ -166,6 +175,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             onChange={(e) => handleInputChange("description", e.target.value)}
             className="mb-4"
           />
+          {/* Add the Price Component */}
+          <Price formData={formData} onFormDataChange={handleInputChange} />
         </Col>
 
         <Col xs={24} md={10}>
@@ -190,7 +201,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             />
           </Card>
 
-          <label htmlFor="Select Category"></label>    
+          <label htmlFor="Select Category"></label>
           <CategorySelector
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
