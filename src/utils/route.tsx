@@ -14,6 +14,8 @@ import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
 import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
+import PaymentSetting from '@/app/dashboard/payment-setting/page';
+
 // Route-to-component mapping
 type RouteComponents = {
   path: string;
@@ -33,6 +35,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
   { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
+  { path: '/dashboard/payment-setting', component: PaymentSetting },
   { path: '/dashboard/pages/faq', component: FAQ },
   { path: '/dashboard/pages/terms-condition', component: TermsCondition },
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },

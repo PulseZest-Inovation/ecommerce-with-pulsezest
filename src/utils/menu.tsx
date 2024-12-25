@@ -159,11 +159,11 @@ export const NAVIGATION = [
     ],
     
   },
-   {
-        segment: 'customerGroup',
-        title: 'Customer Group (eg. vip,Regular)',
-        icon: <GroupsIcon />,
-      },
+  //  {
+  //       segment: 'customerGroup',
+  //       title: 'Customer Group (eg. vip,Regular)',
+  //       icon: <GroupsIcon />,
+  //     },
       {
         segment: 'customerFeedback',
         title: 'Customer Feedback',
@@ -199,15 +199,15 @@ export const NAVIGATION = [
     title: 'Setting',
   },
   {
-    segment: 'paymentSetting',
+    segment: 'dashboard/payment-setting',
     title: 'Payment Setting',
     icon: <AccountBalanceIcon />,
   },
-  {
-    segment: 'orderSetting',
-    title: 'Order Setting',
-    icon: <TimerIcon />,
-  },
+  // {
+  //   segment: 'orderSetting',
+  //   title: 'Order Setting',
+  //   icon: <TimerIcon />,
+  // },
   {
     segment: 'emailNotifications',
     title: 'Email Notification',
@@ -234,7 +234,7 @@ export const NAVIGATION = [
   {
     segment: 'dashboard/pages',
     title: 'Pages',
-    icon: <BarChartIcon />,
+    icon: <DescriptionIcon />,
     children: [
       {
         segment: 'faq',
