@@ -1,23 +1,36 @@
+import dynamic from 'next/dynamic';
 import { Card, Col, Row, Statistic } from 'antd';
-import { Line } from 'react-chartjs-2';
-import { Bar } from 'react-chartjs-2';
 import { Paper, Typography, Box } from '@mui/material';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, Title, Tooltip, Legend, PointElement } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+} from 'chart.js';
 
 // Registering the necessary Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,  // Register LineElement for line charts
-  PointElement, // Register PointElement for data points
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend
 );
 
+// Dynamically import the Chart components with SSR disabled
+const LineChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), { ssr: false });
+const BarChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Bar), { ssr: false });
+
 const AnalyticsDashboard = () => {
-  // Sample Data (to be replaced with actual data from API or database)
+  // Sample Data
   const totalSales = 12000;
   const ordersCount = 320;
   const topProducts = [
@@ -26,7 +39,6 @@ const AnalyticsDashboard = () => {
     { name: 'Product C', sales: 800 },
   ];
 
-  // Line chart data (traffic trend over a week)
   const trafficData = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
@@ -40,7 +52,6 @@ const AnalyticsDashboard = () => {
     ],
   };
 
-  // Bar chart data (Sales by Product)
   const salesByProductData = {
     labels: topProducts.map((product) => product.name),
     datasets: [
@@ -56,7 +67,9 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-6">Ecommerce Analytics<span className='font-mono'> (Dummy Data)</span></h2>
+      <h2 className="text-2xl font-semibold mb-6">
+        Ecommerce Analytics<span className="font-mono"> (Dummy Data)</span>
+      </h2>
 
       {/* Sales Overview */}
       <Row gutter={16}>
@@ -81,7 +94,7 @@ const AnalyticsDashboard = () => {
       <Box className="mt-6">
         <Typography variant="h6" className="mb-4">Website Traffic Overview</Typography>
         <Paper className="p-4">
-          <Line data={trafficData} />
+          <LineChart data={trafficData} />
         </Paper>
       </Box>
 
@@ -89,7 +102,7 @@ const AnalyticsDashboard = () => {
       <Box className="mt-6">
         <Typography variant="h6" className="mb-4">Sales by Product</Typography>
         <Paper className="p-4">
-          <Bar data={salesByProductData} />
+          <BarChart data={salesByProductData} />
         </Paper>
       </Box>
 
@@ -103,8 +116,6 @@ const AnalyticsDashboard = () => {
           </Col>
         ))}
       </Row>
-
-      {/* Other Metrics and Cards can be added below */}
     </div>
   );
 };
