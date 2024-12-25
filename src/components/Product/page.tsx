@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Button, Select, message } from "antd";
 import { Product } from "@/types/Product";
-import GalleryUpload from "./galleryUpload";
+import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
 import { Timestamp } from "firebase/firestore";
@@ -83,6 +83,21 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const handleCategoryChange = (categories: string[]) => {
     setSelectedCategories(categories);
     handleInputChange("categories", categories); // Update formData with selected categories
+  };
+
+  // Update categories when images are added or deleted
+  const updateCategoriesFromImages = (galleryImages: string[]) => {
+    // Check if galleryImages contains any image and update categories accordingly
+    if (galleryImages.length > 0) {
+      setSelectedCategories((prev) => {
+        // Add category if not already present
+        return prev.includes("ImageCategory") ? prev : [...prev, "ImageCategory"];
+      });
+    } else {
+      // Remove category if gallery is empty
+      setSelectedCategories((prev) => prev.filter((category) => category !== "ImageCategory"));
+    }
+    handleInputChange("categories", selectedCategories);
   };
 
   // Submit product form data to Firestore
@@ -168,7 +183,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           />
           <GalleryUpload
             galleryImages={formData.galleryImages}
-            onGalleryChange={(newGalleryImages) => handleInputChange("galleryImages", newGalleryImages)}
+            onGalleryChange={(newGalleryImages) => {
+              handleInputChange("galleryImages", newGalleryImages);
+              updateCategoriesFromImages(newGalleryImages);
+            }}
             slug={formData.slug}
           />
         </Col>
