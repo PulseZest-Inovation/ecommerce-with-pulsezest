@@ -1,123 +1,14 @@
-import dynamic from 'next/dynamic';
-import { Card, Col, Row, Statistic } from 'antd';
-import { Paper, Typography, Box } from '@mui/material';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-} from 'chart.js';
-
-// Registering the necessary Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-// Dynamically import the Chart components with SSR disabled
-const LineChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Line), { ssr: false });
-const BarChart = dynamic(() => import('react-chartjs-2').then((mod) => mod.Bar), { ssr: false });
-
-const AnalyticsDashboard = () => {
-  // Sample Data
-  const totalSales = 12000;
-  const ordersCount = 320;
-  const topProducts = [
-    { name: 'Product A', sales: 1500 },
-    { name: 'Product B', sales: 1000 },
-    { name: 'Product C', sales: 800 },
-  ];
-
-  const trafficData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Website Traffic',
-        data: [500, 800, 1200, 900, 1500, 2000, 2500],
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        tension: 0.1,
-      },
-    ],
-  };
-
-  const salesByProductData = {
-    labels: topProducts.map((product) => product.name),
-    datasets: [
-      {
-        label: 'Sales ($)',
-        data: topProducts.map((product) => product.sales),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-6">
-        Ecommerce Analytics<span className="font-mono"> (Dummy Data)</span>
-      </h2>
-
-      {/* Sales Overview */}
-      <Row gutter={16}>
-        <Col span={8}>
-          <Card>
-            <Statistic title="Total Sales" value={`₹${totalSales}`} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic title="Orders Count" value={ordersCount} />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic title="Average Order Value" value={`₹${(totalSales / ordersCount).toFixed(2)}`} />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Traffic Overview (Line Chart) */}
-      <Box className="mt-6">
-        <Typography variant="h6" className="mb-4">Website Traffic Overview</Typography>
-        <Paper className="p-4">
-          <LineChart data={trafficData} />
-        </Paper>
-      </Box>
-
-      {/* Sales by Product (Bar Chart) */}
-      <Box className="mt-6">
-        <Typography variant="h6" className="mb-4">Sales by Product</Typography>
-        <Paper className="p-4">
-          <BarChart data={salesByProductData} />
-        </Paper>
-      </Box>
-
-      {/* Top Products */}
-      <Row gutter={16} className="mt-6">
-        {topProducts.map((product) => (
-          <Col span={8} key={product.name}>
-            <Card title={product.name}>
-              <Statistic title="Sales" value={`₹${product.sales}`} />
-            </Card>
-          </Col>
-        ))}
-      </Row>
-    </div>
-  );
-};
-
-export default AnalyticsDashboard;
+ import { Result } from 'antd'
+import React from 'react'
+ 
+ export default function AnalyticsDashboard() {
+   return (
+     <div>
+        <Result
+        status='404'
+        title= 'Update Soon'
+        ></Result>
+     </div>
+   )
+ }
+ 
