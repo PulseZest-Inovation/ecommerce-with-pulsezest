@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useMemo, useState } from 'react';
 import { AppData } from '@/types/AppData';
 import Image from 'next/image';

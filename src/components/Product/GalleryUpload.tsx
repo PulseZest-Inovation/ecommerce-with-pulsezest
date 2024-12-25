@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { storage } from "@/utils/firbeaseConfig"; // Firebase config file
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";

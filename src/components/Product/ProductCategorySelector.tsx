@@ -1,6 +1,5 @@
 // components/Product/CategorySelector.tsx
 import React from "react";
-import { Select } from "antd";
 import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
 
 interface CategorySelectorProps {

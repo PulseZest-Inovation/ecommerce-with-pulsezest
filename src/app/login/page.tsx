@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Input, Button, message, Watermark } from 'antd';
+import { message, Watermark } from 'antd';
 import SecurityCheck from './securityCheck'; // Ensure the path is correct
 import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
