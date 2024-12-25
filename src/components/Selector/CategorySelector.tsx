@@ -1,7 +1,8 @@
+'use client'
 import React, { useEffect, useState } from "react";
 import { Select, Spin } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData"; // Adjust the path accordingly
-import { Categories } from "@/types/Categories"; // Adjust the path accordingly
+import { Categories } from "@/types/Categories";
 
 const { Option } = Select;
 
