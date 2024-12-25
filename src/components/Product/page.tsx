@@ -1,15 +1,12 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Col, Row, Input, Button, Select, Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Row, Col, Input, Button, Select, message } from "antd";
 import { Product } from "@/types/Product";
-import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
+import GalleryUpload from "./galleryUpload";
+import FeaturedImageUpload from "./FeatureImageUpload";
+import CategorySelector from "./ProductCategorySelector";
 import { Timestamp } from "firebase/firestore";
-
-// Import your Firebase functions
-import { UploadImageToFirebase, } from "@/services/FirebaseStorage/UploadImageToFirebase";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-
 import "tailwindcss/tailwind.css";
 
 const { Option } = Select;
@@ -53,7 +50,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     categories: [],
     tags: [],
     featuredImage: "",
-    galleryImages: [], // Initialize as empty array
+    galleryImages: [],
     variation: [],
     attributes: [],
     menuOrder: 0,
@@ -87,56 +84,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     setSelectedCategories(categories);
     handleInputChange("categories", categories); // Update formData with selected categories
   };
-
-  // Upload featured image
-  const handleFeaturedUpload = async ({ file }: any) => {
-    const docId = formData.slug;
-    try {
-      const uploadedUrl = await UploadImageToFirebase(file, `products/${docId}/featuredImage`);
-      if (uploadedUrl) {
-        handleInputChange("featuredImage", uploadedUrl);
-        message.success("Featured image uploaded successfully!");
-      }
-    } catch (error) {
-      message.error("Error uploading featured image.");
-    }
-  };
-
- 
-// Upload gallery images one by one
-const handleGalleryUpload = async ({ fileList }: any) => {
-  const docId = formData.slug;
-  const newGalleryImages: string[] = [...formData.galleryImages]; // Keep existing categories intact
-
-  // Loop over each file in the fileList
-  for (const file of fileList) {
-    // Validate file type (check if it's an image)
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      message.error('You can only upload image files!');
-      return false; // Prevent upload
-    }
-
-    try {
-      // Upload the single image using UploadImageToFirebase
-      const uploadedUrl = await UploadImageToFirebase(file.originFileObj, `products/${docId}/galleryImages`);
-      if (uploadedUrl) {
-        // Push the uploaded URL into the categories array
-        console.log("Gallery image upload", uploadedUrl);
-        newGalleryImages.push(uploadedUrl);
-      }
-    } catch (error) {
-      message.error("Error uploading gallery images.");
-    }
-  }
-
-  // Update the form data with the new categories (which now include image URLs)
-  handleInputChange("galleryImages", newGalleryImages);
-  message.success("Gallery images uploaded successfully!");
-};
-
-
-
 
   // Submit product form data to Firestore
   const handleSubmit = async () => {
@@ -200,9 +147,9 @@ const handleGalleryUpload = async ({ fileList }: any) => {
             className="mb-4"
             disabled
           />
-          <MultipleCategoriesSelector
-            value={selectedCategories}
-            onChange={handleCategoryChange}
+          <CategorySelector
+            selectedCategories={selectedCategories}
+            onCategoryChange={handleCategoryChange}
           />
           <Select
             mode="multiple"
@@ -214,27 +161,16 @@ const handleGalleryUpload = async ({ fileList }: any) => {
             <Option value="sale">Sale</Option>
             <Option value="new">New</Option>
           </Select>
-          <Upload
-            showUploadList={false}
-            beforeUpload={() => false}
-            onChange={handleFeaturedUpload}
-            className="mb-4"
-          >
-            <Button icon={<PlusOutlined />}>Upload Featured Image</Button>
-          </Upload>
-          {formData.featuredImage && <img src={formData.featuredImage} alt="Featured" className="w-full mb-4" />}
-          <Upload
-            listType="picture-card"
-            multiple
-            beforeUpload={() => false}
-            onChange={handleGalleryUpload}
-            className="mb-4"
-          >
-            <div>
-              <PlusOutlined />
-              <div>Upload Gallery</div>
-            </div>
-          </Upload>
+          <FeaturedImageUpload
+            featuredImage={formData.featuredImage}
+            onFeaturedImageChange={(url) => handleInputChange("featuredImage", url)}
+            slug={formData.slug}
+          />
+          <GalleryUpload
+            galleryImages={formData.galleryImages}
+            onGalleryChange={(newGalleryImages) => handleInputChange("galleryImages", newGalleryImages)}
+            slug={formData.slug}
+          />
         </Col>
       </Row>
 
