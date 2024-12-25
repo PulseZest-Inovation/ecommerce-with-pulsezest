@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input } from 'antd';
+import { useRouter } from 'next/navigation';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Product } from '@/types/Product';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
@@ -16,6 +17,7 @@ const ViewProduct = (props: Props) => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const router = useRouter();
 
   const fetchProductList = async () => {
     try {
@@ -54,6 +56,7 @@ const ViewProduct = (props: Props) => {
 
   const handleEdit = (id: string) => {
     console.log('Edit product with id:', id);
+    router.push(`edit-product/${id}`)
     // Implement edit logic here
   };
 
@@ -129,7 +132,7 @@ const ViewProduct = (props: Props) => {
           <Tooltip title="Edit">
             <Button
               icon={<EditOutlined />}
-              onClick={() => handleEdit(record.id)}
+              onClick={() => handleEdit(record.slug)}
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -147,9 +150,14 @@ const ViewProduct = (props: Props) => {
   return (
     <div>
 
-      <h1 className='font-bold text-2xl'>Product List</h1>
+      <div className='justify-between flex'>
+        <h1 className='font-bold text-2xl'>Product List</h1>
+        <Button type='primary' onClick={()=>{
+          router.push('add-new-product')
+        }}>Add New Product</Button>
+      </div>
 
-        <div className='flex space-x-3 pt-5'>
+        <div className='flex space-x-3 mt-2 mb-4'>
             <Input
               prefix={<Search/>}
               placeholder="Search by ID or Description"

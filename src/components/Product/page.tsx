@@ -1,16 +1,23 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Col, Row, Input, Button, Select, Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Row, Col, Input, Button, Select, message, Card, DatePicker } from "antd";
 import { Product } from "@/types/Product";
-import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
+import GalleryUpload from "./GalleryUpload";
+import FeaturedImageUpload from "./FeatureImageUpload";
+import CategorySelector from "./ProductCategorySelector";
+import Price from "./Price"; // Import the new Price component
 import { Timestamp } from "firebase/firestore";
-
-// Import your Firebase functions
-import { UploadImageToFirebase, } from "@/services/FirebaseStorage/UploadImageToFirebase";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-
 import "tailwindcss/tailwind.css";
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LinkIcon from '@mui/icons-material/Link';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import Shipping from "./Shipping";
+import LinkedProduct from "./LinkedProduct";
+import Tags from "./Tags";
+type MenuItem = Required<MenuProps>['items'][number];
 
 const { Option } = Select;
 
@@ -18,7 +25,30 @@ interface ProductWrapperProps {
   initialData?: Product;
 }
 
+const items: MenuItem[] = [
+  {
+    key: 'price',
+    label: 'Price',
+    type: 'item',
+    icon: <CurrencyRupeeIcon/>
+  },
+  {
+    key: 'shipping',
+    label: 'Shipping',
+    type: 'item',
+    icon: <LocalShippingIcon/>
+  },
+  {
+    key: 'linkedProduct',
+    label: 'Linked Proudct',
+    type: 'item',
+    icon: <LinkIcon/>
+  },
+ 
+];
+
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
+  const [selectedKey, setSelectedKey] = useState<string>('price');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
@@ -37,6 +67,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),
     dateOnSaleTo: null,
+    dateOnSaleFrom: null,
     price_html: "",
     onSale: false,
     purchaseSale: false,
@@ -53,12 +84,18 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     categories: [],
     tags: [],
     featuredImage: "",
-    galleryImages: [], // Initialize as empty array
+    galleryImages: [],
     variation: [],
     attributes: [],
     menuOrder: 0,
     metaData: [],
   });
+
+  
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e.key);
+    setSelectedKey(e.key); // Update selected key
+  };
 
   // Generate slug from product name
   const generateSlug = (name: string) => {
@@ -88,55 +125,24 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     handleInputChange("categories", categories); // Update formData with selected categories
   };
 
-  // Upload featured image
-  const handleFeaturedUpload = async ({ file }: any) => {
-    const docId = formData.slug;
-    try {
-      const uploadedUrl = await UploadImageToFirebase(file, `products/${docId}/featuredImage`);
-      if (uploadedUrl) {
-        handleInputChange("featuredImage", uploadedUrl);
-        message.success("Featured image uploaded successfully!");
-      }
-    } catch (error) {
-      message.error("Error uploading featured image.");
+  // Update categories when images are added or deleted
+  const updateCategoriesFromImages = (galleryImages: string[]) => {
+    // Check if galleryImages contains any image and update categories accordingly
+    if (galleryImages.length > 0) {
+      setSelectedCategories((prev) => {
+        // Add category if not already present
+        return prev.includes("ImageCategory")
+          ? prev
+          : [...prev, "ImageCategory"];
+      });
+    } else {
+      // Remove category if gallery is empty
+      setSelectedCategories((prev) =>
+        prev.filter((category) => category !== "ImageCategory")
+      );
     }
+    handleInputChange("categories", selectedCategories);
   };
-
- 
-// Upload gallery images one by one
-const handleGalleryUpload = async ({ fileList }: any) => {
-  const docId = formData.slug;
-  const newGalleryImages: string[] = [...formData.galleryImages]; // Keep existing categories intact
-
-  // Loop over each file in the fileList
-  for (const file of fileList) {
-    // Validate file type (check if it's an image)
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      message.error('You can only upload image files!');
-      return false; // Prevent upload
-    }
-
-    try {
-      // Upload the single image using UploadImageToFirebase
-      const uploadedUrl = await UploadImageToFirebase(file.originFileObj, `products/${docId}/galleryImages`);
-      if (uploadedUrl) {
-        // Push the uploaded URL into the categories array
-        console.log("Gallery image upload", uploadedUrl);
-        newGalleryImages.push(uploadedUrl);
-      }
-    } catch (error) {
-      message.error("Error uploading gallery images.");
-    }
-  }
-
-  // Update the form data with the new categories (which now include image URLs)
-  handleInputChange("galleryImages", newGalleryImages);
-  message.success("Gallery images uploaded successfully!");
-};
-
-
-
 
   // Submit product form data to Firestore
   const handleSubmit = async () => {
@@ -165,9 +171,31 @@ const handleGalleryUpload = async ({ fileList }: any) => {
       setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
+ 
+  //rended content 
+  const renderContent = () => {
+    switch (selectedKey) {
+      case 'price':
+        return  <Price formData={formData} onFormDataChange={handleInputChange} />;
+      case 'shipping':
+        return <Shipping  formData={formData} onFormDataChange={handleInputChange}/>;
+      case 'linkedProduct':
+        return <LinkedProduct />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto">
+      <div className="flex justify-between my-2">
+        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
+
+        <Button type="primary" onClick={handleSubmit} disabled={!formData.id}>
+          Submit
+        </Button>
+      </div>
+
       <Row gutter={16}>
         <Col xs={24} md={14}>
           <Input
@@ -180,7 +208,9 @@ const handleGalleryUpload = async ({ fileList }: any) => {
             rows={2}
             placeholder="Short Description"
             value={formData.shortDescription}
-            onChange={(e) => handleInputChange("shortDescription", e.target.value)}
+            onChange={(e) =>
+              handleInputChange("shortDescription", e.target.value)
+            }
             className="mb-4"
           />
           <Input.TextArea
@@ -190,63 +220,59 @@ const handleGalleryUpload = async ({ fileList }: any) => {
             onChange={(e) => handleInputChange("description", e.target.value)}
             className="mb-4"
           />
+ 
+          
+          {/* Menu */}
+         
+          <div style={{ display: 'flex' }}>
+          <Menu
+            onClick={onClick}
+            style={{ width: 256 }}
+            defaultSelectedKeys={['price']}
+            mode="inline"
+            items={items}
+          />
+          {/* Component */}
+          <div style={{ marginLeft: 20, flex: 1 }}>
+            {renderContent()}
+          </div>
+        </div>
+          {/* Add the Price Component */}
         </Col>
 
         <Col xs={24} md={10}>
-          <Input
-            placeholder="Slug"
-            value={formData.slug}
-            onChange={(e) => handleInputChange("slug", e.target.value)}
-            className="mb-4"
-            disabled
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <FeaturedImageUpload
+              featuredImage={formData.featuredImage}
+              onFeaturedImageChange={(url) =>
+                handleInputChange("featuredImage", url)
+              }
+              slug={formData.slug}
+            />
+          </Card>
+
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <GalleryUpload
+              galleryImages={formData.galleryImages}
+              onGalleryChange={(newGalleryImages) => {
+                handleInputChange("galleryImages", newGalleryImages);
+                updateCategoriesFromImages(newGalleryImages);
+              }}
+              slug={formData.slug}
+            />
+          </Card>
+
+          <label htmlFor="Select Category"></label>
+          <CategorySelector
+            selectedCategories={selectedCategories}
+            onCategoryChange={handleCategoryChange}
           />
-          <MultipleCategoriesSelector
-            value={selectedCategories}
-            onChange={handleCategoryChange}
+          <Tags
+            selectedTags={formData.tags}
+            onTagsChange={(value) => handleInputChange("tags", value)}
           />
-          <Select
-            mode="multiple"
-            placeholder="Select Tags"
-            value={formData.tags}
-            onChange={(value) => handleInputChange("tags", value)}
-            className="mb-4 w-full"
-          >
-            <Option value="sale">Sale</Option>
-            <Option value="new">New</Option>
-          </Select>
-          <Upload
-            showUploadList={false}
-            beforeUpload={() => false}
-            onChange={handleFeaturedUpload}
-            className="mb-4"
-          >
-            <Button icon={<PlusOutlined />}>Upload Featured Image</Button>
-          </Upload>
-          {formData.featuredImage && <img src={formData.featuredImage} alt="Featured" className="w-full mb-4" />}
-          <Upload
-            listType="picture-card"
-            multiple
-            beforeUpload={() => false}
-            onChange={handleGalleryUpload}
-            className="mb-4"
-          >
-            <div>
-              <PlusOutlined />
-              <div>Upload Gallery</div>
-            </div>
-          </Upload>
         </Col>
       </Row>
-
-      <div className="text-right">
-        <Button
-          type="primary"
-          onClick={handleSubmit}
-          disabled={!formData.id}
-        >
-          Submit
-        </Button>
-      </div>
     </div>
   );
 };

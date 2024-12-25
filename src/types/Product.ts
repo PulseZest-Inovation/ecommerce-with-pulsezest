@@ -17,6 +17,7 @@ export interface Product {
     regularPrice: string;
     salePrice: string;
     dateOnSaleTo: Timestamp | null;
+    dateOnSaleFrom: Timestamp | null;
     price_html: string;
     onSale: boolean;
     purchaseSale: boolean;
