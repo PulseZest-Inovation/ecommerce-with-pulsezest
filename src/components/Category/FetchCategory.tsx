@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react';
 import { Menu, Spin } from 'antd';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData'; // Update with the actual path

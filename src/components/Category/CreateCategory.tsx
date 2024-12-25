@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
