@@ -13,6 +13,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 export const NAVIGATION = [
   {
@@ -208,11 +209,11 @@ export const NAVIGATION = [
   //   title: 'Order Setting',
   //   icon: <TimerIcon />,
   // },
-  {
-    segment: 'emailNotifications',
-    title: 'Email Notification',
-    icon: <TimerIcon />,
-  },
+  // {
+  //   segment: 'emailNotifications',
+  //   title: 'Email Notification',
+  //   icon: <TimerIcon />,
+  // },
   {
     kind: 'divider',
   },
@@ -262,6 +263,19 @@ export const NAVIGATION = [
         icon: <DescriptionIcon />,
       },
     ],
+  },
+  {
+    kind: 'divider',
+  },
+  // Analytics
+  {
+    kind: 'header',
+    title: 'Support',
+  },
+  {
+    segment: 'dashboard/support',
+    title: 'Support',
+    icon: <SupportAgentIcon />,
   },
  
  

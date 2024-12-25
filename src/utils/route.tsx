@@ -15,6 +15,7 @@ import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
 import PaymentSetting from '@/app/dashboard/payment-setting/page';
+import PulseZestSupport from '@/app/dashboard/support/page';
 
 // Route-to-component mapping
 type RouteComponents = {
@@ -41,6 +42,9 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
   { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
   { path: '/dashboard/pages/about-us', component: AboutPage},
+  { path: '/dashboard/support', component: PulseZestSupport},
+
+  
 ];
 
 // Function to find the matching component for a route

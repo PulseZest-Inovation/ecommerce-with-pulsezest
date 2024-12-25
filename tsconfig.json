@@ -26,6 +26,6 @@
       "@/services/*": ["services/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.js", "src/app/(pages)/dashboard/layout.jsx", "src/app/dashboard/page.jsx", "src/app/dashboard/manage-product/edit-product/[productId]"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.js", "src/app/(pages)/dashboard/layout.jsx", "src/app/dashboard/page.jsx", "src/app/dashboard/manage-product/edit-product/[productId]", "src/components/TawkTo/page.js"],
   "exclude": ["node_modules"]
 }
