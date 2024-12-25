@@ -5,7 +5,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { UploadImageToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Update path as needed
 import { Categories } from "@/types/Categories";
-import CategoriesSelector from "../Selector/CategorySelector";
+import CategoriesSelector from "../Selector/create-selector";
 
 const CreateCategory = () => {
   const [form] = Form.useForm();
