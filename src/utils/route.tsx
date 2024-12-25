@@ -8,6 +8,11 @@ import Tags from '@/app/dashboard/tags/page';
 import Customers from '@/app/dashboard/customers/page';
 import RecentOrder from '@/app/dashboard/recent-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
+import FAQ from '@/app/dashboard/pages/faq/page';
+import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
+import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
+import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
+import AboutUs from '@/app/dashboard/pages/about-us/page';
 
 // Route-to-component mapping
 type RouteComponents = {
@@ -27,6 +32,11 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: Customers },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
+  { path: '/dashboard/pages/faq', component: FAQ },
+  { path: '/dashboard/pages/terms-condition', component: TermsCondition },
+  { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
+  { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
+  { path: '/dashboard/pages/about-us', component: AboutUs },
 ];
 
 // Function to find the matching component for a route

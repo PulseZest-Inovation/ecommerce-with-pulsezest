@@ -232,7 +232,7 @@ export const NAVIGATION = [
     icon: <LayersIcon />,
   },
   {
-    segment: 'pages',
+    segment: 'dashboard/pages',
     title: 'Pages',
     icon: <BarChartIcon />,
     children: [
@@ -242,22 +242,22 @@ export const NAVIGATION = [
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'termsCondition ',
+        segment: 'terms-condition',
         title: 'Terms and Conditions',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'privacyPolicy ',
+        segment: 'privacy-policy',
         title: 'Privacy Policy',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'returnAndRefundPolicy ',
+        segment: 'return-refund-policy ',
         title: 'Return And Refund Policy',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'aboutUs ',
+        segment: 'about-us ',
         title: 'About Us',
         icon: <DescriptionIcon />,
       },
