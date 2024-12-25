@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Upload, Button, message, Progress, Modal } from "antd";
-import { PlusOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig";
+import { storage } from "@/utils/firbeaseConfig"; // Firebase config file
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/utils/firbeaseConfig";
+import { doc, getDoc, updateDoc } from "firebase/firestore"; // Firestore methods
+import { db } from "@/utils/firbeaseConfig"; // Your firestore config
+import { Image, message } from "antd"; // Ant Design message component
 
 interface GalleryUploadProps {
   galleryImages: string[];
@@ -13,172 +12,189 @@ interface GalleryUploadProps {
 }
 
 const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryChange, slug }) => {
-  const [uploading, setUploading] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState<any[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [uploadingFiles, setUploadingFiles] = useState<any[]>([]); // Track files being uploaded
+  const [progress, setProgress] = useState<{ [key: string]: number }>({}); // Store progress per file
 
-  const handleGalleryUpload = async ({ fileList }: any) => {
-    const newGalleryImages: string[] = [...galleryImages];
-
-    setUploading(true);
-    setUploadingFiles(fileList);
-    setUploadProgress({});
-
-    for (const file of fileList) {
-      if (!file.type.startsWith("image/")) {
-        message.error("Only image files are allowed!");
-        continue;
-      }
-
-      const fileExists = newGalleryImages.some((image) => image.includes(file.name));
-      if (fileExists) {
-        message.warning(`Image ${file.name} is already uploaded.`);
-        continue;
-      }
-
-      try {
-        const uploadedUrl = await uploadImageToFirebase(file.originFileObj, `products/${slug}/galleryImages`, (percent: number) => {
-          setUploadProgress((prev) => ({ ...prev, [file.uid]: percent }));
-        });
-        if (uploadedUrl) {
-          newGalleryImages.push(uploadedUrl);
-        }
-      } catch {
-        message.error(`Failed to upload ${file.name}`);
-      }
-    }
-
-    onGalleryChange(newGalleryImages);
-    message.success("Gallery updated successfully!");
-    setUploading(false);
-    setUploadingFiles([]);
-  };
-
-  const uploadImageToFirebase = async (file: File, filePath: string, onProgress: (percent: number) => void): Promise<string | null> => {
+  // Function to upload image to Firebase and track progress
+  const uploadImageToFirebase = (file: File, path: string, onProgress: (fileName: string, percent: number) => void): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, filePath);
+      const storageRef = ref(storage, path);
       const uploadTask = uploadBytesResumable(storageRef, file);
+
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          onProgress(progress);
+          const progressPercent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          onProgress(file.name, progressPercent); // Update progress for the specific file
         },
-        reject,
+        (error) => {
+          console.error("Upload error: ", error);
+          reject("Error uploading image.");
+        },
         async () => {
           try {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            resolve(downloadURL);
-          } catch {
-            reject();
+            resolve(downloadURL); // Return the download URL once upload is successful
+          } catch (error) {
+            reject("Error retrieving download URL.");
           }
         }
       );
     });
   };
 
-  const handlePreview = (imageUrl: string) => {
-    setPreviewImage(imageUrl);
-    setPreviewOpen(true);
+  // Function to delete image from Firebase storage
+  const deleteImageFromFirebase = async (imageUrl: string) => {
+    const storageRef = ref(storage, imageUrl);
+    try {
+      await deleteObject(storageRef); // Delete the image from Firebase storage
+    } catch (error) {
+      console.error("Error deleting image: ", error);
+    }
   };
 
-  const handleDelete = async (imageUrl: string) => {
-    try {
-      const imageRef = ref(storage, imageUrl);
-  
-      // Attempt to delete the image from Firebase Storage
-      await deleteObject(imageRef);
-  
-      // Log a success message if the storage deletion succeeds
-      console.log("Image deleted from Firebase Storage");
-    } catch (error) {
-      // Log a warning message if the storage deletion fails
-      console.warn("Failed to delete image from Firebase Storage:", error);
+  // Function to update Firestore collection after deleting an image
+  const deleteImageFromFirestore = async (imageUrl: string) => {
+    const key = localStorage.getItem("securityKey");
+    if (!key) {
+      message.error("No security key found.");
+      return;
     }
-  
-    try {
-      // Remove the image from the local state
-      const updatedGalleryImages = galleryImages.filter((image) => image !== imageUrl);
-      onGalleryChange(updatedGalleryImages);
-  
-      const appKey = localStorage.getItem("securityKey");
-      if (!appKey) {
-        message.error("Security key not found.");
-        return;
-      }
-  
-      // Update the Firestore collection
-      const productRef = doc(db, "app_name", appKey, "products", slug);
-      const productSnap = await getDoc(productRef);
-  
-      if (productSnap.exists()) {
-        const productData = productSnap.data();
-        const updatedFirestoreImages = (productData.galleryImages || []).filter((image: string) => image !== imageUrl);
-        await updateDoc(productRef, { galleryImages: updatedFirestoreImages });
-        message.success("Image deleted from the gallery.");
-      } else {
-        message.error("Product not found.");
-      }
-    } catch (error) {
-      // Log an error message if the Firestore update fails
-      console.error("Failed to update Firestore:", error);
-      message.error("Failed to delete image from the gallery.");
+
+    const docRef = doc(db, `app_name/${key}/products/${slug}`);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const galleryImages = data?.galleryImages || [];
+
+      // Remove image from the array
+      const updatedGalleryImages = galleryImages.filter((url: string) => url !== imageUrl);
+
+      // Update the Firestore document with the new gallery array
+      await updateDoc(docRef, {
+        galleryImages: updatedGalleryImages,
+      });
+    } else {
+      message.error("Document not found!");
     }
   };
-    
+
+  // Handle file selection and uploading
+  const handleGalleryUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = event.target.files;
+    if (!fileList) return;
+
+    const newGalleryImages: string[] = [...galleryImages];
+    const filesToUpload = Array.from(fileList);
+
+    setUploadingFiles(filesToUpload); // Set files being uploaded
+    setProgress({}); // Reset previous progress
+
+    for (const file of filesToUpload) {
+      if (!file.type.startsWith('image/')) {
+        message.error('You can only upload image files!');
+        continue; // Skip invalid files
+      }
+
+      try {
+        // Upload image immediately after selection
+        const uploadedUrl = await uploadImageToFirebase(
+          file,
+          `products/${slug}/galleryImages/${file.name}`,
+          (fileName: string, percent: number) => {
+            setProgress((prevProgress) => ({
+              ...prevProgress,
+              [fileName]: percent, // Update progress for each file
+            }));
+          }
+        );
+        if (uploadedUrl) {
+          newGalleryImages.push(uploadedUrl); // Add new image URL to gallery
+        }
+      } catch (error) {
+        message.error("Error uploading gallery image.");
+      }
+    }
+
+    onGalleryChange(newGalleryImages); // Update parent component with new gallery images
+    message.success("Gallery images uploaded successfully!");
+  };
+
+  // Function to handle the image deletion
+  const handleDeleteImage = async (imageUrl: string) => {
+    const updatedGalleryImages = galleryImages.filter((url) => url !== imageUrl); // Remove image from array
+    onGalleryChange(updatedGalleryImages); // Update parent component with updated gallery images
+
+    // Delete the image from Firebase storage
+    await deleteImageFromFirebase(imageUrl);
+
+    // Delete the image from Firestore
+    await deleteImageFromFirestore(imageUrl);
+
+    message.success("Image deleted successfully!");
+  };
 
   return (
-    <div className="gallery-upload">
-      <Upload
-        listType="picture-card"
-        multiple
-        beforeUpload={() => false}
-        onChange={handleGalleryUpload}
-        className="mb-4"
-      >
-        <div>
-          <PlusOutlined />
-          <div>{galleryImages.length ? "Add More Images" : "Add Images to Gallery"}</div>
-        </div>
-      </Upload>
+    <div>
+      <div>
+        {/* Upload file input */}
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleGalleryUpload}
+          style={{ display: 'none' }}
+          id="galleryUploadInput"
+        />
+        <label htmlFor="galleryUploadInput" style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', display: 'inline-block', color: 'blue'}}>
+          Upload Gallery
+        </label>
+      </div>
 
-      {uploading && (
-        <div>
-          {uploadingFiles.map((file, index) => (
-            <div key={index} className="mb-4">
-              <Progress percent={uploadProgress[file.uid] || 0} />
-              <div>{file.name}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="gallery-images grid grid-cols-2 md:grid-cols-4 gap-4">
-        {galleryImages.map((image, index) => (
-          <div key={index} className="relative group">
-            <img
-              src={image}
-              alt={`Gallery ${index}`}
-              className="w-full h-24 object-cover rounded-md shadow-md"
-            />
-            <div className="absolute inset-0 flex items-center justify-around bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
-              <EyeOutlined className="text-white text-lg" onClick={() => handlePreview(image)} />
-              <DeleteOutlined className="text-red-500 text-lg" onClick={() => handleDelete(image)} />
+      {/* Display progress bars for uploading files */}
+      <div>
+        {uploadingFiles.map((file, index) => (
+          <div key={index} style={{ marginBottom: '10px' }}>
+            <div>{file.name}</div>
+            <div style={{ width: '100%', background: '#f3f3f3', borderRadius: '5px' }}>
+              <div
+                style={{
+                  height: '10px',
+                  background: 'green',
+                  width: `${progress[file.name] || 0}%`,
+                  borderRadius: '5px',
+                  display: progress[file.name] === 100 ? 'none' : 'block', // Hide progress bar when 100%
+                }}
+              />
             </div>
           </div>
         ))}
       </div>
 
-      <Modal
-        open={previewOpen}
-        title="Preview"
-        footer={null}
-        onCancel={() => setPreviewOpen(false)}
-      >
-        <img src={previewImage} alt="Preview" className="w-full rounded-md" />
-      </Modal>
+      {/* Optionally display already uploaded images */}
+      {galleryImages.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h4>Uploaded Gallery Images</h4>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {galleryImages.map((imageUrl, index) => (
+              <div key={index} style={{ marginRight: '10px', marginBottom: '10px' }}>
+                <Image
+                  src={imageUrl}
+                  alt={`Gallery image ${index}`}
+                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }} // Smaller image size
+                />
+                <button
+                  onClick={() => handleDeleteImage(imageUrl)}
+                  style={{ display: 'block', marginTop: '5px', backgroundColor: '#ff4d4d', color: '#fff', border: 'none', padding: '5px', borderRadius: '5px', cursor: 'pointer' }}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

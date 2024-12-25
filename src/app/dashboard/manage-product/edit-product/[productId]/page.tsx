@@ -41,7 +41,7 @@ const EditProduct = () => {
     <div>
       <div className="flex justify-between">
         <h2 className="text-2xl font-semibold mb-4">Edit Product</h2>
-        <p className="font-mono">/{productId}</p>
+        {/* <p className="font-mono">/{productId}</p> */}
       </div>
       <ProductWrapper initialData={product}/>
     </div>

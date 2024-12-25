@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Select, message } from "antd";
+import { Row, Col, Input, Button, Select, message, Card } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
@@ -91,11 +91,15 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     if (galleryImages.length > 0) {
       setSelectedCategories((prev) => {
         // Add category if not already present
-        return prev.includes("ImageCategory") ? prev : [...prev, "ImageCategory"];
+        return prev.includes("ImageCategory")
+          ? prev
+          : [...prev, "ImageCategory"];
       });
     } else {
       // Remove category if gallery is empty
-      setSelectedCategories((prev) => prev.filter((category) => category !== "ImageCategory"));
+      setSelectedCategories((prev) =>
+        prev.filter((category) => category !== "ImageCategory")
+      );
     }
     handleInputChange("categories", selectedCategories);
   };
@@ -129,7 +133,15 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   }, [initialData]);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto ">
+      <div className="flex justify-between my-2">
+        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
+
+        <Button type="primary" onClick={handleSubmit} disabled={!formData.id}>
+          Submit
+        </Button>
+      </div>
+
       <Row gutter={16}>
         <Col xs={24} md={14}>
           <Input
@@ -142,7 +154,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             rows={2}
             placeholder="Short Description"
             value={formData.shortDescription}
-            onChange={(e) => handleInputChange("shortDescription", e.target.value)}
+            onChange={(e) =>
+              handleInputChange("shortDescription", e.target.value)
+            }
             className="mb-4"
           />
           <Input.TextArea
@@ -155,13 +169,28 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         </Col>
 
         <Col xs={24} md={10}>
-          <Input
-            placeholder="Slug"
-            value={formData.slug}
-            onChange={(e) => handleInputChange("slug", e.target.value)}
-            className="mb-4"
-            disabled
-          />
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <FeaturedImageUpload
+              featuredImage={formData.featuredImage}
+              onFeaturedImageChange={(url) =>
+                handleInputChange("featuredImage", url)
+              }
+              slug={formData.slug}
+            />
+          </Card>
+
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <GalleryUpload
+              galleryImages={formData.galleryImages}
+              onGalleryChange={(newGalleryImages) => {
+                handleInputChange("galleryImages", newGalleryImages);
+                updateCategoriesFromImages(newGalleryImages);
+              }}
+              slug={formData.slug}
+            />
+          </Card>
+
+          <label htmlFor="Select Category"></label>    
           <CategorySelector
             selectedCategories={selectedCategories}
             onCategoryChange={handleCategoryChange}
@@ -176,31 +205,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             <Option value="sale">Sale</Option>
             <Option value="new">New</Option>
           </Select>
-          <FeaturedImageUpload
-            featuredImage={formData.featuredImage}
-            onFeaturedImageChange={(url) => handleInputChange("featuredImage", url)}
-            slug={formData.slug}
-          />
-          <GalleryUpload
-            galleryImages={formData.galleryImages}
-            onGalleryChange={(newGalleryImages) => {
-              handleInputChange("galleryImages", newGalleryImages);
-              updateCategoriesFromImages(newGalleryImages);
-            }}
-            slug={formData.slug}
-          />
         </Col>
       </Row>
-
-      <div className="text-right">
-        <Button
-          type="primary"
-          onClick={handleSubmit}
-          disabled={!formData.id}
-        >
-          Submit
-        </Button>
-      </div>
     </div>
   );
 };

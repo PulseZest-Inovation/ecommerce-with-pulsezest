@@ -71,6 +71,7 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
 
   return (
     <div className="w-full p-4 border rounded-md">
+        <p className="text-center">Feature Image</p>
       {featuredImage && !uploading ? (
         <img
           src={featuredImage}
