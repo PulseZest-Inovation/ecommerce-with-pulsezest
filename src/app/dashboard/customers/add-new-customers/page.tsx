@@ -3,7 +3,7 @@ import React from 'react'
 
 type Props = {}
 
-const Customers = (props: Props) => {
+const AddNewCustomer = (props: Props) => {
   return (
     <div> 
         <CustomerForm/>
@@ -11,4 +11,4 @@ const Customers = (props: Props) => {
   )
 }
 
-export default Customers;
+export default AddNewCustomer;

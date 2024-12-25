@@ -1,7 +1,7 @@
 import React from 'react'
 import { Col, Row } from 'antd'
-import CreateCategory from '@/components/Category/CreateCategory'
-import FetchCategory from '@/components/Category/FetchCategory'
+import CreateCategory from '@/components/CategoryComponent/CreateCategory'
+import FetchCategory from '@/components/CategoryComponent/FetchCategory'
 
 export default function Categories() {
   return (

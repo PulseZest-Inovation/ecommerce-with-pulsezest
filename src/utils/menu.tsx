@@ -74,11 +74,11 @@ export const NAVIGATION = [
                 title: 'Categories',
                 icon: <CategoryIcon />,
               },
-              {
-                segment: 'subCategories',
-                title: 'Sub Categories',
-                icon: <ManageCategories />,
-              },
+              // {
+              //   segment: 'subCategories',
+              //   title: 'Sub Categories',
+              //   icon: <ManageCategories />,
+              // },
             ],
           },
 
@@ -128,7 +128,7 @@ export const NAVIGATION = [
           },
 
           {
-            segment: 'product-reviews-and-raiting',
+            segment: 'dashboard/product-reviews-and-raiting',
             title: 'Product Review and Raiting',
             icon: <ReviewAndRatingIcon />,
           },
@@ -141,7 +141,7 @@ export const NAVIGATION = [
     title: 'Manage Customers',
   },
   {
-    segment: 'customers',
+    segment: 'dashboard/customers',
     title: 'customers',
     icon: <CustomerIcon />,
     children: [
@@ -232,7 +232,7 @@ export const NAVIGATION = [
     icon: <LayersIcon />,
   },
   {
-    segment: 'pages',
+    segment: 'dashboard/pages',
     title: 'Pages',
     icon: <BarChartIcon />,
     children: [
@@ -242,22 +242,22 @@ export const NAVIGATION = [
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'termsCondition ',
+        segment: 'terms-condition',
         title: 'Terms and Conditions',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'privacyPolicy ',
+        segment: 'privacy-policy',
         title: 'Privacy Policy',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'returnAndRefundPolicy ',
+        segment: 'return-refund-policy ',
         title: 'Return And Refund Policy',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'aboutUs ',
+        segment: 'about-us ',
         title: 'About Us',
         icon: <DescriptionIcon />,
       },
