@@ -74,11 +74,11 @@ export const NAVIGATION = [
                 title: 'Categories',
                 icon: <CategoryIcon />,
               },
-              {
-                segment: 'subCategories',
-                title: 'Sub Categories',
-                icon: <ManageCategories />,
-              },
+              // {
+              //   segment: 'subCategories',
+              //   title: 'Sub Categories',
+              //   icon: <ManageCategories />,
+              // },
             ],
           },
 
@@ -141,7 +141,7 @@ export const NAVIGATION = [
     title: 'Manage Customers',
   },
   {
-    segment: 'customers',
+    segment: 'dashboard/customers',
     title: 'customers',
     icon: <CustomerIcon />,
     children: [

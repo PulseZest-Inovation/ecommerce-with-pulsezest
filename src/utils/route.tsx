@@ -6,7 +6,7 @@ import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
 import Tags from '@/app/dashboard/tags/page';
-import Customers from '@/app/dashboard/customers/page';
+import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
 import RecentOrders from '@/app/dashboard/recent-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
 import FAQ from '@/app/dashboard/pages/faq/page';
@@ -26,12 +26,12 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard', component: DashboardContent },
   { path: '/dashboard/analytics', component: AnalyticsDashboard },
   { path: '/dashboard/recent-order', component: RecentOrders },
-  { path: '/dashboard/manage-category/categories', component: Categories },
+  { path: '/dashboard/manage-category/categories', component:   Categories},
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
   { path: '/dashboard/tags', component: Tags },
-  { path: '/dashboard/customers/add-new-customers', component: Customers },
+  { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
   { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
   { path: '/dashboard/pages/faq', component: FAQ },

@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, DatePicker, Switch, Upload, message } from "antd";
 import { Timestamp } from "firebase/firestore";
