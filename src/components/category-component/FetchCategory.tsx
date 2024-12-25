@@ -17,6 +17,8 @@ type CategoryItem = {
   children?: CategoryItem[];
 };
 
+
+
 const FetchCategory = (props: Props) => {
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

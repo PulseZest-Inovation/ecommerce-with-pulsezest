@@ -4,8 +4,19 @@ import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { UploadImageToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Update path as needed
-import { Categories } from "@/types/Categories";
 import CategoriesSelector from "../Selector/create-selector";
+
+interface Categories {
+  cid: string;
+  name: string;
+  slug: string;
+  parent: string;
+  description: string;
+  display: string;
+  image: string;
+  menu_order: string;
+  count: number
+}
 
 const CreateCategory = () => {
   const [form] = Form.useForm();
