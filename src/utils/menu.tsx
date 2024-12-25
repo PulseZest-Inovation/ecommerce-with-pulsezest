@@ -252,12 +252,12 @@ export const NAVIGATION = [
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'return-refund-policy ',
+        segment: 'return-refund-policy',
         title: 'Return And Refund Policy',
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'about-us ',
+        segment: 'about-us',
         title: 'About Us',
         icon: <DescriptionIcon />,
       },

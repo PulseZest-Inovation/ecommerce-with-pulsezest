@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/utils/firbeaseConfig';
 const appKey = typeof window !== "undefined" ? localStorage.getItem("securityKey") : null;
 /**
@@ -62,6 +62,37 @@ export const setDocWithCustomId = async <T>(
     return true;
   } catch (error) {
     console.error('Error setting document with custom ID:', error);
+    return false;
+  }
+};
+
+
+/**
+ * Updates specific fields of an existing document in the specified collection.
+ * @param collectionName - The name of the Firestore collection.
+ * @param docName - The ID of the document to update.
+ * @param data - The data to be updated in the document.
+ * @returns A boolean indicating success or failure.
+ */
+export const updateDocFields = async (
+  collectionName: string,
+  docName: string,
+  data: Record<string, any>
+): Promise<boolean> => {
+  try {
+    if (!appKey) {
+      throw new Error('No security key found in localStorage!');
+    }
+
+    // Reference to the document
+    const docRef = doc(db, 'app_name', appKey, collectionName, docName);
+
+    // Update the specific fields in the document
+    await updateDoc(docRef, data);
+    console.log(`Document with ID '${docName}' successfully updated in '${collectionName}'.`);
+    return true;
+  } catch (error) {
+    console.error('Error updating document fields:', error);
     return false;
   }
 };

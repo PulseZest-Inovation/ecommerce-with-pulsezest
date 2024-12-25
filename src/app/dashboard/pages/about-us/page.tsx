@@ -1,12 +1,11 @@
 'use client'
+import PostMaker from '@/components/Editor/page'
 import React from 'react'
 
-type Props = {}
-
-const AboutUs = (props: Props) => {
+export default function AboutPage() {
   return (
-    <div>AboutUs</div>
+    <div>
+      <PostMaker id='about-us'/>
+    </div>
   )
 }
-
-export default AboutUs

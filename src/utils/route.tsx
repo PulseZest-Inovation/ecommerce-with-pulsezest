@@ -13,8 +13,7 @@ import FAQ from '@/app/dashboard/pages/faq/page';
 import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
 import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
-import AboutUs from '@/app/dashboard/pages/about-us/page';
-
+import AboutPage from '@/app/dashboard/pages/about-us/page';
 // Route-to-component mapping
 type RouteComponents = {
   path: string;
@@ -38,7 +37,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/pages/terms-condition', component: TermsCondition },
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
   { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
-  { path: '/dashboard/pages/about-us', component: AboutUs },
+  { path: '/dashboard/pages/about-us', component: AboutPage},
 ];
 
 // Function to find the matching component for a route
