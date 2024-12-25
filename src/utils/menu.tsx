@@ -128,7 +128,7 @@ export const NAVIGATION = [
           },
 
           {
-            segment: 'product-reviews-and-raiting',
+            segment: 'dashboard/product-reviews-and-raiting',
             title: 'Product Review and Raiting',
             icon: <ReviewAndRatingIcon />,
           },

@@ -4,6 +4,7 @@ import Categories from '@/app/dashboard/manage-category/categories/page';
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
+import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
 import Tags from '@/app/dashboard/tags/page';
 import Customers from '@/app/dashboard/customers/page';
 import RecentOrders from '@/app/dashboard/recent-order/page';
@@ -32,6 +33,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: Customers },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
+  { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
   { path: '/dashboard/pages/faq', component: FAQ },
   { path: '/dashboard/pages/terms-condition', component: TermsCondition },
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
