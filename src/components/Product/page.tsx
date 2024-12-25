@@ -47,7 +47,7 @@ const items: MenuItem[] = [
 ];
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
-   const [selectedKey, setSelectedKey] = useState<string>('price');
+  const [selectedKey, setSelectedKey] = useState<string>('price');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
@@ -177,7 +177,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       case 'price':
         return  <Price formData={formData} onFormDataChange={handleInputChange} />;
       case 'shipping':
-        return <Shipping />;
+        return <Shipping  formData={formData} onFormDataChange={handleInputChange}/>;
       case 'linkedProduct':
         return <LinkedProduct />;
       default:
