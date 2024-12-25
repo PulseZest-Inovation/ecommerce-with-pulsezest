@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Upload, Button, message, Progress } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig";  // Assuming Firebase configuration is already set
+import { storage } from "@/utils/firbeaseConfig"; // Assuming Firebase configuration is already set
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 interface FeaturedImageUploadProps {
@@ -10,7 +10,11 @@ interface FeaturedImageUploadProps {
   slug: string;
 }
 
-const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({ featuredImage, onFeaturedImageChange, slug }) => {
+const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
+  featuredImage,
+  onFeaturedImageChange,
+  slug,
+}) => {
   const [uploading, setUploading] = useState(false);
   const [uploadPercent, setUploadPercent] = useState(0);
 
@@ -34,27 +38,26 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({ featuredImage
     }
   };
 
-  // UploadImageToFirebase function directly written here
-  const uploadImageToFirebase = async (file: File, filePath: string, onProgress: (percent: number) => void): Promise<string | null> => {
+  const uploadImageToFirebase = async (
+    file: File,
+    filePath: string,
+    onProgress: (percent: number) => void
+  ): Promise<string | null> => {
     return new Promise((resolve, reject) => {
       const storageRef = ref(storage, filePath);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
-      // Listen for state changes, errors, and completion of the upload.
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // Track upload progress
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          onProgress(progress); // Pass progress to the parent component
+          onProgress(progress);
         },
         (error) => {
-          // Handle errors
           console.error("Upload error: ", error);
           reject("Error uploading image.");
         },
         async () => {
-          // Handle successful upload
           try {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             resolve(downloadURL);
@@ -67,19 +70,35 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({ featuredImage
   };
 
   return (
-    <div>
+    <div className="w-full p-4 border rounded-md">
+      {featuredImage && !uploading ? (
+        <img
+          src={featuredImage}
+          alt="Featured"
+          className="w-full h-auto mb-4 rounded-lg object-cover"
+        />
+      ) : (
+        <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+          <span className="text-gray-500">Add the Feature Image</span>
+        </div>
+      )}
+
       <Upload
         showUploadList={false}
         beforeUpload={() => false}
         onChange={handleFeaturedUpload}
         className="mb-4"
       >
-        <Button icon={<PlusOutlined />} loading={uploading}>Upload Featured Image</Button>
+        <Button
+          icon={<PlusOutlined />}
+          loading={uploading}
+          type={featuredImage ? "default" : "primary"}
+        >
+          {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
+        </Button>
       </Upload>
-      
-      {uploading && <Progress percent={uploadPercent} showInfo={true} />}
-      
-      {featuredImage && !uploading && <img src={featuredImage} alt="Featured" className="w-full mb-4" />}
+
+      {uploading && <Progress percent={uploadPercent} showInfo />}
     </div>
   );
 };
