@@ -1,12 +1,12 @@
 import DashboardContent from '@/app/dashboard/Main/page';
-import AnalyticsContent from '@/app/dashboard/analytics/page';
+import AnalyticsDashboard from '@/app/dashboard/analytics/page';
 import Categories from '@/app/dashboard/manage-category/categories/page';
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import Tags from '@/app/dashboard/tags/page';
 import Customers from '@/app/dashboard/customers/page';
-import RecentOrder from '@/app/dashboard/recent-order/page';
+import RecentOrders from '@/app/dashboard/recent-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
 import FAQ from '@/app/dashboard/pages/faq/page';
 import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
@@ -23,8 +23,8 @@ type RouteComponents = {
 
 const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard', component: DashboardContent },
-  { path: '/dashboard/analytics', component: AnalyticsContent },
-  { path: '/dashboard/recent-order', component: RecentOrder },
+  { path: '/dashboard/analytics', component: AnalyticsDashboard },
+  { path: '/dashboard/recent-order', component: RecentOrders },
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
