@@ -25,13 +25,13 @@ export const NAVIGATION = [
     icon: <DashboardIcon />,
   },
   {
-    segment: 'analytics',
+    segment: 'dashboard/analytics',
     title: 'Analytics',
     icon: <AnalyticsIcon />,
   },
   {
-    segment: 'orders',
-    title: 'Orders',
+    segment: 'dashboard/recent-order',
+    title: 'Recent Orders',
     icon: <InventoryIcon />,
   },
   {
@@ -45,17 +45,17 @@ export const NAVIGATION = [
    
     //Mange Proudct
         {
-          segment: 'manageProduct',
+          segment: 'dashboard/manage-product',
           title: 'Manage Proudct',
           icon: <ProductIcon />,
           children: [
             {
-              segment: 'addNewProudct',
+              segment: 'add-new-product',
               title: 'Add New Product',
               icon: <AddProuducts />,
             },
             {
-              segment: 'viewAllProduct',
+              segment: 'view-all-product',
               title: 'View All Product',
               icon: <AllProduct />,
             },
@@ -65,7 +65,7 @@ export const NAVIGATION = [
 
   //Manage Categories
           {
-            segment: 'manageCategories',
+            segment: 'dashboard/manage-category',
             title: 'Mangae Categories',
             icon: <CategoryIcon  />,
             children: [
@@ -84,37 +84,37 @@ export const NAVIGATION = [
 
   //Mange Orders
           {
-            segment: 'orders',
+            segment: 'dashboard/orders',
             title: 'Orders',
             icon: <OrderIcon />,
             children: [
               {
-                segment: 'viewAllOrders',
+                segment: 'view-all-orders',
                 title: 'View All Orders',
                 icon: <AllProduct />,
               },
               {
-                segment: 'orderDetails',
+                segment: 'order-details',
                 title: 'Order Details',
                 icon: <TimerIcon />,
               },
               {
-                segment: 'pendingOrders',
+                segment: 'pending-orders',
                 title: 'Pending Orders',
                 icon: <PendingOrderIcon />,
               },
               {
-                segment: 'completedOrders',
+                segment: 'completed-orders',
                 title: 'Compelted Orders',
                 icon: <OrderCompeltedIcon />,
               },
               {
-                segment: 'canceled/Returned Order',
-                title: 'Compelted Orders',
+                segment: 'return-order',
+                title: 'Return Order',
                 icon: <TimerIcon />,
               },
               {
-                segment: 'refundRequests',
+                segment: 'refund-orders',
                 title: 'Refund Requests',
                 icon: <TimerIcon />,
               },
@@ -122,13 +122,13 @@ export const NAVIGATION = [
           },
 
           {
-            segment: 'tags',
+            segment: 'dasboard/tags',
             title: 'Tags',
             icon: <LocalOfferIcon  />,
           },
 
           {
-            segment: 'productReviewsRating',
+            segment: 'product-reviews-and-raiting',
             title: 'Product Review and Raiting',
             icon: <ReviewAndRatingIcon />,
           },
@@ -146,12 +146,12 @@ export const NAVIGATION = [
     icon: <CustomerIcon />,
     children: [
       {
-        segment: 'Viewallcustomers',
+        segment: 'view-all-customers',
         title: 'View All Customers',
         icon: <GroupsIcon />,
       },
       {
-        segment: 'addNewCustomer',
+        segment: 'add-new-customers',
         title: 'Add New Customer',
         icon: <PersonAddAltIcon  />,
       },

@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
