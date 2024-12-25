@@ -9,7 +9,14 @@ import Price from "./Price"; // Import the new Price component
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import "tailwindcss/tailwind.css";
-import moment from 'moment'; // Add moment.js for handling date formats
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LinkIcon from '@mui/icons-material/Link';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import Shipping from "./Shipping";
+import LinkedProduct from "./LinkedProduct";
+type MenuItem = Required<MenuProps>['items'][number];
 
 const { Option } = Select;
 
@@ -17,7 +24,30 @@ interface ProductWrapperProps {
   initialData?: Product;
 }
 
+const items: MenuItem[] = [
+  {
+    key: 'price',
+    label: 'Price',
+    type: 'item',
+    icon: <CurrencyRupeeIcon/>
+  },
+  {
+    key: 'shipping',
+    label: 'Shipping',
+    type: 'item',
+    icon: <LocalShippingIcon/>
+  },
+  {
+    key: 'linkedProduct',
+    label: 'Linked Proudct',
+    type: 'item',
+    icon: <LinkIcon/>
+  },
+ 
+];
+
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
+   const [selectedKey, setSelectedKey] = useState<string>('price');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
@@ -59,6 +89,12 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     menuOrder: 0,
     metaData: [],
   });
+
+  
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e.key);
+    setSelectedKey(e.key); // Update selected key
+  };
 
   // Generate slug from product name
   const generateSlug = (name: string) => {
@@ -134,11 +170,19 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
-
-  // Handle Date change for Sale Start and End Date
-  const handleDateChange = (date: moment.Moment | null, dateType: 'dateOnSaleFrom' | 'dateOnSaleTo') => {
-    const updatedDate = date ? Timestamp.fromDate(date.toDate()) : null;
-    handleInputChange(dateType, updatedDate);
+ 
+  //rended content 
+  const renderContent = () => {
+    switch (selectedKey) {
+      case 'price':
+        return  <Price formData={formData} onFormDataChange={handleInputChange} />;
+      case 'shipping':
+        return <Shipping />;
+      case 'linkedProduct':
+        return <LinkedProduct />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -175,8 +219,25 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             onChange={(e) => handleInputChange("description", e.target.value)}
             className="mb-4"
           />
+
+          {/* Menu Option */}
+          
+          {/* Menu */}
+         
+          <div style={{ display: 'flex' }}>
+          <Menu
+            onClick={onClick}
+            style={{ width: 256 }}
+            defaultSelectedKeys={['price']}
+            mode="inline"
+            items={items}
+          />
+          {/* Component */}
+          <div style={{ marginLeft: 20, flex: 1 }}>
+            {renderContent()}
+          </div>
+        </div>
           {/* Add the Price Component */}
-          <Price formData={formData} onFormDataChange={handleInputChange} />
         </Col>
 
         <Col xs={24} md={10}>

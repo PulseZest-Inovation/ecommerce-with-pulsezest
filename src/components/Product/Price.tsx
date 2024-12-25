@@ -63,6 +63,14 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
           On Sale
         </Checkbox>
 
+         {/* Regular Price Input */}
+         <Input
+          placeholder="Regular Price"
+          value={formData.regularPrice}
+          onChange={(e) => handlePriceChange("regularPrice", e.target.value)}
+          className="mb-4"
+        />
+
         {/* Display the prices */}
         <Card className="text-end">
           {formData.regularPrice && formData.salePrice ? (
@@ -85,13 +93,7 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
           )}
         </Card>
 
-        {/* Regular Price Input */}
-        <Input
-          placeholder="Regular Price"
-          value={formData.regularPrice}
-          onChange={(e) => handlePriceChange("regularPrice", e.target.value)}
-          className="mb-4"
-        />
+       
 
         {/* Sale Price Input */}
         {formData.onSale && (
