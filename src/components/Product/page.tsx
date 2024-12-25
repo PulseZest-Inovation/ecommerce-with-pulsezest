@@ -168,7 +168,6 @@ const handleGalleryUpload = async ({ fileList }: any) => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Add Product</h2>
       <Row gutter={16}>
         <Col xs={24} md={14}>
           <Input

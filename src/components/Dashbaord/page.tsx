@@ -7,7 +7,7 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs } from '@mui/material';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme } from '@/utils/menu';
-import ROUTE_COMPONENTS from '@/utils/route';
+import { getRouteComponent } from '@/utils/route'; // Import the helper function
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { usePathname, useRouter } from 'next/navigation';
 import { Result } from 'antd';
@@ -44,11 +44,14 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   }, [appData]);
 
   // Memoize the router context to prevent unnecessary re-renders
-  const routerContext = useMemo(() => ({
-    pathname,
-    searchParams: new URLSearchParams(),
-    navigate: (route: string) => router.push(route), // Simplify navigation logic
-  }), [pathname, router]);
+  const routerContext = useMemo(
+    () => ({
+      pathname,
+      searchParams: new URLSearchParams(),
+      navigate: (route: string) => router.push(route), // Simplify navigation logic
+    }),
+    [pathname, router]
+  );
 
   // Generate breadcrumbs dynamically based on the current route
   const generateBreadcrumbs = useMemo(() => {
@@ -62,15 +65,15 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
 
   // Render content based on the current route
   const renderContent = () => {
-    const Component = ROUTE_COMPONENTS[pathname as keyof typeof ROUTE_COMPONENTS];
+    const Component = getRouteComponent(pathname); // Use the helper function
     if (Component) {
       return <Component />; // Render the selected component
     }
     return (
       <Result
-        status="500"
-        title="We Are Currently Working on This"
-        subTitle="Very Soon It Will Be Active!"
+        status="404"
+        title="Page Not Found"
+        subTitle="The page you are looking for does not exist."
       />
     );
   };

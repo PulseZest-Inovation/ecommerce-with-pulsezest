@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { Tags } from "@/types/Tags";

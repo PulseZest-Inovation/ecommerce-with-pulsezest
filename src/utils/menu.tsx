@@ -122,7 +122,7 @@ export const NAVIGATION = [
           },
 
           {
-            segment: 'dasboard/tags',
+            segment: 'dashboard/tags',
             title: 'Tags',
             icon: <LocalOfferIcon  />,
           },
