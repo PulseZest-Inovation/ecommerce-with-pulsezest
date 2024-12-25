@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { Table, Button, Space } from 'antd';
 import { Customer } from '@/types/Customer'; // Assuming you have the Customer interface

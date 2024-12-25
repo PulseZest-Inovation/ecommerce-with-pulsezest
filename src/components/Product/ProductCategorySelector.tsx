@@ -1,4 +1,4 @@
-// components/Product/CategorySelector.tsx
+'use client'
 import React from "react";
 import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
 

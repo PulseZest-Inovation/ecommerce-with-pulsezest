@@ -2,7 +2,6 @@
 import React, { useEffect, useState, MouseEvent } from 'react';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Popover from '@mui/material/Popover';
-import { SignOutButton } from '@toolpad/core/Account'; // Assuming this is the SignOut button component
 import { Box, Avatar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, IconButton } from "@mui/material";
 import { getUser } from '@/services/getUser'; // Import the getUser function
 import { useRouter } from 'next/navigation'; // Import useRouter for navigation

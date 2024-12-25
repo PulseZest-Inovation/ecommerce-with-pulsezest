@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { Col, Row } from 'antd';
 import TagForm from '@/components/Tags/CreateTag';

@@ -1,3 +1,4 @@
+'use cleint'
 import ProductWrapper from '@/components/Product/page'
 import React from 'react'
 

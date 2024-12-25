@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { Col, Row } from 'antd'
 import CreateCategory from '@/components/category-component/CreateCategory'

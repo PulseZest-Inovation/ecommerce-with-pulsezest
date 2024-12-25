@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import DashboardWrapper from '@/services/DashboardWrapper'
 

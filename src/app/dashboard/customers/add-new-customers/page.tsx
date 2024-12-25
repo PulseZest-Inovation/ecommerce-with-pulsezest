@@ -1,3 +1,4 @@
+'use client'
 import CustomerForm from '@/components/Customer/CustomerForm/page';
 import React from 'react'
 

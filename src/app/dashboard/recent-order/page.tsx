@@ -1,3 +1,4 @@
+'use client'
 import { Card, Table, Tag } from 'antd';
 import { Typography, Box } from '@mui/material';
 

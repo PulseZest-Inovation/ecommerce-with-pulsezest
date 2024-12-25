@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { List, Card, Typography } from "antd";
 import { Tags } from "@/types/Tags";  // Assuming you have the Tags interface
