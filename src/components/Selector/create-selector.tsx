@@ -2,9 +2,19 @@
 import React, { useEffect, useState } from "react";
 import { Select, Spin } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData"; // Adjust the path accordingly
-import { Categories } from "../../types/Categories";
-
 const { Option } = Select;
+
+interface Categories {
+  cid: string;
+  name: string;
+  slug: string;
+  parent: string;
+  description: string;
+  display: string;
+  image: string;
+  menu_order: string;
+  count: number
+}
 
 interface ParentCategorySelectorProps {
   value?: string;
