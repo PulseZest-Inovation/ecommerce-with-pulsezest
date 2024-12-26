@@ -17,11 +17,18 @@ const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryC
   const [progress, setProgress] = useState<{ [key: string]: number }>({}); // Store progress per file
 
   // Function to upload image to Firebase and track progress
-  const uploadImageToFirebase = (file: File, path: string, onProgress: (fileName: string, percent: number) => void): Promise<string> => {
+  const uploadImageToFirebase = (
+    file: File,
+    path: string,
+    onProgress: (fileName: string, percent: number) => void
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, path);
+      // Generate a unique file name
+      const uniqueFileName = `${Date.now()}-${file.name}`;
+  
+      const storageRef = ref(storage, `${path}/${uniqueFileName}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
-
+  
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -43,6 +50,7 @@ const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryC
       );
     });
   };
+  
 
   // Function to delete image from Firebase storage
   const deleteImageFromFirebase = async (imageUrl: string) => {

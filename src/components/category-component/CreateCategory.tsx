@@ -1,9 +1,10 @@
-'use client'
 import React, { useState } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { UploadImageToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
-import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Update path as needed
+import { storage } from "@/utils/firbeaseConfig"; // Replace with your Firebase config
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Compressor from "compressorjs";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Import the custom function
 import CategoriesSelector from "../Selector/create-selector";
 
 interface Categories {
@@ -15,56 +16,73 @@ interface Categories {
   display: string;
   image: string;
   menu_order: string;
-  count: number
+  count: number;
 }
 
 const CreateCategory = () => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false); // Loading state for the spinner
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // Function to create a valid slug from the category name
   const generateSlug = (name: string) => {
     return name
-      .toLowerCase()                    // Convert to lowercase
-      .trim()                           // Remove leading/trailing spaces
-      .replace(/\s+/g, "-")             // Replace spaces with hyphens
-      .replace(/[^\w-]+/g, "");         // Remove non-alphanumeric characters except hyphens
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+  };
+
+  const uploadImageToFirebase = async (
+    imageFile: File,
+    path: string
+  ): Promise<string> => {
+    try {
+      const compressedImage = await new Promise<File | Blob>((resolve, reject) => {
+        new Compressor(imageFile, {
+          quality: 0.8,
+          success: resolve,
+          error: reject,
+        });
+      });
+
+      const fileName = `${path}/${Date.now()}-${
+        compressedImage instanceof File ? compressedImage.name : "image"
+      }`;
+      const storageRef = ref(storage, fileName);
+
+      await uploadBytes(storageRef, compressedImage);
+      return await getDownloadURL(storageRef);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw new Error("Failed to upload image.");
+    }
   };
 
   const handleFinish = async (values: any) => {
     try {
       setLoading(true);
-      setModalVisible(true); // Show the modal/loader
+      setModalVisible(true);
 
       const { image, ...otherValues } = values;
-
-      // Upload image to Firebase and get the URL
       const imageFile = image?.[0]?.originFileObj;
       if (!imageFile) throw new Error("Image file is required!");
 
-      const imageUrl = await UploadImageToFirebase(imageFile, "categories");
+      const key = localStorage.getItem("securityKey");
+      const imageUrl = await uploadImageToFirebase(imageFile, `${key}/categories`);
 
-      // Add the image URL to form values
       const formData: Categories = {
         ...otherValues,
         cid: otherValues.slug,
         image: imageUrl,
-        count: 0, // Default count value
+        count: 0,
       };
 
-      console.log(formData);
-      // Save the form data to Firestore
-      const docId = formData.slug;
-      const status = await setDocWithCustomId('categories', docId, formData);
+      // Save category data using setDocWithCustomId
+      const success = await setDocWithCustomId("categories", formData.cid, formData);
+      if (!success) throw new Error("Failed to save category data!");
 
-      if (status) {
-        // Add the cid without overwriting the existing document
-        message.success("Category created successfully!");
-        form.resetFields();
-      } else {
-        throw new Error("Failed to create category document!");
-      }
+      message.success("Category created successfully!");
+      form.resetFields();
     } catch (error) {
       if (error instanceof Error) {
         message.error(error.message || "Failed to create category!");
@@ -73,21 +91,20 @@ const CreateCategory = () => {
       }
     } finally {
       setLoading(false);
-      setModalVisible(false); // Hide the modal/loader
+      setModalVisible(false);
     }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    const slug = generateSlug(name); // Generate the slug from the category name
-    form.setFieldsValue({ slug });    // Update the slug field
+    const slug = generateSlug(name);
+    form.setFieldsValue({ slug });
   };
 
   return (
     <div className="p-6 bg-gray-100 rounded-md shadow-md">
       <h2 className="text-xl font-bold mb-4">Create Category</h2>
 
-      {/* Modal for displaying loader */}
       <Modal
         visible={modalVisible}
         footer={null}
@@ -98,13 +115,7 @@ const CreateCategory = () => {
         <Spin size="large" />
       </Modal>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleFinish}
-        className="space-y-4"
-      >
-        {/* Name Field */}
+      <Form form={form} layout="vertical" onFinish={handleFinish} className="space-y-4">
         <Form.Item
           label="Name"
           name="name"
@@ -113,11 +124,10 @@ const CreateCategory = () => {
           <Input
             placeholder="Enter category name"
             className="rounded-md"
-            onChange={handleNameChange} // Update slug when the name changes
+            onChange={handleNameChange}
           />
         </Form.Item>
 
-        {/* Slug Field */}
         <Form.Item
           label="Slug"
           name="slug"
@@ -126,7 +136,6 @@ const CreateCategory = () => {
           <Input placeholder="Enter slug" className="rounded-md" />
         </Form.Item>
 
-        {/* Parent Category Field */}
         <Form.Item
           label="Parent Category"
           name="parent"
@@ -135,7 +144,6 @@ const CreateCategory = () => {
           <CategoriesSelector />
         </Form.Item>
 
-        {/* Description Field */}
         <Form.Item
           label="Description"
           name="description"
@@ -144,22 +152,20 @@ const CreateCategory = () => {
           <Input.TextArea placeholder="Enter description" className="rounded-md" rows={4} />
         </Form.Item>
 
-        {/* Image Field */}
         <Form.Item
           label="Image"
           name="image"
+          rules={[{ required: true, message: "Please upload an image!" }]}
           valuePropName="fileList"
           getValueFromEvent={(e: any) => (Array.isArray(e) ? e : e?.fileList)}
-          rules={[{ required: true, message: "Please upload an image!" }]}
         >
-          <Upload name="image" listType="picture" maxCount={1} beforeUpload={() => false}>
+          <Upload listType="picture" maxCount={1} beforeUpload={() => false}>
             <Button icon={<UploadOutlined />}>Upload Image</Button>
           </Upload>
         </Form.Item>
 
-        {/* Submit Button */}
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="bg-blue-500 hover:bg-blue-600">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Create Category
           </Button>
         </Form.Item>

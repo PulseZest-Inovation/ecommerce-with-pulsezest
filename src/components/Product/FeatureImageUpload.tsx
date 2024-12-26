@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from "react";
 import { Upload, Button, message, Progress } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
@@ -26,15 +26,25 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
 
       const key = localStorage.getItem("securityKey");
 
-      const uploadedUrl = await uploadImageToFirebase(file, `${key}/products`, (percent: number) => {
-        setUploadPercent(percent);
-      });
+      if (!key) {
+        message.error("Security key is missing. Please log in again.");
+        throw new Error("Missing security key");
+      }
+
+      const uploadedUrl = await uploadImageToFirebase(
+        file,
+        `${key}/products/`,
+        (percent: number) => {
+          setUploadPercent(percent);
+        }
+      );
 
       if (uploadedUrl) {
         onFeaturedImageChange(uploadedUrl);
         message.success("Featured image uploaded successfully!");
       }
     } catch (error) {
+      console.error("Upload error:", error);
       message.error("Error uploading featured image.");
     } finally {
       setUploading(false);
@@ -47,7 +57,12 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
     onProgress: (percent: number) => void
   ): Promise<string | null> => {
     return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, filePath);
+      // Generate a unique file name using timestamp and random string
+      const uniqueFileName = `${filePath}${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}-${file.name}`;
+
+      const storageRef = ref(storage, uniqueFileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
@@ -57,7 +72,7 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
           onProgress(progress);
         },
         (error) => {
-          console.error("Upload error: ", error);
+          console.error("Upload error:", error);
           reject("Error uploading image.");
         },
         async () => {
@@ -65,6 +80,7 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             resolve(downloadURL);
           } catch (error) {
+            console.error("Error retrieving download URL:", error);
             reject("Error retrieving download URL.");
           }
         }
@@ -74,7 +90,7 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
 
   return (
     <div className="w-full p-4 border rounded-md">
-        <p className="text-center">Feature Image</p>
+      <p className="text-center font-medium">Feature Image</p>
       {featuredImage && !uploading ? (
         <img
           src={featuredImage}
