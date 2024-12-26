@@ -1,112 +1,129 @@
-'use client'
-import { Card, Col, Row, Statistic } from 'antd';
-import { Line } from 'react-chartjs-2';
-import { Bar } from 'react-chartjs-2';
-import { Paper, Typography, Box } from '@mui/material';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, Title, Tooltip, Legend, PointElement } from 'chart.js';
-
-// Registering the necessary Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,  // Register LineElement for line charts
-  PointElement, // Register PointElement for data points
-  Title,
-  Tooltip,
-  Legend
-);
+"use client";
+import React from 'react';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Grid,
+  Paper,
+} from "@mui/material";
+import { LineChart, BarChart } from "@mui/x-charts";
 
 const AnalyticsDashboard = () => {
   // Sample Data (to be replaced with actual data from API or database)
   const totalSales = 12000;
   const ordersCount = 320;
   const topProducts = [
-    { name: 'Product A', sales: 1500 },
-    { name: 'Product B', sales: 1000 },
-    { name: 'Product C', sales: 800 },
+    { name: "Product A", sales: 1500 },
+    { name: "Product B", sales: 1000 },
+    { name: "Product C", sales: 800 },
   ];
 
   // Line chart data (traffic trend over a week)
   const trafficData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
+    series: [
       {
-        label: 'Website Traffic',
+        name: "Website Traffic",
         data: [500, 800, 1200, 900, 1500, 2000, 2500],
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        tension: 0.1,
+      },
+    ],
+    xAxis: [
+      {
+        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       },
     ],
   };
 
   // Bar chart data (Sales by Product)
   const salesByProductData = {
-    labels: topProducts.map((product) => product.name),
-    datasets: [
+    series: [
       {
-        label: 'Sales ($)',
+        name: "Sales (₹)",
         data: topProducts.map((product) => product.sales),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+      },
+    ],
+    xAxis: [
+      {
+        data: topProducts.map((product) => product.name),
+        scaleType: "band", // Ensure scaleType is set for BarChart
       },
     ],
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-6">Ecommerce Analytics</h2>
+    <Box sx={{ maxWidth: "1200px", margin: "auto", padding: "24px" }}>
+      <Typography variant="h4" gutterBottom>Ecommerce Analytics</Typography>
 
       {/* Sales Overview */}
-      <Row gutter={16}>
-        <Col span={8}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
           <Card>
-            <Statistic title="Total Sales" value={`$${totalSales}`} />
+            <CardContent>
+              <Typography variant="h6">Total Sales</Typography>
+              <Typography variant="h5">₹{totalSales}</Typography>
+            </CardContent>
           </Card>
-        </Col>
-        <Col span={8}>
+        </Grid>
+        <Grid item xs={12} sm={4}>
           <Card>
-            <Statistic title="Orders Count" value={ordersCount} />
+            <CardContent>
+              <Typography variant="h6">Orders Count</Typography>
+              <Typography variant="h5">{ordersCount}</Typography>
+            </CardContent>
           </Card>
-        </Col>
-        <Col span={8}>
+        </Grid>
+        <Grid item xs={12} sm={4}>
           <Card>
-            <Statistic title="Average Order Value" value={`$${(totalSales / ordersCount).toFixed(2)}`} />
+            <CardContent>
+              <Typography variant="h6">Average Order Value</Typography>
+              <Typography variant="h5">
+              ₹{((totalSales / ordersCount) || 0).toFixed(2)}
+              </Typography>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
 
       {/* Traffic Overview (Line Chart) */}
-      <Box className="mt-6">
-        <Typography variant="h6" className="mb-4">Website Traffic Overview</Typography>
-        <Paper className="p-4">
-          <Line data={trafficData} />
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h6" gutterBottom>Website Traffic Overview</Typography>
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <LineChart
+            series={trafficData.series}
+            xAxis={trafficData.xAxis}
+            height={300}
+          />
         </Paper>
       </Box>
 
       {/* Sales by Product (Bar Chart) */}
-      <Box className="mt-6">
-        <Typography variant="h6" className="mb-4">Sales by Product</Typography>
-        <Paper className="p-4">
-          <Bar data={salesByProductData} />
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h6" gutterBottom>Sales by Product</Typography>
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <BarChart
+            series={salesByProductData.series}
+            height={300}
+          />
         </Paper>
       </Box>
 
       {/* Top Products */}
-      <Row gutter={16} className="mt-6">
+      <Grid container spacing={3} sx={{ mt: 6 }}>
         {topProducts.map((product) => (
-          <Col span={8} key={product.name}>
-            <Card title={product.name}>
-              <Statistic title="Sales" value={`$${product.sales}`} />
+          <Grid item xs={12} sm={4} key={product.name}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">{product.name}</Typography>
+                <Typography variant="h5">₹{product.sales}</Typography>
+              </CardContent>
             </Card>
-          </Col>
+          </Grid>
         ))}
-      </Row>
+      </Grid>
 
-      {/* Other Metrics and Cards can be added below */}
-    </div>
+      {/* Additional sections can be added here */}
+    </Box>
   );
 };
 
