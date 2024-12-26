@@ -98,11 +98,12 @@ const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryC
         continue; // Skip invalid files
       }
 
+      const key = localStorage.getItem("securityKey");
       try {
         // Upload image immediately after selection
         const uploadedUrl = await uploadImageToFirebase(
           file,
-          `products/${slug}/galleryImages/${file.name}`,
+          `${key}/products/${file.name}`,
           (fileName: string, percent: number) => {
             setProgress((prevProgress) => ({
               ...prevProgress,

@@ -43,7 +43,7 @@ const CreateCategory = () => {
       const imageFile = image?.[0]?.originFileObj;
       if (!imageFile) throw new Error("Image file is required!");
 
-      const imageUrl = await UploadImageToFirebase(imageFile, "categories/images");
+      const imageUrl = await UploadImageToFirebase(imageFile, "categories");
 
       // Add the image URL to form values
       const formData: Categories = {
