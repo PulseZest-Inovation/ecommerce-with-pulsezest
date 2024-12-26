@@ -31,7 +31,7 @@ export const UploadImageToFirebase = async (
 
     const key = localStorage.getItem("securityKey");
     // Use the current timestamp for a unique file name
-    const fileName = `${key}-${path}/${Date.now()}-${compressedImage instanceof File ? compressedImage.name : "image"}`;
+    const fileName = `${key}/${path}/${Date.now()}-${compressedImage instanceof File ? compressedImage.name : "image"}`;
     const storageRef = ref(storage, fileName);
 
     // Upload the compressed image to Firebase Storage
