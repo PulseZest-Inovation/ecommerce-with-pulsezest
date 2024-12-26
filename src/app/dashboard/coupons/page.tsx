@@ -7,7 +7,7 @@ import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { Timestamp } from 'firebase/firestore';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { useRouter } from 'next/navigation';  
 
 type Props = {};
 
@@ -16,11 +16,11 @@ export default function Coupons({}: Props) {
   const [open, setOpen] = useState<boolean>(false);
   const [editingCoupon, setEditingCoupon] = useState<CouponsType | null>(null);
   const [form] = Form.useForm();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();  
 
   const handleCancel = () => {
     setOpen(false);
-    setEditingCoupon(null); // Reset the editing state
+    setEditingCoupon(null); 
     form.resetFields();
   };
 
