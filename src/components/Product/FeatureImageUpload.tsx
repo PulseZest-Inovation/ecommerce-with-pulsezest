@@ -24,7 +24,9 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
       setUploading(true);
       setUploadPercent(0);
 
-      const uploadedUrl = await uploadImageToFirebase(file, `products/${slug}/featuredImage`, (percent: number) => {
+      const key = localStorage.getItem("securityKey");
+
+      const uploadedUrl = await uploadImageToFirebase(file, `${key}/products`, (percent: number) => {
         setUploadPercent(percent);
       });
 
