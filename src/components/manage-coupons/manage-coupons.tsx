@@ -4,12 +4,10 @@ import { Timestamp } from 'firebase/firestore';
 import { CouponsType } from '@/types/CouponType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import Image from 'next/image';
 import { Row, Col, Input, Button, Checkbox, Select, DatePicker, InputNumber, Form, Popover, Divider, Space, message, Spin } from 'antd';
 import moment from 'moment';
-import { Card } from 'antd';
+import MultipleCategoriesSelector from '../Selector/MultipleCategorySelector';
 
-const { Meta } = Card;
 const { Option } = Select;
 
 const defaultCoupon: CouponsType = {
@@ -88,11 +86,10 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
     }
   };
 
-  if (loading) return <div className='justify-center flex items-center h-screen'><Spin/></div> ;
+  if (loading) return <div className='justify-center flex items-center h-screen'><Spin /></div>;
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col flex={4}>
+   
         <div className="p-4 max-w-2xl mx-auto">
           <h1 className="text-xl font-bold mb-4">Manage Coupon</h1>
           {coupon ? (
@@ -221,12 +218,9 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
               <Row gutter={16}>
                 <Col span={24}>
                   <Form.Item label="Product Categories">
-                    <Input
-                      value={coupon?.productCategories?.join(', ') || ''}
-                      onChange={(e) =>
-                        handleInputChange('productCategories', e.target.value.split(',').map((item) => item.trim()))
-                      }
-                      placeholder="Enter categories separated by commas"
+                    <MultipleCategoriesSelector
+                      value={coupon.productCategories}
+                      onChange={(newCategories ) => handleInputChange('productCategories', newCategories)}
                     />
                   </Form.Item>
                 </Col>
@@ -246,48 +240,10 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
             <div>Failed to load coupon data.</div>
           )}
         </div>
-      </Col>
+      
 
-      <Col flex={2}>
-          <div style={{position: 'sticky', top: '20px'}} >
-          <Card
-          style={{ width: 400 }}
-        >
-          <Popover
-            content={
-              <div>
-                <p><strong>Percentage Discount:</strong> This discount reduces the price by a specified percentage.</p>
-                <p><strong>Fixed Discount:</strong> This discount provides a fixed amount off the total price.</p>
-              </div>
-            }
-            title="Discount Explanation"
-          >
-            <Button type="link">When we use the Percentage and Fixed Discount ?</Button>
-          </Popover>
-        </Card>
-
-          
-
-        <Card className='mt-5'>
-          <Meta description= 'How to use  Coupons ?'></Meta>
-
-          
-          <h1 className="font-mono text-xl font-semibold mt-4 bg-yellow-300 p-4 rounded-lg text-center text-gray-800">
-            {coupon?.code}
-          </h1>
-
-          <p className=" mt-4 text-gray-600">
-            Couponse are always case Sensitive*.
-          </p>
-        </Card>
-
-       
-     
-        
-        
-          </div>
-      </Col>
-    </Row>
+    
+   
   );
 };
 
