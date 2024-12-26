@@ -96,9 +96,9 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
         logo: (
           <Image
             src={appData.app_logo}
-            alt={`${appData.app_name} Logo`}
-            width={70}
-            height={70}
+            alt={`${appData.app_name}-Logo`}
+            width={50}
+            height={400}
             priority
           />
         ),
