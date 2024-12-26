@@ -2,6 +2,7 @@
 import React from 'react'
 import { useParams } from 'next/navigation'
 import ManageCoupons from '@/components/manage-coupons/manage-coupons'
+import { Spin } from 'antd'
 
 type Props = {}
 
@@ -10,12 +11,12 @@ export default function EditViewCoupons({}: Props) {
 
     // Handle cases where couponId is undefined or not available yet
     if (!couponCode) {
-        return <div>Loading...</div>;
+        return <Spin/>;
     }
 
     return (
         <div>
-            <h1>Edit Coupon: {couponCode}</h1>
+            
             <ManageCoupons id={couponCode} />  
             {/* Pass couponId as prop */}
         </div>
