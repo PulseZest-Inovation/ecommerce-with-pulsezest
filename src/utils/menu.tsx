@@ -1,7 +1,8 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon, ManageCategories, ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
+import PaletteIcon from '@mui/icons-material/Palette';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import LayersIcon from '@mui/icons-material/Layers';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -223,9 +224,9 @@ export const NAVIGATION = [
     title: 'Content',
   },
   {
-    segment: 'bannerAndSlider',
-    title: 'Banner/Sliders',
-    icon: <LayersIcon />,
+    segment: 'dashboard/theme',
+    title: 'Appearance and Theme',
+    icon: <PaletteIcon />,
   },
   {
     segment: 'homePageContent',
