@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { ImageCarousleType } from '@/types/ImageCarouselType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import { Button, Select, Switch, Input, List, notification } from 'antd';
-import { SaveOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Button, Select, Switch, Input, List, notification, Upload } from 'antd';
+import { SaveOutlined, PlusOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
+import ImageCarouselPreview from './ImageCarouselPreview'; // Import the ImageCarouselPreview component
 
 type Props = {};
 
@@ -11,6 +13,7 @@ const ImageCarousel = (props: Props) => {
   const [carouselData, setCarouselData] = useState<ImageCarousleType | null>(null); // State to hold the fetched data
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
+  const [isUploading, setIsUploading] = useState(false); // Uploading state for tracking image upload progress
 
   // Fetch the data when the component mounts
   useEffect(() => {
@@ -68,7 +71,7 @@ const ImageCarousel = (props: Props) => {
     if (carouselData) {
       setCarouselData({
         ...carouselData,
-        images: [...carouselData.images, { imageURL: '', pageURL: '' }],
+        images: [...carouselData.images, { imageURL: '', pageURL: '' }], // Add new empty image object
       });
     }
   };
@@ -94,6 +97,20 @@ const ImageCarousel = (props: Props) => {
         ...carouselData,
         images: updatedImages,
       });
+    }
+  };
+
+  // Handle image upload from the gallery
+  const handleImageUpload = async (file: File, index: number) => {
+    try {
+      setIsUploading(true); // Set uploading state to true
+      const uploadedImageUrl = await UploadImageToFirebase(file, 'carousel-images'); // Upload image to Firebase Storage
+      handleImageChange(index, 'imageURL', uploadedImageUrl); // Update the image URL field in the carousel data
+      setIsUploading(false); // Set uploading state to false after the upload is complete
+      notification.success({ message: 'Image uploaded successfully!' });
+    } catch (error) {
+      setIsUploading(false);
+      notification.error({ message: 'Failed to upload image.' });
     }
   };
 
@@ -152,17 +169,20 @@ const ImageCarousel = (props: Props) => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Input
-                      placeholder="Image URL"
-                      value={item.imageURL}
-                      onChange={(e) => handleImageChange(index, 'imageURL', e.target.value)}
-                      style={{ marginRight: '10px', flex: 1 }}
-                    />
-                    <Input
                       placeholder="Page URL"
                       value={item.pageURL}
                       onChange={(e) => handleImageChange(index, 'pageURL', e.target.value)}
                       style={{ marginRight: '10px', flex: 1 }}
                     />
+                    <Upload
+                      showUploadList={false}
+                      customRequest={({ file }) => handleImageUpload(file as File, index)} // Handle image upload
+                      accept="image/*"
+                    >
+                      <Button icon={<UploadOutlined />} loading={isUploading}>
+                        Upload Image
+                      </Button>
+                    </Upload>
                   </div>
                 </List.Item>
               )}
@@ -175,6 +195,15 @@ const ImageCarousel = (props: Props) => {
             >
               Add Image
             </Button>
+          </div>
+
+          {/* Image Carousel Preview */}
+          <div style={{ marginTop: '20px' }}>
+            <h3>Preview Carousel:</h3>
+            <ImageCarouselPreview images={carouselData.images.map((image) => ({
+              imageURL: image.imageURL,
+              altText: image.pageURL, // You can customize how altText is displayed
+            }))} />
           </div>
 
           <div style={{ marginTop: '20px' }}>
