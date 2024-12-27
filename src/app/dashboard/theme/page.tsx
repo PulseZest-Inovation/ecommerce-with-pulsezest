@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
+import ImageCarousel from '@/components/Theme/ImageCarousel';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -44,7 +45,7 @@ const ThemePage = (props: Props) => {
       case '2':
         return <div>Categories Content</div>;
       case '3':
-        return <div>Image Carousel Content</div>;
+        return <ImageCarousel/> ;
       default:
         return <div>Select a menu option</div>;
     }
