@@ -1,0 +1,22 @@
+import { Timestamp } from "firebase/firestore";
+export interface CouponsType {
+  id: string;
+  code: string;
+  amount: number; // Changed to `number`
+  createdAt: Timestamp;
+  dateModifiedAt: Timestamp;
+  discountType: 'percentage' | 'fixed'; // Strict typing
+  description: string;
+  dateExpire: Timestamp;
+  usageCount: number;
+  productsId?: string[]; // Optional field
+  excludeProductIds?: string[]; // Optional field
+  usageLimit: number;
+  usageLimitPerUser: number;
+  freeShipping: boolean;
+  productCategories?: string[];
+  excludeSaleItems: boolean;
+  minimumAmount: number; // Changed to `number`
+  usedBy: string[]; 
+  metaData: { key: string; value: any }[]; // Better defined structure
+}

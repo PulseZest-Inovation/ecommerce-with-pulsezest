@@ -180,15 +180,15 @@ export const NAVIGATION = [
          title: 'Sales',
        },
        {
-        segment: 'discounts & Cupons',
+        segment: 'dashboard/coupons',
         title: 'Discounts & Coupons',
         icon: <DiscountIcon/>,
       },
-      {
-        segment: 'giftCard',
-        title: 'Gift Card',
-        icon: <TimerIcon />,
-      },
+      // {
+      //   segment: 'giftCard',
+      //   title: 'Gift Card',
+      //   icon: <TimerIcon />,
+      // },
 
  
   {
