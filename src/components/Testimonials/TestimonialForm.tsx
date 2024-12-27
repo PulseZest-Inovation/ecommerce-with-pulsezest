@@ -6,42 +6,50 @@ import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToF
 import { ApplicationConfig } from '@/utils/ApplicationConfig';
 
 interface TestimonialFormProps {
-  onSubmit: (testimonialData: { text: string; name: string; imageUrl?: string }) => void;
+  onSubmit: (testimonialData: { text: string; name: string; imageUrls?: string[] }) => void;
 }
 
 const TestimonialForm: React.FC<TestimonialFormProps> = ({ onSubmit }) => {
   const [testimonialText, setTestimonialText] = useState('');
   const [name, setName] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // To store the image URL for preview
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  const handleImageChange = (file: any) => {
-    const selectedImage = file.file;
-    setImage(selectedImage);
-    setImagePreview(URL.createObjectURL(selectedImage)); // Create a preview of the selected image
+  const handleImageChange = ({ fileList }: any) => {
+    if (fileList.length > 2) {
+      message.error('You can only upload up to 2 images.');
+      return;
+    }
+
+    const selectedFiles = fileList.map((file: any) => file.originFileObj);
+    setImages(selectedFiles);
+
+    const previews = selectedFiles.map((file: File) => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
 
   const handleSubmit = async () => {
     message.loading('Adding the Testimonial');
-    if (testimonialText.trim() && name.trim()) {
-      let imageUrl = '';
-      if (image) {
-        imageUrl = await UploadImageToFirebase(image, `${ApplicationConfig.securityKey}/testimonials-images`);
-      }
+    if (testimonialText.trim() && name.trim() && images.length === 2) {
+      const imageUrls = await Promise.all(
+        images.map((image) =>
+          UploadImageToFirebase(image, `${ApplicationConfig.securityKey}/testimonials-images`)
+        )
+      );
 
       onSubmit({
         text: testimonialText,
         name: name,
-        imageUrl: imageUrl,
+        imageUrls: imageUrls,
       });
 
       setTestimonialText('');
       setName('');
-      setImage(null);
-      setImagePreview(null); // Reset the image preview
+      setImages([]);
+      setImagePreviews([]);
       message.success('Testimonial Added');
     } else {
-      message.error('Please fill all fields and upload an image.');
+      message.error('Please fill all fields and upload exactly two images.');
     }
   };
 
@@ -63,29 +71,27 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ onSubmit }) => {
       />
       <p>Recommended image size: 400px x 600px (Portrait)</p>
 
-      {/* Image Upload Section */}
       <Upload
         accept="image/*"
-        showUploadList={false}
+        multiple={true}
         beforeUpload={() => false}
         onChange={handleImageChange}
+        fileList={images.map((image, index) => ({
+          uid: index.toString(),
+          name: image.name,
+          status: 'done',
+          url: imagePreviews[index],
+        }))}
         style={{ marginBottom: '10px' }}
       >
-        <Button>Select Image</Button>
+        <Button>Select Images (Max: 2)</Button>
       </Upload>
-
-      {/* Image Preview */}
-      {imagePreview && (
-        <div style={{ marginBottom: '10px' }}>
-          <Image width={100} height={150} src={imagePreview} alt="Selected Image Preview" />
-        </div>
-      )}
-
+  
       <Button
         onClick={handleSubmit}
         type="primary"
         style={{ marginTop: '10px' }}
-        disabled={!testimonialText.trim() || !name.trim() || !imagePreview} // Disable the button until all fields are filled
+        disabled={!testimonialText.trim() || !name.trim() || images.length !== 2} // Ensure exactly two images are selected
       >
         Add Testimonial
       </Button>
