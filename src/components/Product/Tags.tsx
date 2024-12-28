@@ -33,10 +33,10 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) =>
       const fetchedTags: DefaultOptionType[] = [];
       tagsSnapshot.forEach((doc) => {
         const tagData = doc.data();
-        if (tagData.name) {
+        if (tagData.slug) {
           fetchedTags.push({
-            value: tagData.name,
-            label: tagData.name,
+            value: tagData.slug,
+            label: tagData.slug,
             count: tagData.count || 0, // Initialize count if not available
           });
         }
