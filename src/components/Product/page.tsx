@@ -1,51 +1,42 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Select, message, Card, DatePicker } from "antd";
+import { Row, Col, Input, Button, Menu, message, Card, Collapse } from "antd";
+import type { MenuProps } from 'antd';
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
-import Price from "./Price"; // Import the new Price component
+import Price from "./Price";
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-import "tailwindcss/tailwind.css";
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LinkIcon from '@mui/icons-material/Link';
-import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
 import Shipping from "./Shipping";
 import LinkedProduct from "./LinkedProduct";
 import Tags from "./Tags";
-type MenuItem = Required<MenuProps>['items'][number];
 
-const { Option } = Select;
-
-interface ProductWrapperProps {
-  initialData?: Product;
-}
-
-const items: MenuItem[] = [
+const items: MenuProps['items'] = [
   {
     key: 'price',
     label: 'Price',
-    type: 'item',
-    icon: <CurrencyRupeeIcon/>
+    icon: <CurrencyRupeeIcon />
   },
   {
     key: 'shipping',
     label: 'Shipping',
-    type: 'item',
-    icon: <LocalShippingIcon/>
+    icon: <LocalShippingIcon />
   },
   {
     key: 'linkedProduct',
-    label: 'Linked Proudct',
-    type: 'item',
-    icon: <LinkIcon/>
+    label: 'Linked Product',
+    icon: <LinkIcon />
   },
- 
 ];
+
+interface ProductWrapperProps {
+  initialData?: Product;
+}
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const [selectedKey, setSelectedKey] = useState<string>('price');
@@ -58,7 +49,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     status: "draft",
     featured: false,
     catalog_visibility: "visible",
-    description: "",
     shortDescription: "",
     sku: "",
     price: "",
@@ -89,31 +79,28 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     attributes: [],
     menuOrder: 0,
     metaData: [],
+    description: [
+      { heading: "PRODUCT SPECIFICATION", content: "" },
+      { heading: "SHIPPING INFORMATION", content: "" },
+      { heading: "MORE INFROMATION", content: "" },
+      { heading: "NEED HELP", content: "" },
+    ],
   });
 
-  
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e.key);
-    setSelectedKey(e.key); // Update selected key
+    setSelectedKey(e.key);
   };
 
   // Generate slug from product name
   const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   };
 
   // Handle form data changes
   const handleInputChange = (key: keyof Product, value: any) => {
     if (key === "id") {
       const generatedSlug = generateSlug(value);
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-        slug: generatedSlug,
-      }));
+      setFormData((prev) => ({ ...prev, [key]: value, slug: generatedSlug }));
     } else {
       setFormData((prev) => ({ ...prev, [key]: value }));
     }
@@ -122,21 +109,16 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   // Handle category change
   const handleCategoryChange = (categories: string[]) => {
     setSelectedCategories(categories);
-    handleInputChange("categories", categories); // Update formData with selected categories
+    handleInputChange("categories", categories);
   };
 
-  // Update categories when images are added or deleted
+  // Update categories based on images
   const updateCategoriesFromImages = (galleryImages: string[]) => {
-    // Check if galleryImages contains any image and update categories accordingly
     if (galleryImages.length > 0) {
       setSelectedCategories((prev) => {
-        // Add category if not already present
-        return prev.includes("ImageCategory")
-          ? prev
-          : [...prev, "ImageCategory"];
+        return prev.includes("ImageCategory") ? prev : [...prev, "ImageCategory"];
       });
     } else {
-      // Remove category if gallery is empty
       setSelectedCategories((prev) =>
         prev.filter((category) => category !== "ImageCategory")
       );
@@ -160,25 +142,52 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     }
   };
 
-  // Update formData with initial data if available
   useEffect(() => {
     if (initialData) {
-      setFormData({
+      setFormData((prev) => ({
+        ...prev,
         ...initialData,
         createdAt: initialData.createdAt || Timestamp.now(),
         ModifiedAt: initialData.ModifiedAt || Timestamp.now(),
-      });
+        description: Array.isArray(initialData.description)
+          ? initialData.description
+          : prev.description,
+      }));
       setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
- 
-  //rended content 
+
+  const handleExpandedDescriptionChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const updatedDescriptions = [...prev.description];
+      updatedDescriptions[index].content = value;
+      return { ...prev, description: updatedDescriptions };
+    });
+  };
+
+  // Render expandable descriptions
+  const renderExpandableDescriptions = () => {
+    return (
+      <Collapse>
+        {formData.description.map((section, index) => (
+          <Collapse.Panel header={section.heading} key={index}>
+            <Input.TextArea
+              value={section.content}
+              onChange={(e) => handleExpandedDescriptionChange(index, e.target.value)}
+              rows={4}
+            />
+          </Collapse.Panel>
+        ))}
+      </Collapse>
+    );
+  };
+
   const renderContent = () => {
     switch (selectedKey) {
       case 'price':
-        return  <Price formData={formData} onFormDataChange={handleInputChange} />;
+        return <Price formData={formData} onFormDataChange={handleInputChange} />;
       case 'shipping':
-        return <Shipping  formData={formData} onFormDataChange={handleInputChange}/>;
+        return <Shipping formData={formData} onFormDataChange={handleInputChange} />;
       case 'linkedProduct':
         return <LinkedProduct />;
       default:
@@ -190,7 +199,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     <div className="container mx-auto">
       <div className="flex justify-between my-2">
         <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
-
         <Button type="primary" onClick={handleSubmit} disabled={!formData.id}>
           Submit
         </Button>
@@ -208,45 +216,33 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             rows={2}
             placeholder="Short Description"
             value={formData.shortDescription}
-            onChange={(e) =>
-              handleInputChange("shortDescription", e.target.value)
-            }
+            onChange={(e) => handleInputChange("shortDescription", e.target.value)}
             className="mb-4"
           />
-          <Input.TextArea
-            rows={4}
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => handleInputChange("description", e.target.value)}
-            className="mb-4"
-          />
- 
-          
-          {/* Menu */}
-         
+
+          <h1 className="pl-2 font-bold text-1xl">More Descriptions</h1>
+
+          {renderExpandableDescriptions()}
+
           <div style={{ display: 'flex' }}>
-          <Menu
-            onClick={onClick}
-            style={{ width: 256 }}
-            defaultSelectedKeys={['price']}
-            mode="inline"
-            items={items}
-          />
-          {/* Component */}
-          <div style={{ marginLeft: 20, flex: 1 }}>
-            {renderContent()}
+            <Menu
+              onClick={onClick}
+              style={{ width: 256 }}
+              defaultSelectedKeys={['price']}
+              mode="inline"
+              items={items}
+            />
+            <div style={{ marginLeft: 20, flex: 1 }}>
+              {renderContent()}
+            </div>
           </div>
-        </div>
-          {/* Add the Price Component */}
         </Col>
 
         <Col xs={24} md={10}>
           <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
             <FeaturedImageUpload
               featuredImage={formData.featuredImage}
-              onFeaturedImageChange={(url) =>
-                handleInputChange("featuredImage", url)
-              }
+              onFeaturedImageChange={(url) => handleInputChange("featuredImage", url)}
               slug={formData.slug}
             />
           </Card>
@@ -270,8 +266,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           <Tags
             selectedTags={formData.tags}
             onTagsChange={(value) => handleInputChange("tags", value)}
+            productId={formData.slug}
           />
         </Col>
+
       </Row>
     </div>
   );
