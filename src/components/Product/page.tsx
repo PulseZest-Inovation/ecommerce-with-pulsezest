@@ -1,11 +1,11 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Select, message, Card, DatePicker } from "antd";
+import { Row, Col, Input, Button, Select, message, Card } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
-import Price from "./Price"; // Import the new Price component
+import Price from "./Price";  
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import "tailwindcss/tailwind.css";

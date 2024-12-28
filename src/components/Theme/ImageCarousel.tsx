@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ImageCarousleType } from '@/types/ImageCarouselType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import { Button, Select, Switch, Input, List, notification, Upload } from 'antd';
+import { Button, Select, Switch, Input, List, notification, Upload, Row, Col } from 'antd';
 import { SaveOutlined, PlusOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
 import ImageCarouselPreview from './ImageCarouselPreview'; // Import the ImageCarouselPreview component
@@ -125,9 +125,35 @@ const ImageCarousel = (props: Props) => {
 
   return (
     <div>
-      <h2>Image Carousel</h2>
+      <h2 className='text-center text-2xl font-sans'>Image Carousel</h2>
+      
       {carouselData && (
         <>
+        
+            {/* Save Button */}
+            <div style={{ marginTop: '20px' }} className='justify-end flex'>
+            <Button
+              type="primary"
+              icon={<SaveOutlined />}
+              onClick={saveData}
+              disabled={!carouselData.selectedType || !carouselData.isEnable}
+            >
+              Save Data
+            </Button>
+          </div>
+
+         {/*Carousle Preview  */}
+          {/* Image Carousel Preview */}
+          <div style={{ marginTop: '20px' }}>
+            <ImageCarouselPreview images={carouselData.images.map((image) => ({
+              imageURL: image.imageURL,
+              altText: image.pageURL, // You can customize how altText is displayed
+            }))} />
+          </div>
+
+            <Row>
+              <Col span={9}>  
+               {/* Carousle Type Selector */}
           <div>
             <h3>Carousel Type: </h3>
             <Select
@@ -143,6 +169,7 @@ const ImageCarousel = (props: Props) => {
             </Select>
           </div>
 
+              {/*Switch  */}
           <div style={{ marginTop: '20px' }}>
             <h3>Enable Carousel:</h3>
             <Switch
@@ -153,6 +180,10 @@ const ImageCarousel = (props: Props) => {
             />
           </div>
 
+              </Col>
+              <Col span={15}>  
+              
+              {/*Add || Remove  Images */}
           <div style={{ marginTop: '20px' }}>
             <h3>Images:</h3>
             <List
@@ -196,26 +227,14 @@ const ImageCarousel = (props: Props) => {
               Add Image
             </Button>
           </div>
+              </Col>
 
-          {/* Image Carousel Preview */}
-          <div style={{ marginTop: '20px' }}>
-            <h3>Preview Carousel:</h3>
-            <ImageCarouselPreview images={carouselData.images.map((image) => ({
-              imageURL: image.imageURL,
-              altText: image.pageURL, // You can customize how altText is displayed
-            }))} />
-          </div>
+            </Row>
 
-          <div style={{ marginTop: '20px' }}>
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              onClick={saveData}
-              disabled={!carouselData.selectedType || !carouselData.isEnable}
-            >
-              Save Data
-            </Button>
-          </div>
+       
+
+       
+
         </>
       )}
     </div>

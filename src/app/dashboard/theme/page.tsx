@@ -54,10 +54,10 @@ const ThemePage = (props: Props) => {
   return (
     <div className='flex'>
       <div >
-        <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }} className='sticky top-8 mb-2'>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button>
-        <Menu
+        <Menu className='sticky top-16 mt-2'
           defaultSelectedKeys={['1']}
           mode="inline"
           theme="dark"

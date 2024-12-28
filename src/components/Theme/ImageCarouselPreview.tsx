@@ -8,7 +8,6 @@ interface ImageCarouselPreviewProps {
 const ImageCarouselPreview: React.FC<ImageCarouselPreviewProps> = ({ images, style }) => {
   return (
     <div style={{ textAlign: 'center', marginTop: '20px', ...style }}>
-      <h3>Image Carousel Preview</h3>
       <div
         style={{
           display: 'flex',
