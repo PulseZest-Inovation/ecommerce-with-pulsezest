@@ -1,16 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { ImageCarousleType } from '@/types/ImageCarouselType';
-import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
-import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import { Button, Select, Switch, Input, List, notification, Upload, Row, Col } from 'antd';
-import { SaveOutlined, PlusOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
-import ImageCarouselPreview from './ImageCarouselPreview'; // Import the ImageCarouselPreview component
+import React, { useEffect, useState } from "react";
+import { ImageCarousleType } from "@/types/ImageCarouselType";
+import { getDataByDocName } from "@/services/FirestoreData/getFirestoreData";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
+import {
+  Button,
+  Select,
+  Switch,
+  Input,
+  List,
+  notification,
+  Upload,
+  Row,
+  Col,
+} from "antd";
+import {
+  SaveOutlined,
+  PlusOutlined,
+  MinusCircleOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { UploadImageToFirebase } from "@/services/FirebaseStorage/UploadImageToFirebase";
+import ImageCarouselPreview from "./ImageCarouselPreview"; // Import the ImageCarouselPreview component
 
 type Props = {};
 
 const ImageCarousel = (props: Props) => {
-  const [carouselData, setCarouselData] = useState<ImageCarousleType | null>(null); // State to hold the fetched data
+  const [carouselData, setCarouselData] = useState<ImageCarousleType | null>(
+    null
+  ); // State to hold the fetched data
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const [isUploading, setIsUploading] = useState(false); // Uploading state for tracking image upload progress
@@ -19,14 +36,17 @@ const ImageCarousel = (props: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getDataByDocName<ImageCarousleType>('theme-settings', 'imageCarousel');
+        const data = await getDataByDocName<ImageCarousleType>(
+          "theme-settings",
+          "imageCarousel"
+        );
         if (data) {
           setCarouselData(data);
         } else {
-          setError('No data found for Image Carousel.');
+          setError("No data found for Image Carousel.");
         }
       } catch (error) {
-        setError('Error fetching data.');
+        setError("Error fetching data.");
       } finally {
         setIsLoading(false);
       }
@@ -37,11 +57,15 @@ const ImageCarousel = (props: Props) => {
   // Function to save the data back to Firestore
   const saveData = async () => {
     if (carouselData) {
-      const success = await setDocWithCustomId<ImageCarousleType>('theme-settings', 'imageCarousel', carouselData);
+      const success = await setDocWithCustomId<ImageCarousleType>(
+        "theme-settings",
+        "imageCarousel",
+        carouselData
+      );
       if (success) {
-        notification.success({ message: 'Theme Updated!' });
+        notification.success({ message: "Theme Updated!" });
       } else {
-        notification.error({ message: 'Failed to save data.' });
+        notification.error({ message: "Failed to save data." });
       }
     }
   };
@@ -71,7 +95,7 @@ const ImageCarousel = (props: Props) => {
     if (carouselData) {
       setCarouselData({
         ...carouselData,
-        images: [...carouselData.images, { imageURL: '', pageURL: '' }], // Add new empty image object
+        images: [...carouselData.images, { imageURL: "", pageURL: "" }], // Add new empty image object
       });
     }
   };
@@ -88,7 +112,11 @@ const ImageCarousel = (props: Props) => {
   };
 
   // Handle input change for image URL or page URL
-  const handleImageChange = (index: number, field: 'imageURL' | 'pageURL', value: string) => {
+  const handleImageChange = (
+    index: number,
+    field: "imageURL" | "pageURL",
+    value: string
+  ) => {
     if (carouselData) {
       const updatedImages = carouselData.images.map((image, i) =>
         i === index ? { ...image, [field]: value } : image
@@ -104,13 +132,16 @@ const ImageCarousel = (props: Props) => {
   const handleImageUpload = async (file: File, index: number) => {
     try {
       setIsUploading(true); // Set uploading state to true
-      const uploadedImageUrl = await UploadImageToFirebase(file, 'carousel-images'); // Upload image to Firebase Storage
-      handleImageChange(index, 'imageURL', uploadedImageUrl); // Update the image URL field in the carousel data
+      const uploadedImageUrl = await UploadImageToFirebase(
+        file,
+        "carousel-images"
+      ); // Upload image to Firebase Storage
+      handleImageChange(index, "imageURL", uploadedImageUrl); // Update the image URL field in the carousel data
       setIsUploading(false); // Set uploading state to false after the upload is complete
-      notification.success({ message: 'Image uploaded successfully!' });
+      notification.success({ message: "Image uploaded successfully!" });
     } catch (error) {
       setIsUploading(false);
-      notification.error({ message: 'Failed to upload image.' });
+      notification.error({ message: "Failed to upload image." });
     }
   };
 
@@ -125,13 +156,12 @@ const ImageCarousel = (props: Props) => {
 
   return (
     <div>
-      <h2 className='text-center text-2xl font-sans'>Image Carousel</h2>
-      
+      <h2 className="text-center text-2xl font-sans">Image Carousel</h2>
+
       {carouselData && (
         <>
-        
-            {/* Save Button */}
-            <div style={{ marginTop: '20px' }} className='justify-end flex'>
+          {/* Save Button */}
+          <div style={{ marginTop: "20px" }} className="justify-end flex">
             <Button
               type="primary"
               icon={<SaveOutlined />}
@@ -142,99 +172,100 @@ const ImageCarousel = (props: Props) => {
             </Button>
           </div>
 
-         {/*Carousle Preview  */}
+          {/*Carousle Preview  */}
           {/* Image Carousel Preview */}
-          <div style={{ marginTop: '20px' }}>
-            <ImageCarouselPreview images={carouselData.images.map((image) => ({
-              imageURL: image.imageURL,
-              altText: image.pageURL, // You can customize how altText is displayed
-            }))} />
+          <div style={{ marginTop: "20px" }}>
+            <ImageCarouselPreview
+              images={carouselData.images.map((image) => ({
+                imageURL: image.imageURL,
+                altText: image.pageURL, // You can customize how altText is displayed
+              }))}
+            />
           </div>
 
-            <Row>
-              <Col span={9}>  
-               {/* Carousle Type Selector */}
-          <div>
-            <h3>Carousel Type: </h3>
-            <Select
-              value={carouselData.selectedType}
-              onChange={handleCarouselTypeChange}
-              style={{ width: 200 }}
-            >
-              {carouselData.carouselType.map((type, index) => (
-                <Select.Option key={index} value={type}>
-                  {type}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
+          <Row>
+            <Col span={9}>
+              {/* Carousle Type Selector */}
+              <div>
+                <h3>Carousel Type: </h3>
+                <Select
+                  value={carouselData.selectedType}
+                  onChange={handleCarouselTypeChange}
+                  style={{ width: 200 }}
+                >
+                  {carouselData.carouselType.map((type, index) => (
+                    <Select.Option key={index} value={type}>
+                      {type}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
 
               {/*Switch  */}
-          <div style={{ marginTop: '20px' }}>
-            <h3>Enable Carousel:</h3>
-            <Switch
-              checked={carouselData.isEnable}
-              onChange={handleSwitchChange}
-              checkedChildren="On"
-              unCheckedChildren="Off"
-            />
-          </div>
-
-              </Col>
-              <Col span={15}>  
-              
+              <div style={{ marginTop: "20px" }}>
+                <h3>Enable Carousel:</h3>
+                <Switch
+                  checked={carouselData.isEnable}
+                  onChange={handleSwitchChange}
+                  checkedChildren="On"
+                  unCheckedChildren="Off"
+                />
+              </div>
+            </Col>
+            <Col span={15}>
               {/*Add || Remove  Images */}
-          <div style={{ marginTop: '20px' }}>
-            <h3>Images:</h3>
-            <List
-              dataSource={carouselData.images}
-              renderItem={(item, index) => (
-                <List.Item
-                  key={index}
-                  actions={[
-                    <MinusCircleOutlined
-                      onClick={() => handleRemoveImage(index)}
-                      style={{ color: 'red' }}
-                    />,
-                  ]}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Input
-                      placeholder="Page URL"
-                      value={item.pageURL}
-                      onChange={(e) => handleImageChange(index, 'pageURL', e.target.value)}
-                      style={{ marginRight: '10px', flex: 1 }}
-                    />
-                    <Upload
-                      showUploadList={false}
-                      customRequest={({ file }) => handleImageUpload(file as File, index)} // Handle image upload
-                      accept="image/*"
+              <div style={{ marginTop: "20px" }}>
+                <h3>Images:</h3>
+                <List
+                  dataSource={carouselData.images}
+                  renderItem={(item, index) => (
+                    <List.Item
+                      key={index}
+                      actions={[
+                        <MinusCircleOutlined
+                          onClick={() => handleRemoveImage(index)}
+                          style={{ color: "red" }}
+                        />,
+                      ]}
                     >
-                      <Button icon={<UploadOutlined />} loading={isUploading}>
-                        Upload Image
-                      </Button>
-                    </Upload>
-                  </div>
-                </List.Item>
-              )}
-            />
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={handleAddImage}
-              style={{ marginTop: '10px' }}
-            >
-              Add Image
-            </Button>
-          </div>
-              </Col>
-
-            </Row>
-
-       
-
-       
-
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Input
+                          placeholder="Page URL"
+                          value={item.pageURL}
+                          onChange={(e) =>
+                            handleImageChange(index, "pageURL", e.target.value)
+                          }
+                          style={{ marginRight: "10px", flex: 1 }}
+                        />
+                        <Upload
+                          showUploadList={false}
+                          customRequest={({ file }) =>
+                            handleImageUpload(file as File, index)
+                          } // Handle image upload
+                          accept="image/*"
+                        >
+                          <Button
+                            icon={<UploadOutlined />}
+                            loading={isUploading}
+                          >
+                            Upload Image
+                          </Button>
+                        </Upload>
+                      </div>
+                    </List.Item>
+                  )}
+                />
+                <Button
+                  type="dashed"
+                  icon={<PlusOutlined />}
+                  onClick={handleAddImage}
+                  style={{ marginTop: "10px" }}
+                >
+                  Add Image
+                </Button>
+              </div>
+            </Col>
+          </Row>
         </>
       )}
     </div>
