@@ -50,7 +50,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     featured: false,
     catalog_visibility: "visible",
     shortDescription: "",
-    longDescription: "",
     sku: "",
     price: "",
     regularPrice: "",
@@ -80,7 +79,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     attributes: [],
     menuOrder: 0,
     metaData: [],
-    expandedDescriptions: [
+    description: [
       { heading: "PRODUCT SPECIFICATION", content: "" },
       { heading: "SHIPPING INFORMATION", content: "" },
       { heading: "MORE INFROMATION", content: "" },
@@ -150,9 +149,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         ...initialData,
         createdAt: initialData.createdAt || Timestamp.now(),
         ModifiedAt: initialData.ModifiedAt || Timestamp.now(),
-        expandedDescriptions: Array.isArray(initialData.expandedDescriptions)
-          ? initialData.expandedDescriptions
-          : prev.expandedDescriptions,
+        description: Array.isArray(initialData.description)
+          ? initialData.description
+          : prev.description,
       }));
       setSelectedCategories(initialData.categories || []);
     }
@@ -160,9 +159,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
   const handleExpandedDescriptionChange = (index: number, value: string) => {
     setFormData((prev) => {
-      const updatedDescriptions = [...prev.expandedDescriptions];
+      const updatedDescriptions = [...prev.description];
       updatedDescriptions[index].content = value;
-      return { ...prev, expandedDescriptions: updatedDescriptions };
+      return { ...prev, description: updatedDescriptions };
     });
   };
 
@@ -170,7 +169,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const renderExpandableDescriptions = () => {
     return (
       <Collapse>
-        {formData.expandedDescriptions.map((section, index) => (
+        {formData.description.map((section, index) => (
           <Collapse.Panel header={section.heading} key={index}>
             <Input.TextArea
               value={section.content}
@@ -221,15 +220,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             className="mb-4"
           />
 
-          <Input.TextArea
-            rows={2}
-            placeholder="Long Description"
-            value={formData.longDescription}
-            onChange={(e) => handleInputChange("longDescription", e.target.value)}
-            className="mb-4"
-          />
+          <h1 className="pl-2 font-bold text-1xl">More Descriptions</h1>
 
-          {renderExpandableDescriptions()} {/* Render the expandable descriptions directly here */}
+          {renderExpandableDescriptions()}
 
           <div style={{ display: 'flex' }}>
             <Menu
@@ -273,7 +266,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           <Tags
             selectedTags={formData.tags}
             onTagsChange={(value) => handleInputChange("tags", value)}
-            productId={formData.slug} // Pass the productId as the slug
+            productId={formData.slug}
           />
         </Col>
 

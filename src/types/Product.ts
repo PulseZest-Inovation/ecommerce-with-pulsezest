@@ -10,9 +10,8 @@ export interface Product {
   status: string;
   featured: boolean;
   catalog_visibility: string;
-  expandedDescriptions: { heading: string; content: string }[];
+  description: { heading: string; content: string }[];
   shortDescription: string;
-  longDescription: string;
   sku: string;
   price: string;
   regularPrice: string;

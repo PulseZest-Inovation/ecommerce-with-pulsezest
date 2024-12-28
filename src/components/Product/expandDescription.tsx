@@ -5,19 +5,19 @@ import { Product } from "@/types/Product";
 
 const { Panel } = Collapse;
 
-interface ExpandedDescription {
+interface description {
   heading: string;
   content: string;
 }
 
-interface ExpandableDescriptionsPageProps {
-  expandedDescriptions: ExpandedDescription[];
+interface description {
+  descriptions: description[];
   onDescriptionChange: (index: number, value: string) => void;
   onBack: () => void; // Function to go back to ProductWrapper
 }
 
-const ExpandableDescriptionsPage: React.FC<ExpandableDescriptionsPageProps> = ({
-  expandedDescriptions,
+const DescriptionsPage: React.FC<description> = ({
+  descriptions,
   onDescriptionChange,
   onBack,
 }) => {
@@ -27,7 +27,7 @@ const ExpandableDescriptionsPage: React.FC<ExpandableDescriptionsPageProps> = ({
         Back
       </Button>
       <Collapse>
-        {expandedDescriptions.map((section, index) => (
+        {descriptions.map((section, index) => (
           <Panel header={section.heading} key={index}>
             <Input.TextArea
               value={section.content}
@@ -41,4 +41,4 @@ const ExpandableDescriptionsPage: React.FC<ExpandableDescriptionsPageProps> = ({
   );
 };
 
-export default ExpandableDescriptionsPage;
+export default DescriptionsPage;
