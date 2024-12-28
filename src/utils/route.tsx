@@ -50,11 +50,11 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
 ];
 
 // Function to find the matching component for a route
-export const getRouteComponent = (route: string): React.ComponentType<any> | null => {
+export const getRouteComponent = (route: string): React.ComponentType | null => {
   for (const { path, component, isDynamic } of ROUTE_COMPONENTS) {
     if (isDynamic) {
       // Match dynamic routes
-      const regex = new RegExp(`^${path.replace(/:\w+/g, '\\w+')}$`);
+      const regex = new RegExp(path.replace(/:\w+/g, '\\w+'));
       if (regex.test(route)) {
         return component;
       }
