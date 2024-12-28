@@ -50,6 +50,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     featured: false,
     catalog_visibility: "visible",
     shortDescription: "",
+    longDescription: "",
     sku: "",
     price: "",
     regularPrice: "",
@@ -80,10 +81,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     menuOrder: 0,
     metaData: [],
     expandedDescriptions: [
-      { heading: "Product Information", content: "" },
-      { heading: "Shipping Info", content: "" },
-      { heading: "More Information", content: "" },
-      { heading: "Need Help", content: "" },
+      { heading: "PRODUCT SPECIFICATION", content: "" },
+      { heading: "SHIPPING INFORMATION", content: "" },
+      { heading: "MORE INFROMATION", content: "" },
+      { heading: "NEED HELP", content: "" },
     ],
   });
 
@@ -220,6 +221,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             className="mb-4"
           />
 
+          <Input.TextArea
+            rows={2}
+            placeholder="Long Description"
+            value={formData.longDescription}
+            onChange={(e) => handleInputChange("longDescription", e.target.value)}
+            className="mb-4"
+          />
+
           {renderExpandableDescriptions()} {/* Render the expandable descriptions directly here */}
 
           <div style={{ display: 'flex' }}>
@@ -264,8 +273,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           <Tags
             selectedTags={formData.tags}
             onTagsChange={(value) => handleInputChange("tags", value)}
+            productId={formData.slug} // Pass the productId as the slug
           />
         </Col>
+
       </Row>
     </div>
   );

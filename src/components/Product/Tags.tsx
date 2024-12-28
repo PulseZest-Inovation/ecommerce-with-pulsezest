@@ -8,13 +8,14 @@ import { DefaultOptionType } from 'antd/es/select';
 const { Option } = Select;
 
 interface TagsProps {
-  selectedTags: string[];
-  onTagsChange: (tags: string[]) => void;
+  selectedTags: string[]; // Current selected tags
+  onTagsChange: (tags: string[]) => void; // Callback to propagate changes
+  productId: string; // ID of the product being edited
 }
 
-const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange }) => {
-  const [options, setOptions] = useState<DefaultOptionType[]>([]); // Explicitly typed as DefaultOptionType[]
-  const [loading, setLoading] = useState<boolean>(true);
+const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) => {
+  const [options, setOptions] = useState<DefaultOptionType[]>([]); // Tag options
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   // Fetch tags from Firestore
   const fetchTags = async () => {
@@ -50,6 +51,29 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange }) => {
     }
   };
 
+  // Update product tags in Firestore
+  const updateProductTags = async (tags: string[]) => {
+    if (!tags || !Array.isArray(tags)) {
+      console.error('Invalid tags array:', tags);
+      return;
+    }
+
+    try {
+      const key = localStorage.getItem('securityKey');
+      if (!key) {
+        message.error('Security key is missing!');
+        return;
+      }
+
+      const productDocRef = doc(db, 'app_name', key, 'products', productId);
+      await updateDoc(productDocRef, { tags: tags });
+      message.success('Product tags updated successfully!');
+    } catch (error) {
+      message.error('Error updating product tags.');
+      console.error('Error updating product tags:', error);
+    }
+  };
+
   // Increment the count for an existing tag in Firestore
   const handleTagIncrement = async (tag: string) => {
     try {
@@ -69,15 +93,11 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange }) => {
           count: increment(1), // Increment count by 1
         });
 
-        // Fetch the updated document after incrementing the count
-        const updatedTagDoc = await getDoc(tagDocRef);
-        const updatedCount = updatedTagDoc.exists() ? updatedTagDoc.data()?.count : 0;
-
         // Update the count in the local options state
         setOptions((prevOptions) =>
           prevOptions.map((option) =>
             option.value === tag
-              ? { ...option, label: `${tag} (${updatedCount})`, count: updatedCount }
+              ? { ...option, count: option.count + 1 } // Increment count locally
               : option
           )
         );
@@ -91,24 +111,77 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange }) => {
         // Update options state locally to reflect the new tag with count 1
         setOptions((prevOptions) => [
           ...prevOptions,
-          { value: tag, label: `${tag} (1)`, count: 1 }, // Add the new tag with count 1
+          { value: tag, label: tag, count: 1 }, // Add the new tag with count 1
         ]);
 
         message.success(`Tag "${tag}" added successfully!`);
       }
     } catch (error) {
-      message.error('Error processing tag.');
-      console.error('Error processing tag:', error);
+      message.error('Error processing tag increment.');
+      console.error('Error processing tag increment:', error);
+    }
+  };
+
+  // Decrement the count for an existing tag in Firestore
+  const handleTagDecrement = async (tag: string) => {
+    try {
+      const key = localStorage.getItem('securityKey');
+      if (!key) {
+        message.error('Security key is missing!');
+        return;
+      }
+
+      // Find the tag in the local options state
+      const existingTag = options.find(option => option.value === tag);
+
+      if (existingTag && existingTag.count > 0) {
+        // If the tag exists and count is greater than 0, decrement the count in Firestore
+        const tagDocRef = doc(db, 'app_name', key, 'tags', tag);
+        await updateDoc(tagDocRef, {
+          count: increment(-1), // Decrement count by 1
+        });
+
+        // Update the count in the local options state
+        setOptions((prevOptions) =>
+          prevOptions.map((option) =>
+            option.value === tag
+              ? { ...option, count: option.count - 1 } // Decrement count locally
+              : option
+          )
+        );
+
+        message.success(`Tag "${tag}" count decremented!`);
+      }
+    } catch (error) {
+      message.error('Error processing tag decrement.');
+      console.error('Error processing tag decrement:', error);
     }
   };
 
   // Handle tag changes (handle selection or unselection of tags)
   const handleTagsChange = (value: string[]) => {
-    const newTags = value.filter((tag) => !options.some(option => option.value === tag));
-    if (newTags.length > 0) {
-      newTags.forEach((tag) => handleTagIncrement(tag)); // Add new tags to Firestore and increment their count
+    if (!value || !Array.isArray(value)) {
+      console.error('Invalid value array:', value);
+      return; // Return early if the value is invalid
     }
-    onTagsChange(value);
+
+    // Identify removed tags
+    const removedTags = selectedTags.filter(tag => !value.includes(tag));
+    const addedTags = value.filter(tag => !selectedTags.includes(tag));
+
+    // Decrement count for each removed tag
+    removedTags.forEach((tag) => {
+      handleTagDecrement(tag); // Decrement if tag is removed
+    });
+
+    // Increment count for each added tag
+    addedTags.forEach((tag) => {
+      handleTagIncrement(tag); // Increment if tag is added
+    });
+
+    // Update the product's tags in Firestore
+    updateProductTags(value); // Update product tags in Firestore
+    onTagsChange(value); // Propagate change to parent component
   };
 
   // Fetch tags on component mount
