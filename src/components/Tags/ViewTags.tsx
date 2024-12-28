@@ -9,9 +9,11 @@ import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestor
 import "tailwindcss/tailwind.css";
 
 const { Text } = Typography;
+const { Search } = Input;
 
 const ViewTags: React.FC = () => {
   const [tagsData, setTagsData] = useState<Tags[]>([]);
+  const [filteredTags, setFilteredTags] = useState<Tags[]>([]); // State for filtered tags
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [tagToDelete, setTagToDelete] = useState<Tags | null>(null);
   const [tagToEdit, setTagToEdit] = useState<Tags | null>(null);
@@ -23,6 +25,7 @@ const ViewTags: React.FC = () => {
     try {
       const data = await getAllDocsFromCollection<Tags>('tags');
       setTagsData(data);
+      setFilteredTags(data); // Initialize filtered tags
     } catch (error) {
       console.error('Error fetching tags:', error);
       message.error('Failed to fetch tags. Please try again later.');
@@ -52,6 +55,7 @@ const ViewTags: React.FC = () => {
       const success = await deleteDocFromCollection('tags', tagToDelete.slug); // Use the delete function
       if (success) {
         setTagsData((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug)); // Update local state
+        setFilteredTags((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug)); // Update filtered tags
         message.success('Tag deleted successfully');
       } else {
         message.error('Failed to delete tag');
@@ -73,6 +77,7 @@ const ViewTags: React.FC = () => {
       const success = await setDocWithCustomId('tags', tagToEdit.slug, updatedTag); // Use the new function to update
       if (success) {
         setTagsData((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t))); // Update local state
+        setFilteredTags((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t))); // Update filtered tags
         message.success('Tag updated successfully');
       } else {
         message.error('Failed to update tag');
@@ -89,57 +94,78 @@ const ViewTags: React.FC = () => {
     const success = await updateDocFields('tags', tag.slug, { isVisible: updatedTag.isVisible }); // Update the visibility
     if (success) {
       setTagsData((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t))); // Update local state
+      setFilteredTags((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t))); // Update filtered tags
       message.success('Tag visibility updated successfully');
     } else {
       message.error('Failed to update tag visibility');
     }
   };
 
+  // Handle search input change
+  const handleSearch = (value: string) => {
+    const filtered = tagsData.filter(tag => 
+      tag.name.toLowerCase().includes(value.toLowerCase()) ||
+      tag.slug.toLowerCase().includes(value.toLowerCase()) ||
+      tag.description.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredTags(filtered);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4">Tags List</h2>
 
-      <List
-        grid={{ gutter: 16, column: 2 }}
-        dataSource={tagsData}
-        renderItem={(item) => (
-          <List.Item key={item.slug}>
-            <Card className="shadow-md p-4">
-              <div className="mb-2">
-                <Text className="text-lg font-semibold">{item.name}</Text>
-              </div>
-              <Switch
-                checked={item.isVisible}
-                onChange={() => handleToggleVisibility(item)}
-                className="mb-2"
-                checkedChildren="Visible" 
-                unCheckedChildren="Hidden"
-              />
-              <div className="mb-2">
-                <Text strong>Slug: </Text>
-                <Text>{item.slug}</Text>
-              </div>
-              <div className="mb-2">
-                <Text strong>Description: </Text>
-                <Text>{item.description}</Text>
-              </div>
-              <div className="flex items-center">
-                <Button
-                  type="link"
-                  icon={<EditOutlined />}
-                  onClick={() => handleEdit(item)}
-                />
-                <Button
-                  type="link"
-                  icon={<DeleteOutlined />}
-                  onClick={() => showDeleteConfirm(item)}
-                  danger
-                />
-              </div>
-            </Card>
-          </List.Item>
-        )}
+      {/* Search Bar */}
+      <Search
+        placeholder="Search tags"
+        onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)} // Update filtering on change
+        className="mb-4"
       />
+
+      <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+        <List
+          grid={{ gutter: 16, column: 2 }}
+          dataSource={filteredTags} // Use filtered tags
+          renderItem={(item) => (
+            <List.Item key={item.slug}>
+              <Card className="shadow-md p-4">
+                <div className="mb-2">
+                  <Text className="text-lg font-semibold">{item.name}</Text>
+                </div>
+                <Switch
+                  checked={item.isVisible}
+                  onChange={() => handleToggleVisibility(item)}
+                  className="mb-2"
+                  checkedChildren="Visible" 
+                  unCheckedChildren="Hidden"
+                />
+                <div className="mb-2">
+                  <Text strong>Slug: </Text>
+                  <Text>{item.slug}</Text>
+                </div>
+                <div className="mb-2">
+                  <Text strong>Description: </Text>
+                  <Text>{item.description}</Text>
+                </div>
+                <div className="flex items-center">
+                  <Button
+                    type="link"
+                    icon={<EditOutlined />}
+                    onClick={() => handleEdit(item)}
+                  />
+                  <Button
+                    type="link"
+                    icon={<DeleteOutlined />}
+                    onClick={() => showDeleteConfirm(item)}
+                    danger
+                  />
+                </div>
+              </Card>
+            </List.Item>
+          )}
+        />
+      </div>
 
       {/* Delete Confirmation Modal */}
       <Modal
