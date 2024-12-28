@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig"; // Replace with your Firebase config
+import { storage } from "@/utils/firbeaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Compressor from "compressorjs";
-import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Import the custom function
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import CategoriesSelector from "../Selector/create-selector";
 
 interface Categories {
@@ -17,12 +18,43 @@ interface Categories {
   image: string;
   menu_order: string;
   count: number;
+  isPosition: number; // Updated property
 }
 
 const CreateCategory = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [nextPosition, setNextPosition] = useState(1);
+
+  // Fetch and calculate the next available position
+  const fetchNextPosition = async () => {
+    try {
+      const categories = await getAllDocsFromCollection<Categories>("categories");
+      const allPositions = categories
+        .map((category) => category.isPosition || 0)
+        .sort((a, b) => a - b);
+
+      // Find the smallest missing position
+      let newPosition = 1;
+      for (const position of allPositions) {
+        if (position === newPosition) {
+          newPosition += 1;
+        } else {
+          break;
+        }
+      }
+
+      setNextPosition(newPosition);
+    } catch (error) {
+      console.error("Error fetching categories for isPosition:", error);
+      message.error("Failed to determine next position. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    fetchNextPosition();
+  }, []);
 
   const generateSlug = (name: string) => {
     return name
@@ -75,6 +107,7 @@ const CreateCategory = () => {
         cid: otherValues.slug,
         image: imageUrl,
         count: 0,
+        isPosition: nextPosition, // Assign the calculated isPosition value
       };
 
       // Save category data using setDocWithCustomId
@@ -83,6 +116,7 @@ const CreateCategory = () => {
 
       message.success("Category created successfully!");
       form.resetFields();
+      fetchNextPosition(); // Recalculate the next position
     } catch (error) {
       if (error instanceof Error) {
         message.error(error.message || "Failed to create category!");

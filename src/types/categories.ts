@@ -9,5 +9,6 @@ export interface Categories {
     display: string;
     image: string;
     menu_order: string;
-    count: number
+    count: number;
+    isPosition: number;
 }
