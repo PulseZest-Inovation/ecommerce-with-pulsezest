@@ -39,7 +39,7 @@ const ImageCarousel = (props: Props) => {
     if (carouselData) {
       const success = await setDocWithCustomId<ImageCarousleType>('theme-settings', 'imageCarousel', carouselData);
       if (success) {
-        notification.success({ message: 'Data saved successfully!' });
+        notification.success({ message: 'Theme Updated!' });
       } else {
         notification.error({ message: 'Failed to save data.' });
       }
