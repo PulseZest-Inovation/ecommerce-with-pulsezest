@@ -7,6 +7,7 @@ import { updateDocFields } from '@/services/FirestoreData/postFirestoreData';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
 import { deleteImageFromFirebase } from '@/services/FirebaseStorage/deleteImageToFirebase';
+import { ApplicationConfig } from '@/utils/ApplicationConfig';
 
 type Props = {};
 
@@ -255,8 +256,11 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageUpload = async () => {
+    const key =  ApplicationConfig.secuityKey;
+    console.log(key);
+
     if (image) {
-      const imagePath = `categories/${category.id}`;
+      const imagePath = `${key}/categories`;
       // Delete old image before uploading the new one
       if (category.image) {
         await deleteImageFromFirebase(category.image);
