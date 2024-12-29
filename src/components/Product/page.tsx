@@ -9,6 +9,7 @@ import CategorySelector from "./ProductCategorySelector";
 import Price from "./Price";
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LinkIcon from '@mui/icons-material/Link';
@@ -126,22 +127,44 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     handleInputChange("categories", selectedCategories);
   };
 
-  // Submit product form data to Firestore
+
+  const checkSlugAvailability = async (slug: string): Promise<string> => {
+    try {
+      const products = await getAllDocsFromCollection<Product>("products");
+      const existingProduct = products.find((product) => product.slug === slug);
+      return existingProduct ? existingProduct.slug : ""; // Return existing slug or empty string
+    } catch (error) {
+      console.error("Error checking slug availability:", error);
+      throw new Error("Failed to verify slug availability. Please try again.");
+    }
+  };
+  
   const handleSubmit = async () => {
     if (!formData.id) {
       message.error("Product name is required!");
       return;
     }
-
+  
+    let currentSlug = formData.slug;
+  
+    // Check if slug is available
+    const existingSlug = await checkSlugAvailability(currentSlug);
+    if (existingSlug) {
+      // If the slug is already used, modify it by appending a timestamp
+      const timestamp = Date.now(); // Get current timestamp
+      currentSlug = `${currentSlug}-${timestamp}`; // Append timestamp to slug
+      message.warning("Slug already in use. Modifying slug to: " + currentSlug);
+    }
+  
     try {
-      const docId = formData.slug;
-      await setDocWithCustomId("products", docId, formData);
+      const docId = currentSlug;
+      await setDocWithCustomId("products", docId, { ...formData, slug: currentSlug }); // Update slug in form data
       message.success("Product Added Successfully!");
     } catch (error) {
       message.error("Error adding product.");
     }
   };
-
+  
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({

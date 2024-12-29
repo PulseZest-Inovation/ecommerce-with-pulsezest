@@ -211,7 +211,7 @@ const FetchCategory = (props: Props) => {
   return (
     <div className="p-6 bg-gray-100 rounded-md shadow-md">
       <h2 className="text-xl font-bold mb-4">Categories</h2>
-            <Input
+      <Input
         placeholder="Search categories..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
@@ -249,13 +249,13 @@ type EditFormProps = {
 };
 
 const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
+  const [name, setName] = useState<string>(category.name || '');
   const [description, setDescription] = useState<string>(category.description || '');
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageUpload = async () => {
     const key = ApplicationConfig.secuityKey;
-    console.log(key);
 
     if (image) {
       const imagePath = `${key}/categories`;
@@ -270,10 +270,15 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+    if (!name.trim()) {
+      message.error('Name cannot be empty.');
+      return;
+    }
+
     setLoading(true); // Start loading
     try {
       const imageUrl = await handleImageUpload();
-      onSubmit({ description, image: imageUrl }, category.id);
+      onSubmit({ name, description, image: imageUrl }, category.id);
     } catch (error) {
       message.error('Failed to upload image.');
     } finally {
@@ -282,16 +287,23 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
   };
 
   const handleBeforeUpload = (file: File) => {
-    setImage(file); 
-    return false; 
+    setImage(file);
+    return false;
   };
 
   return (
     <div>
+      <Input
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        style={{ marginBottom: '8px' }}
+      />
       <Input.TextArea
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        style={{ marginBottom: '8px' }}
       />
       <Upload
         beforeUpload={handleBeforeUpload}

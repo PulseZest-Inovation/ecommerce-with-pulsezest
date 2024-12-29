@@ -90,12 +90,38 @@ const CreateCategory = () => {
     }
   };
 
+  const checkSlugAvailability = async (slug: string): Promise<boolean> => {
+    try {
+      const categories = await getAllDocsFromCollection<Categories>("categories");
+      return !categories.some((category) => category.cid === slug); // Check if any category has the same slug
+    } catch (error) {
+      console.error("Error checking slug availability:", error);
+      throw new Error("Failed to verify slug availability. Please try again.");
+    }
+  };
+
   const handleFinish = async (values: any) => {
     try {
       setLoading(true);
       setModalVisible(true);
 
-      const { image, ...otherValues } = values;
+      const { image, slug, ...otherValues } = values;
+
+      // Check if slug is already used
+      let currentSlug = slug;
+      let isSlugAvailable = await checkSlugAvailability(currentSlug);
+
+      // If slug is not available, append a timestamp to create a unique slug
+      if (!isSlugAvailable) {
+        const timestamp = Date.now();
+        currentSlug = `${slug}-${timestamp}`;
+        isSlugAvailable = await checkSlugAvailability(currentSlug);
+      }
+
+      if (!isSlugAvailable) {
+        throw new Error("Unable to create a unique slug. Please choose a different name.");
+      }
+
       const imageFile = image?.[0]?.originFileObj;
       if (!imageFile) throw new Error("Image file is required!");
 
@@ -104,7 +130,8 @@ const CreateCategory = () => {
 
       const formData: Categories = {
         ...otherValues,
-        cid: otherValues.slug,
+        cid: currentSlug, // Slug is used as the document ID
+        slug: currentSlug, // Keep slug in the data as well
         image: imageUrl,
         count: 0,
         isPosition: nextPosition, // Assign the calculated isPosition value
@@ -128,6 +155,7 @@ const CreateCategory = () => {
       setModalVisible(false);
     }
   };
+  
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
