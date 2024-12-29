@@ -211,9 +211,7 @@ const FetchCategory = (props: Props) => {
   return (
     <div className="p-6 bg-gray-100 rounded-md shadow-md">
       <h2 className="text-xl font-bold mb-4">Categories</h2>
-      
-      {/* Search Input */}
-      <Input
+            <Input
         placeholder="Search categories..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
@@ -256,7 +254,7 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageUpload = async () => {
-    const key =  ApplicationConfig.secuityKey;
+    const key = ApplicationConfig.secuityKey;
     console.log(key);
 
     if (image) {
@@ -279,8 +277,13 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
     } catch (error) {
       message.error('Failed to upload image.');
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
+  };
+
+  const handleBeforeUpload = (file: File) => {
+    setImage(file); 
+    return false; 
   };
 
   return (
@@ -290,7 +293,12 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <Upload beforeUpload={(file) => (setImage(file), false)}>
+      <Upload
+        beforeUpload={handleBeforeUpload}
+        multiple={false} // Ensure only one file can be selected
+        fileList={image ? [image as any] : []} // Display the selected image in the upload list
+        onRemove={() => setImage(null)} // Clear the image on removal
+      >
         <Button icon={<UploadOutlined />}>Change Image</Button>
       </Upload>
       <div className="flex justify-end mt-4">
