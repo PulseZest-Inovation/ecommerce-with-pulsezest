@@ -75,11 +75,11 @@ export const NAVIGATION = [
                 title: 'Categories',
                 icon: <CategoryIcon />,
               },
-              // {
-              //   segment: 'subCategories',
-              //   title: 'Sub Categories',
-              //   icon: <ManageCategories />,
-              // },
+              {
+                segment: 'sub-categories',
+                title: 'Sub Categories',
+                icon: <ManageCategories />,
+              },
             ],
           },
 
