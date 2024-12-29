@@ -1,5 +1,4 @@
 
-
 export interface Categories {
     cid: string;
     name: string;
@@ -11,4 +10,11 @@ export interface Categories {
     menu_order: string;
     count: number;
     isPosition: number;
+    isVisible: boolean;
+    createdAt?: string;
+    children ?: Categories[];
+
+
+
+
 }

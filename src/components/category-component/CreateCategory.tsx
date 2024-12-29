@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -7,19 +9,7 @@ import Compressor from "compressorjs";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import CategoriesSelector from "../Selector/create-selector";
-
-interface Categories {
-  cid: string;
-  name: string;
-  slug: string;
-  parent: string;
-  description: string;
-  display: string;
-  image: string;
-  menu_order: string;
-  count: number;
-  isPosition: number; // Updated property
-}
+import { Categories } from "@/types/categories";
 
 const CreateCategory = () => {
   const [form] = Form.useForm();

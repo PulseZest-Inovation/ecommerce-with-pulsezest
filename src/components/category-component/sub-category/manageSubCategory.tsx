@@ -6,42 +6,33 @@ import { EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-de
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { updateDocFields } from '@/services/FirestoreData/postFirestoreData';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
+import { Categories } from '@/types/categories';
 
-type Props = {};
 
-type CategoryItem = {
-  id: string;
-  name: string;
-  slug: string;
-  parent: string;
-  description?: string;
-  image?: string;
-  children?: CategoryItem[];
-};
 
-const ManageSubCategories = (props: Props) => {
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<CategoryItem[]>([]);
+const ManageSubCategories = () => {
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Categories[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [editModal, setEditModal] = useState<{
     visible: boolean;
-    subCategory: CategoryItem | null;
+    subCategory: Categories | null;
   }>({ visible: false, subCategory: null });
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getAllDocsFromCollection<CategoryItem>('categories');
-        const categoryMap: Record<string, CategoryItem> = {};
+        const data = await getAllDocsFromCollection<Categories>('categories');
+        const categoryMap: Record<string, Categories> = {};
 
         // Map categories by ID
         data.forEach((category) => {
-          categoryMap[category.id] = { ...category, children: [] };
+          categoryMap[category.cid] = { ...category, children: [] };
         });
 
         // Organize into parent-child structure
-        const nestedCategories: CategoryItem[] = [];
+        const nestedCategories: Categories[] = [];
         Object.values(categoryMap).forEach((category) => {
           if (category.parent === 'none') {
             nestedCategories.push(category);
@@ -84,25 +75,25 @@ const ManageSubCategories = (props: Props) => {
     setFilteredCategories(filtered);
   };
 
-  const handleDeleteSubCategory = async (subCategory: CategoryItem) => {
+  const handleDeleteSubCategory = async (subCategory: Categories) => {
     Modal.confirm({
       title: 'Are you sure to delete this subcategory?',
       icon: <ExclamationCircleOutlined />,
       content: 'This action cannot be undone.',
       onOk: async () => {
         try {
-          await deleteDocFromCollection('categories', subCategory.id);
+          await deleteDocFromCollection('categories', subCategory.cid);
           message.success('Subcategory deleted!');
           setCategories((prev) =>
             prev.map((cat) => ({
               ...cat,
-              children: cat.children?.filter((child) => child.id !== subCategory.id),
+              children: cat.children?.filter((child) => child.cid !== subCategory.cid),
             }))
           );
           setFilteredCategories((prev) =>
             prev.map((cat) => ({
               ...cat,
-              children: cat.children?.filter((child) => child.id !== subCategory.id),
+              children: cat.children?.filter((child) => child.cid !== subCategory.cid),
             }))
           );
         } catch (error) {
@@ -112,18 +103,18 @@ const ManageSubCategories = (props: Props) => {
     });
   };
 
-  const handleEditSubmit = async (values: Partial<CategoryItem>) => {
+  const handleEditSubmit = async (values: Partial<Categories>) => {
     if (!editModal.subCategory) return;
-    const { id } = editModal.subCategory;
+    const { cid } = editModal.subCategory;
 
     try {
-      await updateDocFields('categories', id, values);
+      await updateDocFields('categories', cid, values);
       message.success('Subcategory updated!');
       setCategories((prev) =>
         prev.map((cat) => ({
           ...cat,
           children: cat.children?.map((child) =>
-            child.id === id ? { ...child, ...values } : child
+            child.cid === cid ? { ...child, ...values } : child
           ),
         }))
       );
@@ -131,7 +122,7 @@ const ManageSubCategories = (props: Props) => {
         prev.map((cat) => ({
           ...cat,
           children: cat.children?.map((child) =>
-            child.id === id ? { ...child, ...values } : child
+            child.cid === cid ? { ...child, ...values } : child
           ),
         }))
       );
@@ -158,11 +149,11 @@ const ManageSubCategories = (props: Props) => {
       ) : (
         <Collapse>
           {filteredCategories.map((category) => (
-            <Collapse.Panel header={category.name} key={category.id}>
+            <Collapse.Panel header={category.name} key={category.cid}>
               {category.children?.length ? (
                 <ul className="pl-4">
                   {category.children.map((subCategory) => (
-                    <li key={subCategory.id} className="mb-2">
+                    <li key={subCategory.cid} className="mb-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <img

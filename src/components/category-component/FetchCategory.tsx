@@ -8,30 +8,18 @@ import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestor
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
 import { deleteImageFromFirebase } from '@/services/FirebaseStorage/deleteImageToFirebase';
 import { ApplicationConfig } from '@/utils/ApplicationConfig';
+import { Categories } from '@/types/categories';
 
 type Props = {};
 
-type CategoryItem = {
-  id: string;
-  name: string;
-  slug: string;
-  parent: string;
-  description?: string;
-  display?: string;
-  image?: string;
-  createdAt?: string;
-  children?: CategoryItem[];
-  isPosition: number;
-  isVisible: boolean;
-};
 
 const FetchCategory = (props: Props) => {
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<CategoryItem[]>([]);
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Categories[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [editModal, setEditModal] = useState<{
     visible: boolean;
-    category: CategoryItem | null;
+    category: Categories | null;
   }>({
     visible: false,
     category: null,
@@ -41,13 +29,13 @@ const FetchCategory = (props: Props) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getAllDocsFromCollection<CategoryItem>('categories');
-        const categoryMap: Record<string, CategoryItem> = {};
+        const data = await getAllDocsFromCollection<Categories>('categories');
+        const categoryMap: Record<string, Categories> = {};
         data.forEach((category) => {
-          categoryMap[category.id] = { ...category, children: [] };
+          categoryMap[category.cid] = { ...category, children: [] };
         });
 
-        const nestedCategories: CategoryItem[] = [];
+        const nestedCategories: Categories[] = [];
         Object.values(categoryMap).forEach((category) => {
           if (category.parent === 'none') {
             nestedCategories.push(category);
@@ -79,18 +67,18 @@ const FetchCategory = (props: Props) => {
     setFilteredCategories(filtered);
   }, [searchTerm, categories]);
 
-  const toggleVisibility = async (category: CategoryItem) => {
+  const toggleVisibility = async (category: Categories) => {
     try {
-      await updateDocFields('categories', category.id, { isVisible: !category.isVisible });
+      await updateDocFields('categories', category.cid, { isVisible: !category.isVisible });
       message.success('Visibility updated!');
       setCategories((prev) =>
         prev.map((cat) =>
-          cat.id === category.id ? { ...cat, isVisible: !category.isVisible } : cat
+          cat.cid === category.cid ? { ...cat, isVisible: !category.isVisible } : cat
         )
       );
       setFilteredCategories((prev) =>
         prev.map((cat) =>
-          cat.id === category.id ? { ...cat, isVisible: !category.isVisible } : cat
+          cat.cid === category.cid ? { ...cat, isVisible: !category.isVisible } : cat
         )
       );
     } catch (error) {
@@ -98,18 +86,18 @@ const FetchCategory = (props: Props) => {
     }
   };
 
-  const handleEditSubmit = async (updatedData: Partial<CategoryItem>, categoryId: string) => {
+  const handleEditSubmit = async (updatedData: Partial<Categories>, categoryId: string) => {
     try {
       await updateDocFields('categories', categoryId, updatedData);
       message.success('Category updated!');
       setCategories((prev) =>
         prev.map((cat) =>
-          cat.id === categoryId ? { ...cat, ...updatedData } : cat
+          cat.cid === categoryId ? { ...cat, ...updatedData } : cat
         )
       );
       setFilteredCategories((prev) =>
         prev.map((cat) =>
-          cat.id === categoryId ? { ...cat, ...updatedData } : cat
+          cat.cid === categoryId ? { ...cat, ...updatedData } : cat
         )
       );
       setEditModal({ visible: false, category: null });
@@ -118,7 +106,7 @@ const FetchCategory = (props: Props) => {
     }
   };
 
-  const handleDelete = async (category: CategoryItem) => {
+  const handleDelete = async (category: Categories) => {
     Modal.confirm({
       title: 'Are you sure to delete this category?',
       icon: <ExclamationCircleOutlined />,
@@ -129,10 +117,10 @@ const FetchCategory = (props: Props) => {
           if (category.image) {
             await deleteImageFromFirebase(category.image);
           }
-          await deleteDocFromCollection('categories', category.id);
+          await deleteDocFromCollection('categories', category.cid);
           message.success('Category deleted!');
-          setCategories((prev) => prev.filter((cat) => cat.id !== category.id));
-          setFilteredCategories((prev) => prev.filter((cat) => cat.id !== category.id));
+          setCategories((prev) => prev.filter((cat) => cat.cid !== category.cid));
+          setFilteredCategories((prev) => prev.filter((cat) => cat.cid !== category.cid));
         } catch (error) {
           message.error('Failed to delete category.');
         }
@@ -159,10 +147,10 @@ const FetchCategory = (props: Props) => {
     }
   };
 
-  const updateCategoryPositions = async (updatedCategories: CategoryItem[]) => {
+  const updateCategoryPositions = async (updatedCategories: Categories[]) => {
     try {
       await Promise.all(updatedCategories.map((cat, index) =>
-        updateDocFields('categories', cat.id, { isPosition: index + 1 })
+        updateDocFields('categories', cat.cid, { isPosition: index + 1 })
       ));
       message.success('Category positions updated!');
     } catch (error) {
@@ -170,10 +158,10 @@ const FetchCategory = (props: Props) => {
     }
   };
 
-  const renderMenu = (items: CategoryItem[]) => {
+  const renderMenu = (items: Categories[]) => {
     return items.map((item, index) => (
       <div
-        key={item.id}
+        key={item.cid}
         draggable
         onDragStart={(event) => handleDragStart(event, index)}
         onDrop={(event) => handleDrop(event, index)}
@@ -244,8 +232,8 @@ const FetchCategory = (props: Props) => {
 };
 
 type EditFormProps = {
-  category: CategoryItem;
-  onSubmit: (data: Partial<CategoryItem>, categoryId: string) => void;
+  category: Categories;
+  onSubmit: (data: Partial<Categories>, categoryId: string) => void;
 };
 
 const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
@@ -278,7 +266,7 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
     setLoading(true); // Start loading
     try {
       const imageUrl = await handleImageUpload();
-      onSubmit({ name, description, image: imageUrl }, category.id);
+      onSubmit({ name, description, image: imageUrl }, category.cid);
     } catch (error) {
       message.error('Failed to upload image.');
     } finally {
