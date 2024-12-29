@@ -1,28 +1,50 @@
-import React, { useState } from "react";
+'use client'
+
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig"; // Replace with your Firebase config
+import { storage } from "@/utils/firbeaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Compressor from "compressorjs";
-import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData"; // Import the custom function
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import CategoriesSelector from "../Selector/create-selector";
-
-interface Categories {
-  cid: string;
-  name: string;
-  slug: string;
-  parent: string;
-  description: string;
-  display: string;
-  image: string;
-  menu_order: string;
-  count: number;
-}
+import { Categories } from "@/types/categories";
 
 const CreateCategory = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [nextPosition, setNextPosition] = useState(1);
+
+  // Fetch and calculate the next available position
+  const fetchNextPosition = async () => {
+    try {
+      const categories = await getAllDocsFromCollection<Categories>("categories");
+      const allPositions = categories
+        .map((category) => category.isPosition || 0)
+        .sort((a, b) => a - b);
+
+      // Find the smallest missing position
+      let newPosition = 1;
+      for (const position of allPositions) {
+        if (position === newPosition) {
+          newPosition += 1;
+        } else {
+          break;
+        }
+      }
+
+      setNextPosition(newPosition);
+    } catch (error) {
+      console.error("Error fetching categories for isPosition:", error);
+      message.error("Failed to determine next position. Please try again later.");
+    }
+  };
+
+  useEffect(() => {
+    fetchNextPosition();
+  }, []);
 
   const generateSlug = (name: string) => {
     return name
@@ -58,12 +80,38 @@ const CreateCategory = () => {
     }
   };
 
+  const checkSlugAvailability = async (slug: string): Promise<boolean> => {
+    try {
+      const categories = await getAllDocsFromCollection<Categories>("categories");
+      return !categories.some((category) => category.cid === slug); // Check if any category has the same slug
+    } catch (error) {
+      console.error("Error checking slug availability:", error);
+      throw new Error("Failed to verify slug availability. Please try again.");
+    }
+  };
+
   const handleFinish = async (values: any) => {
     try {
       setLoading(true);
       setModalVisible(true);
 
-      const { image, ...otherValues } = values;
+      const { image, slug, ...otherValues } = values;
+
+      // Check if slug is already used
+      let currentSlug = slug;
+      let isSlugAvailable = await checkSlugAvailability(currentSlug);
+
+      // If slug is not available, append a timestamp to create a unique slug
+      if (!isSlugAvailable) {
+        const timestamp = Date.now();
+        currentSlug = `${slug}-${timestamp}`;
+        isSlugAvailable = await checkSlugAvailability(currentSlug);
+      }
+
+      if (!isSlugAvailable) {
+        throw new Error("Unable to create a unique slug. Please choose a different name.");
+      }
+
       const imageFile = image?.[0]?.originFileObj;
       if (!imageFile) throw new Error("Image file is required!");
 
@@ -72,9 +120,11 @@ const CreateCategory = () => {
 
       const formData: Categories = {
         ...otherValues,
-        cid: otherValues.slug,
+        cid: currentSlug, // Slug is used as the document ID
+        slug: currentSlug, // Keep slug in the data as well
         image: imageUrl,
         count: 0,
+        isPosition: nextPosition, // Assign the calculated isPosition value
       };
 
       // Save category data using setDocWithCustomId
@@ -83,6 +133,7 @@ const CreateCategory = () => {
 
       message.success("Category created successfully!");
       form.resetFields();
+      fetchNextPosition(); // Recalculate the next position
     } catch (error) {
       if (error instanceof Error) {
         message.error(error.message || "Failed to create category!");
@@ -94,6 +145,7 @@ const CreateCategory = () => {
       setModalVisible(false);
     }
   };
+  
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
