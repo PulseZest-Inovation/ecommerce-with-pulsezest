@@ -1,16 +1,24 @@
 import { signOut } from "firebase/auth";
 import { auth } from "./firbeaseConfig";
-import { message } from "antd";
+
+const getSecurityKey = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("securityKey");
+  }
+  return null; // Default value for server-side
+};
+
+const key = getSecurityKey();
+
+if (!key) {
+  if (typeof window !== "undefined") {
+    console.warn("Security key not found. Signing out...");
+    signOut(auth)
+      .then(() => console.log("Successfully signed out"))
+      .catch((error) => console.error("Error during sign-out:", error));
+  }
+}
 
 export const ApplicationConfig = {
-    get securitKey(){
-        return localStorage.getItem('securityKey')
-    }
-}
-
-const key = ApplicationConfig.securitKey;
-
-if(!key){
-    message.error("security key not found. singiing out");
-    signOut(auth).then(()=> message.success("Singout successfully")).catch((error)=> message.error(`Erro ${error}`))
-}
+  securityKey: key,
+};
