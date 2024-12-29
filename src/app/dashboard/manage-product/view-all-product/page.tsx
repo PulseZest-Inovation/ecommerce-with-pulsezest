@@ -8,15 +8,18 @@ import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreD
 import moment from 'moment';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector'; // Adjust path accordingly
 import { Search } from '@mui/icons-material';
+import DeleteConfirmationModal from './deleteConfirmationModal';
 
 type Props = {};
 
-const ViewProduct = (props: Props) => {
+const ViewProduct: React.FC<Props> = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const router = useRouter();
 
   const fetchProductList = async () => {
@@ -57,12 +60,20 @@ const ViewProduct = (props: Props) => {
   const handleEdit = (id: string) => {
     console.log('Edit product with id:', id);
     router.push(`edit-product/${id}`)
-    // Implement edit logic here
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete product with id:', id);
-    // Implement delete logic here
+  const handleDelete = (product: Product) => {
+    setProductToDelete(product);
+    setIsModalVisible(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    fetchProductList(); 
+  };
+
+  const cancelDelete = () => {
+    setIsModalVisible(false);
+    setProductToDelete(null);
   };
 
   const columns = [
@@ -81,7 +92,7 @@ const ViewProduct = (props: Props) => {
           <div>
             <div className='font-bold'> {record.id}</div>
             <div>
-               {record.shortDescription.split(' ').slice(0, 10).join(' ')}...
+              {record.shortDescription.split(' ').slice(0, 10).join(' ')}...
             </div>
           </div>
         </Space>
@@ -139,7 +150,7 @@ const ViewProduct = (props: Props) => {
             <Button
               danger
               icon={<DeleteOutlined />}
-              onClick={() => handleDelete(record.id)}
+              onClick={() => handleDelete(record)}
             />
           </Tooltip>
         </Space>
@@ -149,31 +160,28 @@ const ViewProduct = (props: Props) => {
 
   return (
     <div>
-
       <div className='justify-between flex'>
         <h1 className='font-bold text-2xl'>Product List</h1>
-        <Button type='primary' onClick={()=>{
-          router.push('add-new-product')
-        }}>Add New Product</Button>
+        <Button type='primary' onClick={() => router.push('add-new-product')}>
+          Add New Product
+        </Button>
       </div>
 
-        <div className='flex space-x-3 mt-2 mb-4'>
-            <Input
-              prefix={<Search/>}
-              placeholder="Search by ID or Description"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          <div style={{width: '100%'}} >
-          <MultipleCategoriesSelector 
-              value={selectedCategories}
-              onChange={setSelectedCategories}
-            />
-          </div>
+      <div className='flex space-x-3 mt-2 mb-4'>
+        <Input
+          prefix={<Search />}
+          placeholder="Search by ID or Description"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+        <div style={{ width: '100%' }}>
+          <MultipleCategoriesSelector
+            value={selectedCategories}
+            onChange={setSelectedCategories}
+          />
         </div>
+      </div>
 
-     
-    
       <Table
         dataSource={filteredProducts}
         columns={columns}
@@ -181,6 +189,13 @@ const ViewProduct = (props: Props) => {
         loading={loading}
         pagination={{ pageSize: 10 }}
         bordered
+      />
+
+      <DeleteConfirmationModal
+        visible={isModalVisible}
+        product={productToDelete}
+        onDeleteSuccess={handleDeleteSuccess} 
+        onCancel={cancelDelete} 
       />
     </div>
   );
