@@ -1,6 +1,7 @@
 import DashboardContent from '@/app/dashboard/Main/page';
 import AnalyticsDashboard from '@/app/dashboard/analytics/page';
 import Categories from '@/app/dashboard/manage-category/categories/page';
+import SubCategoires from '@/app/dashboard/manage-category/sub-categories/page';
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
@@ -31,6 +32,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/analytics', component: AnalyticsDashboard },
   { path: '/dashboard/recent-order', component: RecentOrders },
   { path: '/dashboard/manage-category/categories', component: Categories },
+  { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
