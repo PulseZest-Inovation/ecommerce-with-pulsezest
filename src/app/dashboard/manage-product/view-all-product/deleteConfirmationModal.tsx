@@ -53,8 +53,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             style={{ marginBottom: 16 }}
           />
           <h3>Are you sure you want to delete this product?</h3>
-          <p>
-            <strong>Product ID:</strong> {product.id}
+          <p className='text-1xl font-bold'>
+             {product.id}
           </p>
         </div>
       )}
