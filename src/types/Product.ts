@@ -32,6 +32,7 @@ export interface Product {
   averageRating: string;
   ratingCount: number;
   categories: string[];
+  videoUrl: string;
   tags: string[];
   featuredImage: string;
   galleryImages: string[];
