@@ -64,7 +64,7 @@ export default function PostMaker({ id }: Props) {
 
   const handleCreatePage = async () => {
     // Create the document with empty fields and a modifiedAt field
-    const newData = { title: '', content: '', modifiedAt: new Date().toISOString() };
+    const newData = { title: '', content: '', modifiedAt: new Date().toISOString(), id: id };
     await setDocWithCustomId('pages', id, newData);
     setData(newData);
     message.success('Page created successfully!');
