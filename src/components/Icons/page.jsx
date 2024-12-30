@@ -40,7 +40,7 @@ const AddProuducts = () => {
   );
 };
 
-const ManageCategories = () => {
+const ManageCategoriesIcon = () => {
   return (
     <Image
       src="/icons/manage-categories.png" // Path relative to the `public` folder
@@ -134,6 +134,6 @@ const DiscountIcon = () => {
 
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
-    ManageCategories,
+   ManageCategoriesIcon,
      ReviewAndRatingIcon,
      PendingOrderIcon, OrderCompeltedIcon, DiscountIcon };

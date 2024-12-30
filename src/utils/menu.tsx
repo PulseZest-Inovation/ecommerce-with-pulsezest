@@ -1,6 +1,5 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
 import PaletteIcon from '@mui/icons-material/Palette';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -79,7 +78,7 @@ export const NAVIGATION = [
               {
                 segment: 'sub-categories',
                 title: 'Sub Categories',
-                icon: <ManageCategories />,
+                icon: <ManageCategoriesIcon />,
               },
             ],
           },
