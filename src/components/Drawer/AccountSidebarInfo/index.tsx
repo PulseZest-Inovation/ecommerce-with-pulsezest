@@ -2,11 +2,25 @@
 import React, { useEffect, useState, MouseEvent } from 'react';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Popover from '@mui/material/Popover';
-import { Box, Avatar, Typography, MenuList, MenuItem, ListItemIcon, ListItemText, IconButton } from "@mui/material";
-import { getUser } from '@/services/getUser'; // Import the getUser function
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
-import {auth} from '@/utils/firbeaseConfig'
+import {
+  Box,
+  Avatar,
+  Typography,
+  MenuList,
+  MenuItem,
+  ListItemText,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+import { getUser } from '@/services/getUser';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/utils/firbeaseConfig';
 import { signOut } from 'firebase/auth';
+import SettingsModal from './SettingModal';
 
 interface User {
   fullName: string;
@@ -18,8 +32,10 @@ function AccountSidebarInfo(): JSX.Element {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [settingsModalOpen, setSettingsModalOpen] = useState<boolean>(false); // State to handle settings modal visibility
+  const [logoutModalOpen, setLogoutModalOpen] = useState<boolean>(false); // State to handle logout confirmation modal
 
-  const router = useRouter(); // Next.js router for navigation
+  const router = useRouter();
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -51,16 +67,21 @@ function AccountSidebarInfo(): JSX.Element {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      // Firebase sign-out
       await signOut(auth); // Firebase sign-out logic
-      // Redirect to the login page after logging out
       router.push('/login');
     } catch (error) {
       console.error('Error during sign-out:', error);
+    } finally {
+      setLogoutModalOpen(false); // Close the logout modal after sign-out
     }
   };
 
   const open = Boolean(anchorEl);
+
+  const handleSettingsModalOpen = () => setSettingsModalOpen(true); // Open settings modal
+  const handleSettingsModalClose = () => setSettingsModalOpen(false); // Close settings modal
+  const handleLogoutModalOpen = () => setLogoutModalOpen(true); // Open logout confirmation modal
+  const handleLogoutModalClose = () => setLogoutModalOpen(false); // Close logout confirmation modal
 
   if (loading) {
     return (
@@ -80,13 +101,12 @@ function AccountSidebarInfo(): JSX.Element {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 2 }}>
-      {/* User Avatar and Name */}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
           sx={{ width: 40, height: 40, marginRight: 1 }}
           src={user.profileUrl}
           alt={user.fullName}
-          onClick={handleClick} // Open the popover on avatar click
+          onClick={handleClick}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <Typography variant="body1">{user.fullName}</Typography>
@@ -95,13 +115,11 @@ function AccountSidebarInfo(): JSX.Element {
           </Typography>
         </Box>
 
-        {/* Menu Icon (Three dots) */}
         <IconButton onClick={handleClick}>
           <MoreVertIcon />
         </IconButton>
       </Box>
 
-      {/* Popover Menu */}
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -116,16 +134,33 @@ function AccountSidebarInfo(): JSX.Element {
         }}
       >
         <MenuList>
-          <MenuItem onClick={handleClose}>
-            <ListItemIcon>
-              <Avatar src={user.profileUrl} sx={{ width: 32, height: 32 }} />
-            </ListItemIcon>
-            <ListItemText primary="Profile" />
+          <MenuItem onClick={handleSettingsModalOpen}>
+            <ListItemText primary="Settings" />
           </MenuItem>
-          <MenuItem onClick={handleClose}>Settings</MenuItem>
-          <MenuItem onClick={handleLogout}>Sign Out</MenuItem> {/* Handle logout here */}
+          <MenuItem onClick={handleLogoutModalOpen}>
+            <ListItemText primary="Sign Out" />
+          </MenuItem>
         </MenuList>
       </Popover>
+
+      {/* Call the SettingsModal component */}
+      <SettingsModal open={settingsModalOpen} onClose={handleSettingsModalClose} />
+
+      {/* Logout Confirmation Modal */}
+      <Dialog open={logoutModalOpen} onClose={handleLogoutModalClose}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to log out?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutModalClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="secondary" autoFocus>
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
