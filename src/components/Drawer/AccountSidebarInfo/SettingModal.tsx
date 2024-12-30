@@ -1,7 +1,7 @@
-// components/SettingsModal.tsx
 import React, { useState } from 'react';
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, IconButton, Typography, DialogTitle, DialogContent, Modal, Tabs, Tab } from "@mui/material";
+import { Box, IconButton, Typography, DialogContent, Modal, Tabs, Tab } from "@mui/material";
+import { Button, Result } from 'antd';
 
 interface SettingsModalProps {
   open: boolean;
@@ -26,15 +26,17 @@ function SettingsModal({ open, onClose }: SettingsModalProps): JSX.Element {
       <Box
         sx={{
           position: 'absolute',
-          top: '20%',
+          top: '45%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 900,
+          width: { xs: '90%', sm: 700 }, // Make modal responsive
+          maxHeight: '80vh', // Set max height for the modal
           bgcolor: 'background.paper',
           boxShadow: 24,
           p: 4,
-          borderRadius: 1,
+          borderRadius: 2,
           outline: 'none',
+          overflow: 'hidden', // Prevent content from overflowing outside the modal box
         }}
       >
         <IconButton
@@ -47,7 +49,6 @@ function SettingsModal({ open, onClose }: SettingsModalProps): JSX.Element {
         >
           <CloseIcon />
         </IconButton>
-       
 
         {/* Horizontal Tabs */}
         <Tabs
@@ -64,15 +65,55 @@ function SettingsModal({ open, onClose }: SettingsModalProps): JSX.Element {
         </Tabs>
 
         {/* Tab Content */}
-        <DialogContent>
+        <DialogContent
+          sx={{
+            maxHeight: 'calc(80vh - 80px)', // Calculate content area height
+            overflowY: 'auto', // Enable scroll if needed
+            '&::-webkit-scrollbar': {
+              display: 'none', // Hide scrollbar
+            },
+            msOverflowStyle: 'none', // For Internet Explorer
+            scrollbarWidth: 'none', // For Firefox
+          }}
+        >
           {activeTab === 0 && (
-            <Typography>Details about the application.</Typography>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                Application Information
+              </Typography>
+              <Result
+                status="500"
+                title="PulseZest is working"
+                subTitle="This Feature is Available very soon."
+                extra={<Button type="primary" onClick={onClose}>Back Home</Button>}
+              />
+            </Box>
           )}
           {activeTab === 1 && (
-            <Typography>Details about the user.</Typography>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                User Information
+              </Typography>
+              <Result
+                status="500"
+                title="PulseZest is working"
+                subTitle="This Feature is Available very soon."
+                extra={<Button type="primary" onClick={onClose}>Back Home</Button>}
+              />
+            </Box>
           )}
           {activeTab === 2 && (
-            <Typography>Details about usage statistics.</Typography>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                Usage Statistics
+              </Typography>
+              <Result
+                status="500"
+                title="PulseZest is working"
+                subTitle="This Feature is Available very soon."
+                extra={<Button type="primary" onClick={onClose}>Back Home</Button>}
+              />
+            </Box>
           )}
         </DialogContent>
       </Box>
