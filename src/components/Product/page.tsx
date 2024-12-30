@@ -76,6 +76,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     tags: [],
     featuredImage: "",
     galleryImages: [],
+    videoUrl: '',
     variation: [],
     attributes: [],
     menuOrder: 0,
