@@ -227,11 +227,7 @@ export const NAVIGATION = [
     title: 'Appearance and Theme',
     icon: <PaletteIcon />,
   },
-  {
-    segment: 'homePageContent',
-    title: 'Home Page Content',
-    icon: <LayersIcon />,
-  },
+ 
   {
     segment: 'dashboard/pages',
     title: 'Pages',
