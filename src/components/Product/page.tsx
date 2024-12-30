@@ -1,7 +1,7 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Button, Menu, message, Card, Collapse } from "antd";
-import type { MenuProps } from "antd";
+import type { MenuProps } from 'antd';
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
@@ -10,19 +10,37 @@ import Price from "./Price";
 import { Timestamp } from "firebase/firestore";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
-import { items } from "./ProductMenu/MenuItem";
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LinkIcon from '@mui/icons-material/Link';
 import Shipping from "./Shipping";
 import LinkedProduct from "./LinkedProduct";
 import Tags from "./Tags";
-import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
-import VideoUpload from "./VideUpload";
+
+const items: MenuProps['items'] = [
+  {
+    key: 'price',
+    label: 'Price',
+    icon: <CurrencyRupeeIcon />
+  },
+  {
+    key: 'shipping',
+    label: 'Shipping',
+    icon: <LocalShippingIcon />
+  },
+  {
+    key: 'linkedProduct',
+    label: 'Linked Product',
+    icon: <LinkIcon />
+  },
+];
 
 interface ProductWrapperProps {
   initialData?: Product;
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
-  const [selectedKey, setSelectedKey] = useState<string>("price");
+  const [selectedKey, setSelectedKey] = useState<string>('price');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
@@ -58,7 +76,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     tags: [],
     featuredImage: "",
     galleryImages: [],
-    videoUrl: "",
     variation: [],
     attributes: [],
     menuOrder: 0,
@@ -66,21 +83,18 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     description: [
       { heading: "PRODUCT SPECIFICATION", content: "" },
       { heading: "SHIPPING INFORMATION", content: "" },
-      { heading: "MORE INFROMATION", content: "" },
+      { heading: "MORE INFORMATION", content: "" },
       { heading: "NEED HELP", content: "" },
     ],
   });
 
-  const onClick: MenuProps["onClick"] = (e) => {
+  const onClick: MenuProps['onClick'] = (e) => {
     setSelectedKey(e.key);
   };
 
   // Generate slug from product name
   const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   };
 
   // Handle form data changes
@@ -103,9 +117,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const updateCategoriesFromImages = (galleryImages: string[]) => {
     if (galleryImages.length > 0) {
       setSelectedCategories((prev) => {
-        return prev.includes("ImageCategory")
-          ? prev
-          : [...prev, "ImageCategory"];
+        return prev.includes("ImageCategory") ? prev : [...prev, "ImageCategory"];
       });
     } else {
       setSelectedCategories((prev) =>
@@ -134,24 +146,25 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
     let currentSlug = formData.slug;
 
-    // Check if slug is available
-    const existingSlug = await checkSlugAvailability(currentSlug);
-    if (existingSlug) {
-      // If the slug is already used, modify it by appending a timestamp
-      const timestamp = Date.now(); // Get current timestamp
-      currentSlug = `${currentSlug}-${timestamp}`; // Append timestamp to slug
-      message.warning("Slug already in use. Modifying slug to: " + currentSlug);
+    // If editing, use the existing slug without modification
+    if (!initialData) {
+      // Check if slug is available only when creating a new product
+      const existingSlug = await checkSlugAvailability(currentSlug);
+      if (existingSlug) {
+        // If the slug is already used, modify it by appending a timestamp
+        const timestamp = Date.now(); // Get current timestamp
+        currentSlug = `${currentSlug}-${timestamp}`; // Append timestamp to slug
+        message.warning("Slug already in use. Modifying slug to: " + currentSlug);
+      }
     }
 
     try {
       const docId = currentSlug;
-      await setDocWithCustomId("products", docId, {
-        ...formData,
-        slug: currentSlug,
-      }); // Update slug in form data
-      message.success("Product Added Successfully!");
+      // Update the product using the existing slug for edits
+      await setDocWithCustomId("products", docId, { ...formData, slug: currentSlug });
+      message.success(initialData ? "Product Updated Successfully!" : "Product Added Successfully!");
     } catch (error) {
-      message.error("Error adding product.");
+      message.error("Error adding/updating product.");
     }
   };
 
@@ -186,15 +199,26 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           <Collapse.Panel header={section.heading} key={index}>
             <Input.TextArea
               value={section.content}
-              onChange={(e) =>
-                handleExpandedDescriptionChange(index, e.target.value)
-              }
+              onChange={(e) => handleExpandedDescriptionChange(index, e.target.value)}
               rows={4}
             />
           </Collapse.Panel>
         ))}
       </Collapse>
     );
+  };
+
+  const renderContent = () => {
+    switch (selectedKey) {
+      case 'price':
+        return <Price formData={formData} onFormDataChange={handleInputChange} />;
+      case 'shipping':
+        return <Shipping formData={formData} onFormDataChange={handleInputChange} />;
+      case 'linkedProduct':
+        return <LinkedProduct />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -207,8 +231,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       </div>
 
       <Row gutter={16}>
-        {/* First col.. */}
-
         <Col xs={24} md={14}>
           <Input
             placeholder="Product Name"
@@ -220,9 +242,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             rows={2}
             placeholder="Short Description"
             value={formData.shortDescription}
-            onChange={(e) =>
-              handleInputChange("shortDescription", e.target.value)
-            }
+            onChange={(e) => handleInputChange("shortDescription", e.target.value)}
             className="mb-4"
           />
 
@@ -230,22 +250,39 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
           {renderExpandableDescriptions()}
 
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <Menu
               onClick={onClick}
               style={{ width: 256 }}
-              defaultSelectedKeys={["price"]}
+              defaultSelectedKeys={['price']}
               mode="inline"
               items={items}
             />
             <div style={{ marginLeft: 20, flex: 1 }}>
-              <ProductContentRenderer
-                selectedKey={selectedKey}
-                formData={formData}
-                onFormDataChange={handleInputChange}
-              />
+              {renderContent()}
             </div>
           </div>
+        </Col>
+
+        <Col xs={24} md={10}>
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <FeaturedImageUpload
+              featuredImage={formData.featuredImage}
+              onFeaturedImageChange={(url) => handleInputChange("featuredImage", url)}
+              slug={formData.slug}
+            />
+          </Card>
+
+          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <GalleryUpload
+              galleryImages={formData.galleryImages}
+              onGalleryChange={(newGalleryImages) => {
+                handleInputChange("galleryImages", newGalleryImages);
+                updateCategoriesFromImages(newGalleryImages);
+              }}
+              slug={formData.slug}
+            />
+          </Card>
 
           <label htmlFor="Select Category"></label>
           <CategorySelector
@@ -259,40 +296,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           />
         </Col>
 
-        {/* Second col */}
-
-        <Col xs={24} md={10}>
-          <div>
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-              <FeaturedImageUpload
-                featuredImage={formData.featuredImage}
-                onFeaturedImageChange={(url) =>
-                  handleInputChange("featuredImage", url)
-                }
-                slug={formData.slug}
-              />
-            </Card>
-
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-              <GalleryUpload
-                galleryImages={formData.galleryImages}
-                onGalleryChange={(newGalleryImages) => {
-                  handleInputChange("galleryImages", newGalleryImages);
-                  updateCategoriesFromImages(newGalleryImages);
-                }}
-                slug={formData.slug}
-              />
-            </Card>
-
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-            <VideoUpload
-            slug={formData.slug}
-              videoUrl={formData.videoUrl}
-              onVideoChange={(url) => handleInputChange("videoUrl", url)}
-            />
-          </Card>
-          </div>
-        </Col>
       </Row>
     </div>
   );
