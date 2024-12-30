@@ -12,6 +12,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
 import ImageCarousel from '@/components/Theme/ImageCarousel';
+import TopHeader from '@/components/Theme/TopHeader';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -41,7 +42,7 @@ const ThemePage = (props: Props) => {
   const renderContent = () => {
     switch (selectedKey) {
       case '1':
-        return <div>Top Header Content</div>;
+        return <TopHeader/>;
       case '2':
         return <div>Categories Content</div>;
       case '3':
