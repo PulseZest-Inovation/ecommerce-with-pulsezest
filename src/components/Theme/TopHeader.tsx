@@ -3,7 +3,7 @@ import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData'
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData'
 import { TopHeaderType } from '@/types/TopHeaderType'
 import React, { useState, useEffect } from 'react'
-import { Form, Input, Button, Switch, message } from 'antd'
+import { Form, Input, Button, Switch, message, Row, Col, Divider } from 'antd'
 
 type Props = {}
 
@@ -53,7 +53,16 @@ export default function TopHeader({}: Props) {
   }, []);
 
   return (
-    <div>
+    <div className="container mx-auto p-6">
+     <Divider orientation="left" className='text-2xl'>Edit Top Header</Divider>
+      <Row justify="end" className="mb-4">
+        <Col>
+          <Form.Item label="Enable" name="isEnable" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Col>
+      </Row>
+    
       {topHeaderData ? (
         <Form
           form={form}
@@ -64,35 +73,44 @@ export default function TopHeader({}: Props) {
             isEnable: topHeaderData.isEnable === 'true',
           }}
         >
-          <Form.Item
-            label="Link"
-            name="link"
-            // rules={[{ required: true, message: 'Please enter the link!' }]}
-          >
-            <Input placeholder="Enter link" />
-          </Form.Item>
-          <Form.Item
-            label="Description"
-            name="description"
-            // rules={[{ required: true, message: 'Please enter the description!' }]}
-          >
-            <Input.TextArea placeholder="Enter description" rows={4} />
-          </Form.Item>
-          <Form.Item
-            label="Text"
-            name="text"
-            // rules={[{ required: true, message: 'Please enter the text!' }]}
-          >
-            <Input placeholder="Enter text" />
-          </Form.Item>
-          <Form.Item label="Enable" name="isEnable" valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              Save
-            </Button>
-          </Form.Item>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8}>
+              <Form.Item
+                label="Link"
+                name="link"
+                rules={[{ required: true, message: 'Please enter the link!' }]}
+              >
+                <Input placeholder="Enter link" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Form.Item
+                label="Text"
+                name="text"
+                rules={[{ required: true, message: 'Please enter the text!' }]}
+              >
+                <Input placeholder="Enter text" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={8}>
+              <Form.Item
+                label="Description"
+                name="description"
+                rules={[{ required: true, message: 'Please enter the description!' }]}
+              >
+                <Input.TextArea placeholder="Enter description" rows={2} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row justify="end">
+            <Col>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Save
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       ) : (
         <p>Loading...</p>
