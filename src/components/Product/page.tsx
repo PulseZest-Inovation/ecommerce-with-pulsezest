@@ -16,6 +16,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import Shipping from "./Shipping";
 import LinkedProduct from "./LinkedProduct";
 import Tags from "./Tags";
+import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
+import VideoUpload from "./VideUpload";
 
 const items: MenuProps['items'] = [
   {
@@ -232,6 +234,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       </div>
 
       <Row gutter={16}>
+        {/* First col.. */}
+
         <Col xs={24} md={14}>
           <Input
             placeholder="Product Name"
@@ -243,7 +247,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             rows={2}
             placeholder="Short Description"
             value={formData.shortDescription}
-            onChange={(e) => handleInputChange("shortDescription", e.target.value)}
+            onChange={(e) =>
+              handleInputChange("shortDescription", e.target.value)
+            }
             className="mb-4"
           />
 
@@ -251,39 +257,22 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
           {renderExpandableDescriptions()}
 
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: "flex" }}>
             <Menu
               onClick={onClick}
               style={{ width: 256 }}
-              defaultSelectedKeys={['price']}
+              defaultSelectedKeys={["price"]}
               mode="inline"
               items={items}
             />
             <div style={{ marginLeft: 20, flex: 1 }}>
-              {renderContent()}
+              <ProductContentRenderer
+                selectedKey={selectedKey}
+                formData={formData}
+                onFormDataChange={handleInputChange}
+              />
             </div>
           </div>
-        </Col>
-
-        <Col xs={24} md={10}>
-          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-            <FeaturedImageUpload
-              featuredImage={formData.featuredImage}
-              onFeaturedImageChange={(url) => handleInputChange("featuredImage", url)}
-              slug={formData.slug}
-            />
-          </Card>
-
-          <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-            <GalleryUpload
-              galleryImages={formData.galleryImages}
-              onGalleryChange={(newGalleryImages) => {
-                handleInputChange("galleryImages", newGalleryImages);
-                updateCategoriesFromImages(newGalleryImages);
-              }}
-              slug={formData.slug}
-            />
-          </Card>
 
           <label htmlFor="Select Category"></label>
           <CategorySelector
@@ -297,9 +286,45 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           />
         </Col>
 
+        {/* Second col */}
+
+        <Col xs={24} md={10}>
+          <div>
+            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+              <FeaturedImageUpload
+                featuredImage={formData.featuredImage}
+                onFeaturedImageChange={(url) =>
+                  handleInputChange("featuredImage", url)
+                }
+                slug={formData.slug}
+              />
+            </Card>
+
+            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+              <GalleryUpload
+                galleryImages={formData.galleryImages}
+                onGalleryChange={(newGalleryImages) => {
+                  handleInputChange("galleryImages", newGalleryImages);
+                  updateCategoriesFromImages(newGalleryImages);
+                }}
+                slug={formData.slug}
+              />
+            </Card>
+
+            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <VideoUpload
+            slug={formData.slug}
+              videoUrl={formData.videoUrl}
+              onVideoChange={(url) => handleInputChange("videoUrl", url)}
+            />
+          </Card>
+          </div>
+        </Col>
       </Row>
     </div>
   );
+
+  
 };
 
 export default ProductWrapper;
