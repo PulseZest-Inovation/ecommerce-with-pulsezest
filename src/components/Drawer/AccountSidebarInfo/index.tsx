@@ -10,12 +10,17 @@ import {
   MenuItem,
   ListItemText,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import { getUser } from '@/services/getUser';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/utils/firbeaseConfig';
 import { signOut } from 'firebase/auth';
-import SettingsModal from './SettingModal'; // Import the new SettingsModal component
+import SettingsModal from './SettingModal';
 
 interface User {
   fullName: string;
@@ -27,7 +32,8 @@ function AccountSidebarInfo(): JSX.Element {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [modalOpen, setModalOpen] = useState<boolean>(false); // State to handle modal visibility
+  const [settingsModalOpen, setSettingsModalOpen] = useState<boolean>(false); // State to handle settings modal visibility
+  const [logoutModalOpen, setLogoutModalOpen] = useState<boolean>(false); // State to handle logout confirmation modal
 
   const router = useRouter();
 
@@ -65,13 +71,17 @@ function AccountSidebarInfo(): JSX.Element {
       router.push('/login');
     } catch (error) {
       console.error('Error during sign-out:', error);
+    } finally {
+      setLogoutModalOpen(false); // Close the logout modal after sign-out
     }
   };
 
   const open = Boolean(anchorEl);
 
-  const handleModalOpen = () => setModalOpen(true); // Open modal
-  const handleModalClose = () => setModalOpen(false); // Close modal
+  const handleSettingsModalOpen = () => setSettingsModalOpen(true); // Open settings modal
+  const handleSettingsModalClose = () => setSettingsModalOpen(false); // Close settings modal
+  const handleLogoutModalOpen = () => setLogoutModalOpen(true); // Open logout confirmation modal
+  const handleLogoutModalClose = () => setLogoutModalOpen(false); // Close logout confirmation modal
 
   if (loading) {
     return (
@@ -124,17 +134,33 @@ function AccountSidebarInfo(): JSX.Element {
         }}
       >
         <MenuList>
-          <MenuItem onClick={handleModalOpen}>
+          <MenuItem onClick={handleSettingsModalOpen}>
             <ListItemText primary="Settings" />
           </MenuItem>
-          <MenuItem onClick={handleLogout}>
+          <MenuItem onClick={handleLogoutModalOpen}>
             <ListItemText primary="Sign Out" />
           </MenuItem>
         </MenuList>
       </Popover>
 
       {/* Call the SettingsModal component */}
-      <SettingsModal open={modalOpen} onClose={handleModalClose} />
+      <SettingsModal open={settingsModalOpen} onClose={handleSettingsModalClose} />
+
+      {/* Logout Confirmation Modal */}
+      <Dialog open={logoutModalOpen} onClose={handleLogoutModalClose}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to log out?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutModalClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogout} color="secondary" autoFocus>
+            Logout
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
