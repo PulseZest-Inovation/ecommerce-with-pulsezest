@@ -15,6 +15,7 @@ import Shipping from "./Shipping";
 import LinkedProduct from "./LinkedProduct";
 import Tags from "./Tags";
 import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
+import VideoUpload from "./VideUpload";
 
 interface ProductWrapperProps {
   initialData?: Product;
@@ -282,6 +283,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
                 slug={formData.slug}
               />
             </Card>
+
+            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
+            <VideoUpload
+            slug={formData.slug}
+              videoUrl={formData.videoUrl}
+              onVideoChange={(url) => handleInputChange("videoUrl", url)}
+            />
+          </Card>
           </div>
         </Col>
       </Row>
