@@ -1,7 +1,6 @@
 'use client';
 import React, { useEffect, useState, MouseEvent } from 'react';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CloseIcon from "@mui/icons-material/Close";
 import Popover from '@mui/material/Popover';
 import {
   Box,
@@ -11,14 +10,12 @@ import {
   MenuItem,
   ListItemText,
   IconButton,
-  Modal,
-  DialogTitle,
-  DialogContent,
 } from "@mui/material";
-import { getUser } from '@/services/getUser'; // Import the getUser function
-import { useRouter } from 'next/navigation'; // Import useRouter for navigation
+import { getUser } from '@/services/getUser';
+import { useRouter } from 'next/navigation';
 import { auth } from '@/utils/firbeaseConfig';
 import { signOut } from 'firebase/auth';
+import SettingsModal from './SettingModal'; // Import the new SettingsModal component
 
 interface User {
   fullName: string;
@@ -32,7 +29,7 @@ function AccountSidebarInfo(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false); // State to handle modal visibility
 
-  const router = useRouter(); // Next.js router for navigation
+  const router = useRouter();
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -136,44 +133,8 @@ function AccountSidebarInfo(): JSX.Element {
         </MenuList>
       </Popover>
 
-      {/* Modal for Settings */}
-      <Modal
-        open={modalOpen}
-        onClose={handleModalClose}
-        sx={{
-          backdropFilter: 'blur(4px)', // Add blur effect
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 800,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 1,
-            outline: 'none',
-          }}
-        >
-          <IconButton
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-            }}
-            onClick={handleModalClose}
-          >
-            <CloseIcon />
-          </IconButton>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogContent>
-            <Typography>Here are your settings.</Typography>
-          </DialogContent>
-        </Box>
-      </Modal>
+      {/* Call the SettingsModal component */}
+      <SettingsModal open={modalOpen} onClose={handleModalClose} />
     </Box>
   );
 }
