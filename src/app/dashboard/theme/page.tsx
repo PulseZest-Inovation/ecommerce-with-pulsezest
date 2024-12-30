@@ -13,6 +13,7 @@ import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
 import ImageCarousel from '@/components/Theme/ImageCarousel';
 import TopHeader from '@/components/Theme/TopHeader';
+import CategoryStyle from '@/components/Theme/CategoryStyle';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -44,7 +45,7 @@ const ThemePage = (props: Props) => {
       case '1':
         return <TopHeader/>;
       case '2':
-        return <div>Categories Content</div>;
+        return <CategoryStyle/>;
       case '3':
         return <ImageCarousel/> ;
       default:
