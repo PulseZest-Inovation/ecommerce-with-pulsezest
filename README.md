@@ -9,3 +9,5 @@ step 2 - Enter the Email and Password of your Account.
 You Looged into Your Ecommerce Dashboard with PulseZest
 
 You are ready to use now!
+
+# Features of the PulseZest Ecommerce Dashboard
