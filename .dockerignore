@@ -1,0 +1,15 @@
+node_modules
+.dockerignore
+Dockerfile
+.next
+.env.local
+.env.development
+.env.test
+.env.production
+.vscode
+.git
+.gitignore
+logs
+*.log
+# Tailwind CSS output (if any custom paths are used)
+dist
