@@ -131,9 +131,21 @@ const DiscountIcon = () => {
   );
 };
 
+const TestimonialIcon = () => {
+  return (
+    <Image
+      src="/icons/testimonial.png" // Path relative to the `public` folder
+      alt='car'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
 
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ManageCategoriesIcon,
      ReviewAndRatingIcon,
-     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon };
+     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon };

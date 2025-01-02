@@ -6,6 +6,7 @@ import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
+import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
 import ThemePage from '@/app/dashboard/theme/page';
@@ -41,6 +42,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
+  { path: '/dashboard/testimonials', component: TestimonialsPage },
   { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
   { path: '/dashboard/payment-setting', component: PaymentSetting },
   { path: '/dashboard/coupons', component: Coupons },
