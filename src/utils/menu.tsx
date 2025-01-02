@@ -126,11 +126,7 @@ export const NAVIGATION = [
             title: 'Tags',
             icon: <LocalOfferIcon  />,
           },
-          {
-            segment: 'dashboard/testimonials',
-            title: 'Testimonials',
-            icon: <TestimonialIcon />,
-          },
+        
 
           {
             segment: 'dashboard/product-reviews-and-raiting',
@@ -170,11 +166,10 @@ export const NAVIGATION = [
   //       icon: <GroupsIcon />,
   //     },
       {
-        segment: 'customerFeedback',
-        title: 'Customer Feedback',
-        icon: <InsertCommentIcon color='primary'/>,
+        segment: 'dashboard/testimonials',
+        title: 'Testimonials',
+        icon: <TestimonialIcon />,
       },
-
       {
         kind: 'divider',
       },
