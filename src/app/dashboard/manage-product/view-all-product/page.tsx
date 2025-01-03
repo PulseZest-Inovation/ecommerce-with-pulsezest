@@ -90,9 +90,9 @@ const ViewProduct: React.FC<Props> = () => {
             style={{ objectFit: 'cover' }}
           />
           <div>
-            <div className='font-bold'> {record.id}</div>
+            <div className='font-bold'> {record.productTitle ? <>{record.productTitle}</>:'No Product Title' }</div>
             <div>
-              {record.shortDescription.split(' ').slice(0, 10).join(' ')}...
+              { record.productSubtitle ? <>{record.productSubtitle.split(' ').slice(0, 10).join(' ')}...</> : <>No Subtitle set</> }
             </div>
           </div>
         </Space>
@@ -187,7 +187,7 @@ const ViewProduct: React.FC<Props> = () => {
         columns={columns}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        pagination={false}
         bordered
       />
 
