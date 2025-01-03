@@ -15,7 +15,7 @@ const ProductStock: React.FC<ProrductStockProps> = ({ formData, onFormDataChange
       <Input
         type="number"
         placeholder="Enter Product Stock Quantity"
-        value={formData.shipping_taxable}
+        value={formData.stockQuantity}
         onChange={(e) => onFormDataChange("stockQuantity", e.target.value)}
         className="mb-4"
       />

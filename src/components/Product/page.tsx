@@ -123,7 +123,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       const existingSlug = await checkSlugAvailability(currentSlug);
       if (existingSlug) {
         currentSlug = `${currentSlug}-${Date.now()}`;
-        message.warning(`Slug already in use. Using new slug: ${currentSlug}`);
+        // message.warning(`Slug already in use. Using new slug: ${currentSlug}`);
       }
     }
 
