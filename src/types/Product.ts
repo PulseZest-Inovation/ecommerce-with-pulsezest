@@ -2,6 +2,8 @@ import { Timestamp } from "firebase/firestore";
 
 export interface Product {
   id: string;
+  productTitle: string;
+  productSubtitle: string;
   slug: string;
   permalink: string;
   createdAt: Timestamp;
