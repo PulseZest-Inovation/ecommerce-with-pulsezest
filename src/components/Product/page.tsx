@@ -169,9 +169,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
   return (
     <div className="container mx-auto">
-      <div className="flex justify-between my-2">
-        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
-        <Button
+      <div className="flex justify-start">
+      <Button
           type="primary"
           onClick={handleSubmit}
           disabled={!formData.productTitle}
@@ -179,8 +178,11 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           Submit
         </Button>
       </div>
+      <div className=" my-2">
+        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
+      </div>
       <Row gutter={16}>
-        <Col xs={24} md={14}>
+        <Col  span={10}>
           <Input
             placeholder="Product Title"
             value={formData.productTitle}
@@ -205,8 +207,20 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             }
             className="mb-4"
           />
-          <Collapse>{renderExpandableDescriptions()}</Collapse>
-          <div className="flex">
+          <Collapse  >{renderExpandableDescriptions()}</Collapse>
+          <div  >
+              <CategorySelector
+                selectedCategories={selectedCategories}
+                onCategoryChange={handleCategoryChange}
+              />
+              <Tags
+                selectedTags={formData.tags}
+                onTagsChange={(tags) => handleInputChange("tags", tags)}
+                productId={formData.slug}
+              />
+          </div>
+
+          <div className="flex " >
             <Menu
               onClick={(e) => setSelectedKey(e.key)}
               style={{ width: 256 }}
@@ -214,24 +228,18 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
               mode="inline"
               items={items}
             />
+            <div style={{width: '80%'}}>
             <ProductContentRenderer
               selectedKey={selectedKey}
               formData={formData}
               onFormDataChange={handleInputChange}
             />
+            </div>
+        
           </div>
 
-          <CategorySelector
-            selectedCategories={selectedCategories}
-            onCategoryChange={handleCategoryChange}
-          />
-          <Tags
-            selectedTags={formData.tags}
-            onTagsChange={(tags) => handleInputChange("tags", tags)}
-            productId={formData.slug}
-          />
         </Col>
-        <Col xs={24} md={10}>
+        <Col   span={14}>
           <Card className="mt-2">
             <FeaturedImageUpload
               featuredImage={formData.featuredImage}

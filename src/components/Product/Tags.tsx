@@ -190,10 +190,9 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) =>
   }, []);
 
   return (
-    <div>
-      <label htmlFor="Select Tags" className="block mb-2">
-        Select Tags
-      </label>
+    <div  className='mt-3'>
+    
+      <h2 className='font-bold'>Selct Tags</h2>
       <Select
         mode="tags"
         style={{ width: '100%' }}

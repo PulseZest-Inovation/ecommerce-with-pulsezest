@@ -146,21 +146,8 @@ const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryC
   };
 
   return (
-    <div>
-      <div>
-        {/* Upload file input */}
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleGalleryUpload}
-          style={{ display: 'none' }}
-          id="galleryUploadInput"
-        />
-        <label htmlFor="galleryUploadInput" style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', display: 'inline-block', color: 'blue'}}>
-          Upload Gallery
-        </label>
-      </div>
+    <div >
+   
 
       {/* Display progress bars for uploading files */}
       <div>
@@ -205,6 +192,21 @@ const GalleryUpload: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryC
           </div>
         </div>
       )}
+
+<div>
+        {/* Upload file input */}
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleGalleryUpload}
+          style={{ display: 'none' }}
+          id="galleryUploadInput"
+        />
+        <label htmlFor="galleryUploadInput" style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', display: 'inline-block', color: 'blue'}}>
+          Upload Gallery
+        </label>
+      </div>
     </div>
   );
 };
