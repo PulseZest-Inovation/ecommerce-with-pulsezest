@@ -1,6 +1,7 @@
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import LinkIcon from "@mui/icons-material/Link";
+import Inventory2Icon from '@mui/icons-material/Inventory2';
 
 import type { MenuProps } from "antd";
 
@@ -16,8 +17,8 @@ export const items: MenuProps["items"] = [
     icon: <LocalShippingIcon />,
   },
   {
-    key: "linkedProduct",
-    label: "Linked Product",
-    icon: <LinkIcon />,
+    key: "stock",
+    label: "Product Stock",
+    icon: <Inventory2Icon />,
   },
 ];

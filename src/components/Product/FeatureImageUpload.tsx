@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from "react";
-import { Upload, Button, message, Progress } from "antd";
+import { Upload, Button, message, Progress, Image } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { storage } from "@/utils/firbeaseConfig"; // Assuming Firebase configuration is already set
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -89,37 +89,38 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
   };
 
   return (
-    <div className="w-full p-4 border rounded-md">
-      <p className="text-center font-medium">Feature Image</p>
-      {featuredImage && !uploading ? (
-        <img
-          src={featuredImage}
-          alt="Featured"
-          className="w-full h-auto mb-4 rounded-lg object-cover"
-        />
-      ) : (
-        <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
-          <span className="text-gray-500">Add the Feature Image</span>
-        </div>
-      )}
-
-      <Upload
-        showUploadList={false}
-        beforeUpload={() => false}
-        onChange={handleFeaturedUpload}
-        className="mb-4"
+    <div className="w-[300px] h-[400px] p-4 border rounded-md">
+    <p className="text-center font-medium">Feature Image</p>
+    {featuredImage && !uploading ? (
+      <Image
+        src={featuredImage}
+        alt="Featured"
+        className="w-full h-auto mb-4 rounded-lg object-cover"
+      />
+    ) : (
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+        <span className="text-gray-500">Add the Feature Image</span>
+      </div>
+    )}
+  
+    <Upload
+      showUploadList={false}
+      beforeUpload={() => false}
+      onChange={handleFeaturedUpload}
+      className="mb-4"
+    >
+      <Button
+        icon={<PlusOutlined />}
+        loading={uploading}
+        type={featuredImage ? "default" : "primary"}
       >
-        <Button
-          icon={<PlusOutlined />}
-          loading={uploading}
-          type={featuredImage ? "default" : "primary"}
-        >
-          {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
-        </Button>
-      </Upload>
-
-      {uploading && <Progress percent={uploadPercent} showInfo />}
-    </div>
+        {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
+      </Button>
+    </Upload>
+  
+    {uploading && <Progress percent={uploadPercent} showInfo />}
+  </div>
+  
   );
 };
 

@@ -3,6 +3,7 @@ import Price from "../Price";
 import Shipping from "../Shipping";
 import LinkedProduct from "../LinkedProduct";
 import { Product } from "@/types/Product";
+import ProductStock from "../stock";
 
 interface ProductContentRendererProps{
     selectedKey: string;
@@ -22,8 +23,8 @@ const ProductContentRenderer: React.FC<ProductContentRendererProps> = ({
         return (
           <Shipping formData={formData} onFormDataChange={onFormDataChange} />
         );
-      case "linkedProduct":
-        return <LinkedProduct />;
+      case "stock":
+        return <ProductStock formData={formData} onFormDataChange={onFormDataChange} />;
       default:
         return null;
     }

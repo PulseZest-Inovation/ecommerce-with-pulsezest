@@ -1,51 +1,30 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Button, Menu, message, Card, Collapse } from "antd";
-import type { MenuProps } from 'antd';
+import type { MenuProps } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
-import Price from "./Price";
-import { Timestamp } from "firebase/firestore";
-import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import LinkIcon from '@mui/icons-material/Link';
-import Shipping from "./Shipping";
-import LinkedProduct from "./LinkedProduct";
 import Tags from "./Tags";
 import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
 import VideoUpload from "./VideUpload";
-
-const items: MenuProps['items'] = [
-  {
-    key: 'price',
-    label: 'Price',
-    icon: <CurrencyRupeeIcon />
-  },
-  {
-    key: 'shipping',
-    label: 'Shipping',
-    icon: <LocalShippingIcon />
-  },
-  {
-    key: 'linkedProduct',
-    label: 'Linked Product',
-    icon: <LinkIcon />
-  },
-];
+import { items } from "./ProductMenu/MenuItem";
+import { Timestamp } from "firebase/firestore";
+import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 
 interface ProductWrapperProps {
   initialData?: Product;
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
-  const [selectedKey, setSelectedKey] = useState<string>('price');
+  const [selectedKey, setSelectedKey] = useState<string>("price");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
+    productTitle: "",
+    productSubtitle: "",
     slug: "",
     permalink: "",
     type: "simple",
@@ -78,7 +57,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     tags: [],
     featuredImage: "",
     galleryImages: [],
-    videoUrl: '',
+    videoUrl: "",
     variation: [],
     attributes: [],
     menuOrder: 0,
@@ -90,86 +69,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       { heading: "NEED HELP", content: "" },
     ],
   });
-
-  const onClick: MenuProps['onClick'] = (e) => {
-    setSelectedKey(e.key);
-  };
-
-  // Generate slug from product name
-  const generateSlug = (name: string) => {
-    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  };
-
-  // Handle form data changes
-  const handleInputChange = (key: keyof Product, value: any) => {
-    if (key === "id") {
-      const generatedSlug = generateSlug(value);
-      setFormData((prev) => ({ ...prev, [key]: value, slug: generatedSlug }));
-    } else {
-      setFormData((prev) => ({ ...prev, [key]: value }));
-    }
-  };
-
-  // Handle category change
-  const handleCategoryChange = (categories: string[]) => {
-    setSelectedCategories(categories);
-    handleInputChange("categories", categories);
-  };
-
-  // Update categories based on images
-  const updateCategoriesFromImages = (galleryImages: string[]) => {
-    if (galleryImages.length > 0) {
-      setSelectedCategories((prev) => {
-        return prev.includes("ImageCategory") ? prev : [...prev, "ImageCategory"];
-      });
-    } else {
-      setSelectedCategories((prev) =>
-        prev.filter((category) => category !== "ImageCategory")
-      );
-    }
-    handleInputChange("categories", selectedCategories);
-  };
-
-  const checkSlugAvailability = async (slug: string): Promise<string> => {
-    try {
-      const products = await getAllDocsFromCollection<Product>("products");
-      const existingProduct = products.find((product) => product.slug === slug);
-      return existingProduct ? existingProduct.slug : ""; // Return existing slug or empty string
-    } catch (error) {
-      console.error("Error checking slug availability:", error);
-      throw new Error("Failed to verify slug availability. Please try again.");
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.id) {
-      message.error("Product name is required!");
-      return;
-    }
-
-    let currentSlug = formData.slug;
-
-    // If editing, use the existing slug without modification
-    if (!initialData) {
-      // Check if slug is available only when creating a new product
-      const existingSlug = await checkSlugAvailability(currentSlug);
-      if (existingSlug) {
-        // If the slug is already used, modify it by appending a timestamp
-        const timestamp = Date.now(); // Get current timestamp
-        currentSlug = `${currentSlug}-${timestamp}`; // Append timestamp to slug
-        message.warning("Slug already in use. Modifying slug to: " + currentSlug);
-      }
-    }
-
-    try {
-      const docId = currentSlug;
-      // Update the product using the existing slug for edits
-      await setDocWithCustomId("products", docId, { ...formData, slug: currentSlug });
-      message.success(initialData ? "Product Updated Successfully!" : "Product Added Successfully!");
-    } catch (error) {
-      message.error("Error adding/updating product.");
-    }
-  };
 
   useEffect(() => {
     if (initialData) {
@@ -186,61 +85,117 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     }
   }, [initialData]);
 
-  const handleExpandedDescriptionChange = (index: number, value: string) => {
-    setFormData((prev) => {
-      const updatedDescriptions = [...prev.description];
-      updatedDescriptions[index].content = value;
-      return { ...prev, description: updatedDescriptions };
-    });
-  };
-
-  // Render expandable descriptions
-  const renderExpandableDescriptions = () => {
-    return (
-      <Collapse>
-        {formData.description.map((section, index) => (
-          <Collapse.Panel header={section.heading} key={index}>
-            <Input.TextArea
-              value={section.content}
-              onChange={(e) => handleExpandedDescriptionChange(index, e.target.value)}
-              rows={4}
-            />
-          </Collapse.Panel>
-        ))}
-      </Collapse>
-    );
-  };
-
-  const renderContent = () => {
-    switch (selectedKey) {
-      case 'price':
-        return <Price formData={formData} onFormDataChange={handleInputChange} />;
-      case 'shipping':
-        return <Shipping formData={formData} onFormDataChange={handleInputChange} />;
-      case 'linkedProduct':
-        return <LinkedProduct />;
-      default:
-        return null;
+  const handleInputChange = (key: keyof Product, value: any) => {
+    if (key === "productTitle") {
+      const slug = generateSlug(value);
+      setFormData((prev) => ({ ...prev, [key]: value, slug }));
+    } else {
+      setFormData((prev) => ({ ...prev, [key]: value }));
     }
   };
 
+  const generateSlug = (name: string) =>
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const handleCategoryChange = (categories: string[]) => {
+    setSelectedCategories(categories);
+    setFormData((prev) => ({ ...prev, categories }));
+  };
+
+  const handleExpandedDescriptionChange = (index: number, value: string) => {
+    const updatedDescriptions = [...formData.description];
+    updatedDescriptions[index].content = value;
+    setFormData((prev) => ({ ...prev, description: updatedDescriptions }));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.productTitle) {
+      message.error("Product Title is required!");
+      return;
+    }
+
+    let currentSlug = formData.slug;
+
+    if (!initialData) {
+      const existingSlug = await checkSlugAvailability(currentSlug);
+      if (existingSlug) {
+        currentSlug = `${currentSlug}-${Date.now()}`;
+        // message.warning(`Slug already in use. Using new slug: ${currentSlug}`);
+      }
+    }
+
+    try {
+      await setDocWithCustomId("products", currentSlug, {
+        ...formData,
+        slug: currentSlug,
+        id: currentSlug,
+      });
+      message.success(
+        initialData
+          ? "Product Updated Successfully!"
+          : "Product Added Successfully!"
+      );
+    } catch (error) {
+      message.error("Error adding/updating product.");
+    }
+  };
+
+  const checkSlugAvailability = async (slug: string): Promise<string> => {
+    try {
+      const products = await getAllDocsFromCollection<Product>("products");
+      const existingProduct = products.find((product) => product.slug === slug);
+      return existingProduct ? existingProduct.slug : "";
+    } catch (error) {
+      console.error("Error checking slug availability:", error);
+      throw new Error("Failed to verify slug availability.");
+    }
+  };
+
+  const renderExpandableDescriptions: any = () =>
+    formData.description.map((section, index) => (
+      <Collapse.Panel header={section.heading} key={index}>
+        <Input.TextArea
+          value={section.content}
+          onChange={(e) =>
+            handleExpandedDescriptionChange(index, e.target.value)
+          }
+          rows={4}
+        />
+      </Collapse.Panel>
+    ));
+
   return (
     <div className="container mx-auto">
-      <div className="flex justify-between my-2">
-        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
-        <Button type="primary" onClick={handleSubmit} disabled={!formData.id}>
+      <div className="flex justify-start">
+      <Button
+          type="primary"
+          onClick={handleSubmit}
+          disabled={!formData.productTitle}
+        >
           Submit
         </Button>
       </div>
-
+      <div className=" my-2">
+        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
+      </div>
       <Row gutter={16}>
-        {/* First col.. */}
-
-        <Col xs={24} md={14}>
+        <Col  span={10}>
           <Input
-            placeholder="Product Name"
-            value={formData.id}
-            onChange={(e) => handleInputChange("id", e.target.value)}
+            placeholder="Product Title"
+            value={formData.productTitle}
+            onChange={(e) => handleInputChange("productTitle", e.target.value)}
+            className="mb-4"
+            required
+          />
+          <Input
+            placeholder="Product Subtitle"
+            value={formData.productSubtitle}
+            onChange={(e) =>
+              handleInputChange("productSubtitle", e.target.value)
+            }
             className="mb-4"
           />
           <Input.TextArea
@@ -252,79 +207,68 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
             }
             className="mb-4"
           />
+          <Collapse  >{renderExpandableDescriptions()}</Collapse>
+          <div  >
+              <CategorySelector
+                selectedCategories={selectedCategories}
+                onCategoryChange={handleCategoryChange}
+              />
+              <Tags
+                selectedTags={formData.tags}
+                onTagsChange={(tags) => handleInputChange("tags", tags)}
+                productId={formData.slug}
+              />
+          </div>
 
-          <h1 className="pl-2 font-bold text-1xl">More Descriptions</h1>
-
-          {renderExpandableDescriptions()}
-
-          <div style={{ display: "flex" }}>
+          <div className="flex " >
             <Menu
-              onClick={onClick}
+              onClick={(e) => setSelectedKey(e.key)}
               style={{ width: 256 }}
               defaultSelectedKeys={["price"]}
               mode="inline"
               items={items}
             />
-            <div style={{ marginLeft: 20, flex: 1 }}>
-              <ProductContentRenderer
-                selectedKey={selectedKey}
-                formData={formData}
-                onFormDataChange={handleInputChange}
-              />
+            <div style={{width: '80%'}}>
+            <ProductContentRenderer
+              selectedKey={selectedKey}
+              formData={formData}
+              onFormDataChange={handleInputChange}
+            />
             </div>
+        
           </div>
 
-          <label htmlFor="Select Category"></label>
-          <CategorySelector
-            selectedCategories={selectedCategories}
-            onCategoryChange={handleCategoryChange}
-          />
-          <Tags
-            selectedTags={formData.tags}
-            onTagsChange={(value) => handleInputChange("tags", value)}
-            productId={formData.slug}
-          />
         </Col>
-
-        {/* Second col */}
-
-        <Col xs={24} md={10}>
-          <div>
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-              <FeaturedImageUpload
-                featuredImage={formData.featuredImage}
-                onFeaturedImageChange={(url) =>
-                  handleInputChange("featuredImage", url)
-                }
-                slug={formData.slug}
-              />
-            </Card>
-
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-              <GalleryUpload
-                galleryImages={formData.galleryImages}
-                onGalleryChange={(newGalleryImages) => {
-                  handleInputChange("galleryImages", newGalleryImages);
-                  updateCategoriesFromImages(newGalleryImages);
-                }}
-                slug={formData.slug}
-              />
-            </Card>
-
-            <Card className="mt-2 hover:shadow-lg hover:scale-105 transition-transform duration-200">
-            <VideoUpload
-            slug={formData.slug}
-              videoUrl={formData.videoUrl}
-              onVideoChange={(url) => handleInputChange("videoUrl", url)}
+        <Col   span={14}>
+          <Card className="mt-2">
+            <FeaturedImageUpload
+              featuredImage={formData.featuredImage}
+              onFeaturedImageChange={(url) =>
+                handleInputChange("featuredImage", url)
+              }
+              slug={formData.slug}
             />
           </Card>
-          </div>
+          <Card className="mt-2">
+            <GalleryUpload
+              galleryImages={formData.galleryImages}
+              onGalleryChange={(images) =>
+                handleInputChange("galleryImages", images)
+              }
+              slug={formData.slug}
+            />
+          </Card>
+          <Card className="mt-2">
+            <VideoUpload
+              videoUrl={formData.videoUrl}
+              onVideoChange={(url) => handleInputChange("videoUrl", url)}
+              slug={formData.slug}
+            />
+          </Card>
         </Col>
       </Row>
     </div>
   );
-
-  
 };
 
 export default ProductWrapper;
