@@ -86,13 +86,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   }, [initialData]);
 
   const handleInputChange = (key: keyof Product, value: any) => {
-    if (key === "productTitle") {
+    if (key === "productTitle" && !initialData) {
       const slug = generateSlug(value);
       setFormData((prev) => ({ ...prev, [key]: value, slug }));
     } else {
       setFormData((prev) => ({ ...prev, [key]: value }));
     }
   };
+  
 
   const generateSlug = (name: string) =>
     name
@@ -116,21 +117,21 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       message.error("Product Title is required!");
       return;
     }
-
+  
     let currentSlug = formData.slug;
-
+  
     if (!initialData) {
+      // Only check for slug availability for new products
       const existingSlug = await checkSlugAvailability(currentSlug);
       if (existingSlug) {
         currentSlug = `${currentSlug}-${Date.now()}`;
-        // message.warning(`Slug already in use. Using new slug: ${currentSlug}`);
       }
     }
-
+  
     try {
       await setDocWithCustomId("products", currentSlug, {
         ...formData,
-        slug: currentSlug,
+        slug: currentSlug, // Preserve the existing slug if editing
         id: currentSlug,
       });
       message.success(
@@ -142,6 +143,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       message.error("Error adding/updating product.");
     }
   };
+  
+  
 
   const checkSlugAvailability = async (slug: string): Promise<string> => {
     try {
@@ -182,7 +185,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
       </div>
       <Row gutter={16}>
-        <Col  span={10}>
+        <Col  span={12}>
           <Input
             placeholder="Product Title"
             value={formData.productTitle}
@@ -239,7 +242,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           </div>
 
         </Col>
-        <Col   span={14}>
+        <Col   span={12}>
           <Card className="mt-2">
             <FeaturedImageUpload
               featuredImage={formData.featuredImage}
@@ -249,7 +252,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
               slug={formData.slug}
             />
           </Card>
-          <Card className="mt-2">
+          <Card className="mt-9">
             <GalleryUpload
               galleryImages={formData.galleryImages}
               onGalleryChange={(images) =>
