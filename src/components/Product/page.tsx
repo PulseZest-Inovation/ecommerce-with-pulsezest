@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Menu, message, Card, Collapse } from "antd";
+import { Row, Col, Input, Button, Menu, message, Card, Collapse, Select } from "antd";
 import type { MenuProps } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
@@ -36,6 +36,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     price: "",
     regularPrice: "",
     salePrice: "",
+    gstRate: "",
+    HSN: "",
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),
     dateOnSaleTo: null,

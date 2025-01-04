@@ -36,6 +36,8 @@ export interface Product {
   categories: string[];
   videoUrl: string;
   tags: string[];
+  gstRate: string
+  HSN: string;
   featuredImage: string;
   galleryImages: string[];
   variation: any[];

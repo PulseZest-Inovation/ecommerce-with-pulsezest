@@ -1,9 +1,8 @@
 'use client'
 import React, { useEffect } from "react";
-import { Input, Checkbox, Card, Row, Col, Typography } from "antd";
+import { Input, Checkbox, Card, Row, Col } from "antd";
 import { Product } from "@/types/Product"; // Ensure the Product type is imported
 
-const { Text } = Typography;
 
 interface PriceProps {
   formData: Product;
