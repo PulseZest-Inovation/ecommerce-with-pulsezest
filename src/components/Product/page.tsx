@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Menu, message, Card, Collapse } from "antd";
-import type { MenuProps } from "antd";
+import { Row, Col, Input, Button, Menu, message, Card, Collapse, } from "antd";
 import { Product } from "@/types/Product";
 import GalleryUpload from "./GalleryUpload";
 import FeaturedImageUpload from "./FeatureImageUpload";
 import CategorySelector from "./ProductCategorySelector";
+import { useRouter } from "next/navigation";
 import Tags from "./Tags";
 import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
 import VideoUpload from "./VideUpload";
@@ -19,6 +19,7 @@ interface ProductWrapperProps {
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedKey, setSelectedKey] = useState<string>("price");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
@@ -36,6 +37,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     price: "",
     regularPrice: "",
     salePrice: "",
+    gstRate: "",
+    HSN: "",
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),
     dateOnSaleTo: null,
@@ -69,6 +72,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       { heading: "NEED HELP", content: "" },
     ],
   });
+
+  const router = useRouter();
 
   useEffect(() => {
     if (initialData) {
@@ -118,6 +123,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       return;
     }
   
+    if (loading) return; // Prevent multiple submissions
+    setLoading(true);
+
     let currentSlug = formData.slug;
   
     if (!initialData) {
@@ -139,8 +147,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           ? "Product Updated Successfully!"
           : "Product Added Successfully!"
       );
+
+      router.push('/dashboard/manage-product/view-all-product')
+
     } catch (error) {
       message.error("Error adding/updating product.");
+    }finally{
+      setLoading(false); 
     }
   };
   
@@ -176,7 +189,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       <Button
           type="primary"
           onClick={handleSubmit}
-          disabled={!formData.productTitle}
+          disabled={ loading || !formData.productTitle}
+          loading={loading}
         >
           Submit
         </Button>
