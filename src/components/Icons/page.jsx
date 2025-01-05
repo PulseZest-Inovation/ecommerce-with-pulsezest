@@ -156,8 +156,20 @@ const TaxIcon = () => {
   );
 };
 
+const SkuIcon = () => {
+  return (
+    <Image
+      src="/icons/sku.png" // Path relative to the `public` folder
+      alt='car'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ManageCategoriesIcon,
      ReviewAndRatingIcon,
-     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon };
+     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon, SkuIcon };

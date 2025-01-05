@@ -4,7 +4,7 @@ import Inventory2Icon from '@mui/icons-material/Inventory2';
 import EightMpIcon from '@mui/icons-material/EightMp';
 
 import type { MenuProps } from "antd";
-import { TaxIcon } from "@/components/Icons/page";
+import { SkuIcon, TaxIcon } from "@/components/Icons/page";
 
 export const items: MenuProps["items"] = [
   {
@@ -21,6 +21,11 @@ export const items: MenuProps["items"] = [
     key: "stock",
     label: "Product Stock",
     icon: <Inventory2Icon />,
+  },
+  {
+    key: "sku",
+    label: "SKU",
+    icon: <SkuIcon />,
   },
   {
     key: "GST",

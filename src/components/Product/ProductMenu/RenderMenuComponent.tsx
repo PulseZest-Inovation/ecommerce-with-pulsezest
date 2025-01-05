@@ -6,6 +6,7 @@ import { Product } from "@/types/Product";
 import ProductStock from "../stock";
 import GSTSelector from "../GSTSelector";
 import HSN from "../HSN";
+import SkuField from "../Sku";
 
 interface ProductContentRendererProps{
     selectedKey: string;
@@ -30,6 +31,10 @@ const ProductContentRenderer: React.FC<ProductContentRendererProps> = ({
         );
       case "stock":
         return <ProductStock formData={formData} onFormDataChange={onFormDataChange} />;
+      case "sku":
+        return (
+          <SkuField formData={formData} onFormDataChange={onFormDataChange}/>
+        )  
        case "GST":
         return <GSTSelector formData={formData} onFormDataChange={onFormDataChange}/>;
         case "HSN":

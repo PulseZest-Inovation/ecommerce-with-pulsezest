@@ -142,6 +142,15 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         slug: currentSlug, // Preserve the existing slug if editing
         id: currentSlug,
       });
+
+
+      //saving the sku
+      if (formData.sku) {
+        await setDocWithCustomId("sku", formData.sku, {
+          skuCode: formData.sku,
+        });
+      }
+
       message.success(
         initialData
           ? "Product Updated Successfully!"
