@@ -6,11 +6,18 @@ import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
+import ViewAllOrderPage from '@/app/dashboard/orders/view-all-orders/page';
+import OrderDetailsPage from '@/app/dashboard/orders/order-details/page';
+import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
+import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
+import ReturnOrders from '@/app/dashboard/orders/return-order/page';
+import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
+
 import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
 import ThemePage from '@/app/dashboard/theme/page';
-import RecentOrders from '@/app/dashboard/recent-order/page';
+import RecentOrders from '@/app/dashboard/orders/return-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
 import Coupons from '@/app/dashboard/coupons/page';
 import EditViewCoupons from '@/app/dashboard/coupons/[couponCode]/page';
@@ -38,6 +45,12 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
+  { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
+  { path: '/dashboard/orders/order-details', component: OrderDetailsPage },
+  { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
+  { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
+  { path: '/dashboard/orders/return-order', component: ReturnOrders },
+  { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
   { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true },
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
