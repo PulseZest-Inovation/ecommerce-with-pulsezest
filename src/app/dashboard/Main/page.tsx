@@ -5,6 +5,7 @@ import { Typography, Grid } from '@mui/material';
 import SummaryCard from '@/components/Dashbaord/Card/SummaryCard';
 import ConfirmedOrderCard from '@/components/Dashbaord/Card/ConfirmedOrderCard';
 import DashboardGraphs from '@/components/Dashbaord/Graph/DashboardGraph';
+import CartView from '@/components/Dashbaord/CartView/page';
 
 const DashboardPage = () => {
   // Data for today's order summary
@@ -42,29 +43,38 @@ const DashboardPage = () => {
 
   return (
     <div>
-    
-      {/* Section: Today's Order Summary */}
-      <Typography variant="h6" className="mb-4 font-bold">
-        Today's Order Summary
-      </Typography>
-      <Grid container spacing={2} className="mb-8">
-        {todayOrderSummary.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-            <SummaryCard title={item.title} value={item.value} subtitle={item.subtitle} />
-          </Grid>
-        ))}
-      </Grid>
+      <Grid container spacing={3}>
+        {/* Left side: Today's Order Summary and Repeat Orders */}
+        <Grid item xs={12} md={8}>
+          {/* Section: Today's Order Summary */}
+          <Typography variant="h6" className="mb-4 font-bold">
+            Today's Order Summary
+          </Typography>
+          <Grid container spacing={3} className="mb-8">
+          {todayOrderSummary.map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <SummaryCard title={item.title} value={item.value} subtitle={item.subtitle} />
+            </Grid>
+          ))}
+        </Grid>
 
-      {/* Section: Repeat Orders */}
-      <Typography variant="h6" className="mb-4 font-bold">
-        Repeat Orders
-      </Typography>
-      <Grid container spacing={2} className="mb-8">
-        {repeatOrders.map((item, index) => (
-          <Grid item xs={12} sm={6} key={index}>
-            <SummaryCard title={item.title} value={item.value} />
+          {/* Section: Repeat Orders */}
+          <Typography variant="h6" className="mb-4 font-bold">
+            Repeat Orders
+          </Typography>
+          <Grid container spacing={2} className="mb-8">
+            {repeatOrders.map((item, index) => (
+              <Grid item xs={12} sm={6} key={index}>
+                <SummaryCard title={item.title} value={item.value} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
+        </Grid>
+
+        {/* Right side: CartView */}
+        <Grid item xs={12} md={4}>
+          <CartView />
+        </Grid>
       </Grid>
 
       {/* Section: Customer Rating */}
@@ -91,10 +101,8 @@ const DashboardPage = () => {
         ))}
       </Grid>
 
-
-      {/* Show the Graphss */}
-      <DashboardGraphs/>
- 
+      {/* Show the Graphs */}
+      <DashboardGraphs />
     </div>
   );
 };
