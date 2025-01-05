@@ -7,22 +7,22 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 export default function CartView() {
   // Sample data for users
   const users = [
-    { id: 1, image: 'https://via.placeholder.com/50', userNumber: 'User1', isRead: false },
-    { id: 2, image: 'https://via.placeholder.com/50', userNumber: 'User2', isRead: false },
-    { id: 3, image: 'https://via.placeholder.com/50', userNumber: 'User3', isRead: false },
-    { id: 4, image: 'https://via.placeholder.com/50', userNumber: 'User4', isRead: false },
-    { id: 5, image: 'https://via.placeholder.com/50', userNumber: 'User5', isRead: false },
-    { id: 6, image: 'https://via.placeholder.com/50', userNumber: 'User6', isRead: false },
+    { id: 1, image: 'https://via.placeholder.com/50', userNumber: 'Rishab', isRead: false },
+    { id: 2, image: 'https://via.placeholder.com/50', userNumber: 'Abhinav', isRead: false },
+    { id: 3, image: 'https://via.placeholder.com/50', userNumber: 'Divya Mam', isRead: false },
+    { id: 4, image: 'https://via.placeholder.com/50', userNumber: 'Dvivyansh', isRead: false },
+    { id: 5, image: 'https://via.placeholder.com/50', userNumber: 'Piyush', isRead: false },
+    { id: 6, image: 'https://via.placeholder.com/50', userNumber: 'Shruti', isRead: false },
   ];
 
   // Sample data for products in cart and favorites
   const cartProducts = [
-    { id: 1, name: 'Product 1', price: '$10' },
-    { id: 2, name: 'Product 2', price: '$20' },
+    { id: 1, name: 'Product 1', price: '₹10' },
+    { id: 2, name: 'Product 2', price: '₹20' },
   ];
   const favoriteProducts = [
-    { id: 1, name: 'Product 3', price: '$15' },
-    { id: 2, name: 'Product 4', price: '$25' },
+    { id: 1, name: 'Product 3', price: '₹15' },
+    { id: 2, name: 'Product 4', price: '₹25' },
   ];
 
   // State for the drawer visibility and which list to show
