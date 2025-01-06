@@ -5,9 +5,21 @@ import {
   TwitterOutlined,
   LinkedinOutlined,
   FacebookOutlined,
+  YoutubeOutlined,
 } from '@ant-design/icons';
 
 const { Title } = Typography;
+
+// Define the form values type
+interface FormValues {
+  user: {
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+    facebook?: string;
+    youtube?: string;
+  };
+}
 
 // Form layout and validation messages
 const layout = {
@@ -19,19 +31,20 @@ const validateMessages = {
   required: '${label} is required!',
   types: {
     email: '${label} is not a valid email!',
+    url: '${label} is not a valid URL!',
   },
 };
 
-const onFinish = (values) => {
-  console.log(values);
+const onFinish = (values: FormValues) => {
+  console.log('Form Values:', values);
 };
 
-const App = () => (
+const App: React.FC = () => (
   <div style={{ padding: '20px' }}>
     <Title level={3}>Social Media Handles</Title>
     <Form
       {...layout}
-      name="social-media-Handels"
+      name="social-media-form"
       onFinish={onFinish}
       style={{ maxWidth: 600 }}
       validateMessages={validateMessages}
@@ -47,7 +60,7 @@ const App = () => (
         }
         rules={[{ required: true }]}
       >
-        <Input placeholder="Enter Instagram username" />
+        <Input placeholder="Enter Instagram handle" />
       </Form.Item>
 
       {/* Twitter */}
@@ -61,7 +74,7 @@ const App = () => (
         }
         rules={[{ type: 'email' }]}
       >
-        <Input placeholder="Enter Twitter email" />
+        <Input placeholder="Enter Twitter handle or email" />
       </Form.Item>
 
       {/* LinkedIn */}
@@ -74,7 +87,7 @@ const App = () => (
           </>
         }
       >
-        <Input placeholder="Enter LinkedIn URL" />
+        <Input placeholder="Enter LinkedIn profile URL" />
       </Form.Item>
 
       {/* Facebook */}
@@ -90,9 +103,21 @@ const App = () => (
         <Input placeholder="Enter Facebook profile URL" />
       </Form.Item>
 
-      {/* Introduction */}
-      <Form.Item name={['user', 'introduction']} label="Introduction">
-        <Input.TextArea placeholder="Write a short introduction" />
+      {/* YouTube Video Link */}
+      <Form.Item
+        name={['user', 'youtube']}
+        label={
+          <>
+            <YoutubeOutlined style={{ color: '#FF0000', marginRight: 8 }} />
+            YouTube
+          </>
+        }
+        rules={[
+          { required: true, message: 'YouTube video link is required!' },
+          { type: 'url', message: 'Please enter a valid URL!' },
+        ]}
+      >
+        <Input placeholder="Enter YouTube video link" />
       </Form.Item>
 
       {/* Save Button */}
