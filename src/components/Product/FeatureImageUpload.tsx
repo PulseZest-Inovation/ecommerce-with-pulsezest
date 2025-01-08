@@ -57,7 +57,6 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
     onProgress: (percent: number) => void
   ): Promise<string | null> => {
     return new Promise((resolve, reject) => {
-      // Generate a unique file name using timestamp and random string
       const uniqueFileName = `${filePath}${Date.now()}-${Math.random()
         .toString(36)
         .substr(2, 9)}-${file.name}`;
@@ -88,39 +87,54 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
     });
   };
 
+  const validateFile = (file: File) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Only image files are allowed!");
+    }
+    return isImage;
+  };
+
   return (
-    <div className="w-[300px] h-[400px] p-4 border rounded-md">
-    <p className="text-center font-medium">Feature Image</p>
-    {featuredImage && !uploading ? (
-      <Image
-        src={featuredImage}
-        alt="Featured"
-        className="w-full h-auto mb-4 rounded-lg object-cover"
-      />
-    ) : (
-      <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg mb-4">
-        <span className="text-gray-500">Add the Feature Image</span>
-      </div>
-    )}
-  
-    <Upload
-      showUploadList={false}
-      beforeUpload={() => false}
-      onChange={handleFeaturedUpload}
-      className="mb-4"
-    >
-      <Button
-        icon={<PlusOutlined />}
-        loading={uploading}
-        type={featuredImage ? "default" : "primary"}
+    <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+      <h3 className="text-lg font-semibold text-center mb-4">Feature Image</h3>
+
+      {featuredImage && !uploading ? (
+        <div className="mb-4">
+          <Image
+            src={featuredImage}
+            alt="Featured"
+            className="w-full h-56 rounded-lg object-cover"
+          />
+        </div>
+      ) : (
+        <div className="w-full h-56 bg-gray-100 flex items-center justify-center rounded-lg mb-4">
+          <span className="text-gray-500">No featured image selected</span>
+        </div>
+      )}
+
+      <Upload
+        showUploadList={false}
+        beforeUpload={(file) => validateFile(file) && false}
+        onChange={handleFeaturedUpload}
+        className="w-full"
       >
-        {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
-      </Button>
-    </Upload>
-  
-    {uploading && <Progress percent={uploadPercent} showInfo />}
-  </div>
-  
+        <Button
+          icon={<PlusOutlined />}
+          loading={uploading}
+          type="primary"
+          block
+        >
+          {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
+        </Button>
+      </Upload>
+
+      {uploading && (
+        <div className="mt-4">
+          <Progress percent={uploadPercent} showInfo />
+        </div>
+      )}
+    </div>
   );
 };
 
