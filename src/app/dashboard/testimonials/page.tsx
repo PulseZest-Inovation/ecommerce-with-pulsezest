@@ -88,7 +88,7 @@ export default function TestimonialsPage() {
         </Col>
       </Row>
 
-      <Modal
+      {/* <Modal
         title="Edit Testimonial"
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
@@ -104,7 +104,7 @@ export default function TestimonialsPage() {
         {currentTestimonial && (
           <TestimonialForm onSubmit={handleSaveTestimonial}  />
         )}
-      </Modal>
+      </Modal> */}
     </div>
   );
 }
