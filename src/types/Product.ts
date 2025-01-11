@@ -10,11 +10,12 @@ export interface Product {
   ModifiedAt: Timestamp;
 
   isReadyToWear: boolean;
-  readyToWearCharges: string;
-  readyToWearWrist: string;
-  readyToWearLength: string;
-  readyToWearHip: string;
-  
+  readyToWearCharges: number;
+  readyToWear?: {
+    wrist: number;
+    length: number;
+    hip: number;
+  };
   type: string;
   status: string;
   featured: boolean;

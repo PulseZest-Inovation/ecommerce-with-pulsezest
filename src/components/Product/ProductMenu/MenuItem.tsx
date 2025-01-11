@@ -14,14 +14,14 @@ export const items: MenuProps["items"] = [
     icon: <CurrencyRupeeIcon />,
   },
   {
-    key: "shipping",
-    label: "Shipping",
-    icon: <LocalShippingIcon />,
-  },
-  {
     key: "readyToWear",
     label: "Ready to Wear",
     icon: <AlarmOnIcon />,
+  },
+  {
+    key: "shipping",
+    label: "Shipping",
+    icon: <LocalShippingIcon />,
   },
   {
     key: "stock",

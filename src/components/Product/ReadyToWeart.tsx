@@ -16,7 +16,11 @@ const ReadyToWear: React.FC<ReadyToWearProp> = ({ formData, onFormDataChange }) 
   };
 
   const handleChargesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onFormDataChange("readyToWearCharges", e.target.value);
+    const value = e.target.value;
+    // Ensure the value is a number or empty string
+    if (value === "" || !isNaN(Number(value))) {
+      onFormDataChange("readyToWearCharges", value === "" ? undefined : Number(value));
+    }
   };
 
   return (

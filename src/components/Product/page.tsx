@@ -40,10 +40,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     gstRate: "",
     
     isReadyToWear: false,
-    readyToWearCharges: '',
-    readyToWearWrist: '',
-    readyToWearLength: '',
-    readyToWearHip: '',
+    readyToWearCharges: 0,
 
     HSN: "",
     createdAt: Timestamp.now(),
