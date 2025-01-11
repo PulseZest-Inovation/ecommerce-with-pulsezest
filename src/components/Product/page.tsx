@@ -38,6 +38,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     regularPrice: "",
     salePrice: "",
     gstRate: "",
+    
+    isReadyToWear: false,
+    readyToWearCharges: '',
+    readyToWearWrist: '',
+    readyToWearLength: '',
+    readyToWearHip: '',
+
     HSN: "",
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),

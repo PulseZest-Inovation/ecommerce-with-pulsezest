@@ -8,6 +8,13 @@ export interface Product {
   permalink: string;
   createdAt: Timestamp;
   ModifiedAt: Timestamp;
+
+  isReadyToWear: boolean;
+  readyToWearCharges: string;
+  readyToWearWrist: string;
+  readyToWearLength: string;
+  readyToWearHip: string;
+  
   type: string;
   status: string;
   featured: boolean;
