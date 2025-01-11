@@ -13,3 +13,4 @@ You are ready to use now!
 # Features of the PulseZest Ecommerce Dashboard
 1. Website Traffic.
 2. Business Analytics
+3. Phonepe intigration
