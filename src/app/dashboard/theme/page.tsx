@@ -8,12 +8,14 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
 import ImageCarousel from '@/components/Theme/ImageCarousel';
 import TopHeader from '@/components/Theme/TopHeader';
 import CategoryStyle from '@/components/Theme/CategoryStyle';
+import Socialmedia from '@/components/Theme/socialmedia';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -22,6 +24,7 @@ const items: MenuItem[] = [
   { key: '1', icon: <PieChartOutlined />, label: 'Top Header' },
   { key: '2', icon: <DesktopOutlined />, label: 'Categories' },
   { key: '3', icon: <ContainerOutlined />, label: 'Image Carousel' },
+  { key: '4', icon: <GlobalOutlined/>, label: 'Social Media'},
 ];
 
 type Props = {}
@@ -48,6 +51,8 @@ const ThemePage = (props: Props) => {
         return <CategoryStyle/>;
       case '3':
         return <ImageCarousel/> ;
+      case '4': 
+        return <Socialmedia/> ;
       default:
         return <div>Select a menu option</div>;
     }
