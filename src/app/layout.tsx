@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Application",
-  description: "Your Application Discription",
+  title: "PulseZest",
+  description: "Ecommerce Application in a min.",
 };
 
 export default function RootLayout({

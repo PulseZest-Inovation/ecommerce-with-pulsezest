@@ -1,99 +1,66 @@
-'use client'
-import React from 'react';
-import { Table, Button, Space } from 'antd';
-import { Customer } from '@/types/Customer'; // Assuming you have the Customer interface
-import { Timestamp } from 'firebase/firestore';
-
-// Dummy customer data (replace with real data or API call)
-const customers: Customer[] = [
-  {
-    id: '1', // Add the id field here
-    fullName: 'John Doe',
-    phone: '1234567890',
-    address: '123 Main St',
-    createdAt: Timestamp.now(),
-    dateModified: Timestamp.now(),
-    email: 'john.doe@example.com',
-    username: 'johndoe',
-    password: 'password123',
-    billing: {
-      fullName: 'John Doe',
-      company: 'Example Corp',
-      address: '123 Main Street',
-      city: 'New York',
-      state: 'NY',
-      postCode: '10001',
-      country: 'USA',
-      email: 'johndoe@example.com',
-      phone: '123-456-7890',
-    },
-    shipping: {
-      fullName: 'John Doe',
-      company: 'Example Corp',
-      address: '123 Main Street',
-      city: 'New York',
-      state: 'NY',
-      postcode: '10001',
-      country: 'USA',
-    },
-    isPayingCustomer: true,
-    avatarUrl: 'https://via.placeholder.com/150',
-    metaData: [{ key: 'loyaltyPoints', value: '150' }],
-  },
-  {
-    id: '2', // Add the id field here
-    fullName: 'Jane Smith',
-    phone: '0987654321',
-    address: '456 Oak Ave',
-    createdAt: Timestamp.now(),
-    dateModified: Timestamp.now(),
-    email: 'jane.smith@example.com',
-    username: 'janesmith',
-    password: 'password456',
-    billing: {
-      fullName: 'Jane Smith',
-      company: 'Another Corp',
-      address: '456 Oak Ave',
-      city: 'Los Angeles',
-      state: 'CA',
-      postCode: '90001',
-      country: 'USA',
-      email: 'janesmith@example.com',
-      phone: '098-765-4321',
-    },
-    shipping: {
-      fullName: 'Jane Smith',
-      company: 'Another Corp',
-      address: '456 Oak Ave',
-      city: 'Los Angeles',
-      state: 'CA',
-      postcode: '90001',
-      country: 'USA',
-    },
-    isPayingCustomer: false,
-    avatarUrl: 'https://via.placeholder.com/150',
-    metaData: [{ key: 'preferredContact', value: 'email' }],
-  },
-];
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Space, Avatar, Input } from 'antd';
+import { CustomerType } from '@/types/Customer';
+import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
+import CustomerDetails from '../CustomerDetails/page';
+const { Search } = Input;
 
 const CustomersTable: React.FC = () => {
-  // Handle the "View Profile" button click (you can replace this with routing logic if needed)
-  const handleViewProfile = (customer: Customer) => {
-    console.log('Viewing profile for:', customer);
-    // Add navigation to the profile page or modal logic here
+  const [customers, setCustomers] = useState<CustomerType[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<CustomerType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
+
+  // Fetch dynamic data from Firestore
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      setLoading(true);
+      const data = await getAllDocsFromCollection<CustomerType>('customers');
+      setCustomers(data);
+      setFilteredCustomers(data);
+      setLoading(false);
+    };
+
+    fetchCustomers();
+  }, []);
+
+  // Handle the "View Details" button click
+  const handleViewDetails = (customer: CustomerType) => {
+    setSelectedCustomer(customer);
+    setDrawerVisible(true);
+  };
+
+  // Handle filtering the data
+  const handleFilter = (value: string) => {
+    const lowerCaseValue = value.toLowerCase();
+    const filtered = customers.filter(
+      (customer) =>
+        customer.fullName.toLowerCase().includes(lowerCaseValue) ||
+        customer.email.toLowerCase().includes(lowerCaseValue) ||
+        customer.phoneNumber.toLowerCase().includes(lowerCaseValue)
+    );
+    setFilteredCustomers(filtered);
   };
 
   // Define columns for the Ant Design table
   const columns = [
     {
+      title: 'Avatar',
+      dataIndex: 'avatarUrl',
+      key: 'avatarUrl',
+      render: (avatarUrl: string) => (
+        <Avatar
+          src={typeof avatarUrl === 'string' ? avatarUrl : '/images/avtar.png'}
+          alt="Avatar"
+        />
+      ),
+    },
+    {
       title: 'Full Name',
       dataIndex: 'fullName',
       key: 'fullName',
-    },
-    {
-      title: 'Phone',
-      dataIndex: 'phone',
-      key: 'phone',
     },
     {
       title: 'Email',
@@ -101,23 +68,17 @@ const CustomersTable: React.FC = () => {
       key: 'email',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'isPayingCustomer',
-      key: 'isPayingCustomer',
-      render: (text: boolean) => (text ? 'Paying' : 'Non-paying'),
+      title: 'Phone',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
     },
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: Customer) => (
+      render: (_: any, record: CustomerType) => (
         <Space size="middle">
-          <Button type="primary" onClick={() => handleViewProfile(record)}>
-            View Profile
+          <Button type="primary" onClick={() => handleViewDetails(record)}>
+            View Details
           </Button>
         </Space>
       ),
@@ -127,11 +88,27 @@ const CustomersTable: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4">Customers</h2>
+      <div className="mb-4">
+        <Search
+          placeholder="Search by name, email, or phone"
+          onSearch={handleFilter}
+          enterButton
+          allowClear
+        />
+      </div>
       <Table
         columns={columns}
-        dataSource={customers}
+        dataSource={filteredCustomers}
         rowKey="id" // Use the id field as the unique key for each row
-        pagination={false} // You can enable pagination if needed
+        loading={loading} // Show loading spinner while fetching data
+        pagination={false} // Add pagination if needed
+      />
+
+      {/* Use the CustomerDetailsDrawer Component */}
+      <CustomerDetails
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        customer={selectedCustomer}
       />
     </div>
   );

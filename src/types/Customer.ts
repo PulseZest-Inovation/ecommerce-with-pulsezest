@@ -13,11 +13,14 @@ export interface MetaData {
 // ];
 
 
-export interface Customer {
+export interface CustomerType {
     id: string
     fullName: string;
-    phone: string;
+    phoneNumber: string;
     address: string;
+    city: string;
+    state: string;
+    pin: string;
     createdAt: Timestamp;
     dateModified: Timestamp;
     email: string;
