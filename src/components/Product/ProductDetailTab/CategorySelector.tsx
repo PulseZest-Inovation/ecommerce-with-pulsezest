@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import MultipleCategoriesSelector from "../Selector/MultipleCategorySelector";
+import MultipleCategoriesSelector from "@/components/Selector/MultipleCategorySelector";
 
 interface CategorySelectorProps {
   selectedCategories: string[];

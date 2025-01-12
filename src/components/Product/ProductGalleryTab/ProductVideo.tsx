@@ -10,39 +10,31 @@ interface VideoUploadProps {
   onVideoChange: (url: string) => void;
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ videoUrl, onVideoChange, slug }) => {
+const ProductVideo: React.FC<VideoUploadProps> = ({ videoUrl, onVideoChange, slug }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleVideoUpload = async (videoFile: File) => {
     try {
-      setUploading(true); // Set uploading state to true
-      const path = "videos"; // Define your desired storage path
+      setUploading(true);
+      const path = "videos";
       const uploadedVideoUrl = await UploadVideoToFirebase(videoFile, path, setProgress);
       await setDocWithCustomId("products", slug, { videoUrl: uploadedVideoUrl });
-
-      // Notify user of successful upload
       message.success("Video uploaded successfully.");
-      // Update the parent component with the video URL
       onVideoChange(uploadedVideoUrl);
     } catch (error) {
       console.error("Failed to upload video:", error);
-      // Notify user of the failure
       message.error("Failed to upload video. Please try again.");
     } finally {
-      setUploading(false); // Reset uploading state
-      setProgress(0); // Reset progress
+      setUploading(false);
+      setProgress(0);
     }
   };
 
   const handleDeleteVideo = async () => {
     try {
-      // Clear video URL in Firestore
       await setDocWithCustomId("products", slug, { videoUrl: "" });
-      // Update the parent component with an empty video URL
       onVideoChange("");
-
-      // Notify user of successful deletion
       message.success("Video deleted successfully.");
     } catch (error) {
       console.error("Failed to delete video:", error);
@@ -52,67 +44,55 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ videoUrl, onVideoChange, slug
 
   const props = {
     beforeUpload: (file: File) => {
-      // Validate file type
       const isVideo = file.type.startsWith("video/");
       if (!isVideo) {
         message.error("You can only upload video files!");
-        return Upload.LIST_IGNORE; // Prevent upload
+        return Upload.LIST_IGNORE;
       }
-
-      // Proceed with the upload if validation passes
       handleVideoUpload(file);
-      return false; // Prevent default upload behavior
+      return false;
     },
-    accept: "video/*", // Accept only video files
+    accept: "video/*",
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-      <Upload {...props} maxCount={1} showUploadList={false} disabled={uploading}>
-        <Button icon={<UploadOutlined />} disabled={uploading}>
-          {uploading ? "Uploading..." : "Upload Video"}
-        </Button>
-      </Upload>
+    <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto">
+      <h2 className="mb-6 text-xl font-bold text-center text-gray-800">Product Video Upload</h2>
+
       {uploading && (
         <Progress
           percent={progress}
           status={progress === 100 ? "success" : "active"}
-          style={{ width: "100%", marginTop: "10px" }}
+          className="w-full mb-4"
         />
       )}
+
       {videoUrl && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "20px",
-            marginTop: "10px",
-            width: "100%",
-          }}
-        >
+        <div className="relative mb-6">
           <video
             src={videoUrl}
             controls
-            style={{
-              width: "70%",
-              maxWidth: "500px",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-            }}
+            className="w-full rounded-lg shadow-md"
           />
-          <Button
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
+          <button
+            className="absolute top-2 right-2 px-3 py-1 text-sm font-semibold text-white bg-red-600 rounded hover:bg-red-700"
             onClick={handleDeleteVideo}
-            style={{ height: "40px" }}
           >
-            Delete Video
-          </Button>
+            <DeleteOutlined />
+          </button>
         </div>
       )}
+
+      <Upload {...props} maxCount={1} showUploadList={false} disabled={uploading}>
+        <button
+          className={`w-full px-5 py-3 text-sm font-medium text-white rounded-md ${uploading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+          disabled={uploading}
+        >
+          <UploadOutlined className="mr-2" /> {uploading ? "Uploading..." : "Upload Video"}
+        </button>
+      </Upload>
     </div>
   );
 };
 
-export default VideoUpload;
+export default ProductVideo;

@@ -11,7 +11,7 @@ interface FeaturedImageUploadProps {
   slug: string;
 }
 
-const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
+const ProductFeatureImage: React.FC<FeaturedImageUploadProps> = ({
   featuredImage,
   onFeaturedImageChange,
   slug,
@@ -96,20 +96,22 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-center mb-4">Feature Image</h3>
+    <div className="max-w-md mx-auto bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-lg p-6">
+      <h3 className="text-xl font-bold text-center mb-6 text-gray-700">
+        Feature Image
+      </h3>
 
       {featuredImage && !uploading ? (
         <div className="mb-4">
           <Image
             src={featuredImage}
             alt="Featured"
-            className="w-full h-56 rounded-lg object-cover"
+            className="w-full h-60 rounded-lg object-cover shadow-md"
           />
         </div>
       ) : (
-        <div className="w-full h-56 bg-gray-100 flex items-center justify-center rounded-lg mb-4">
-          <span className="text-gray-500">No featured image selected</span>
+        <div className="w-full h-60 bg-gray-100 flex items-center justify-center rounded-lg shadow-inner mb-4 border border-dashed border-gray-300">
+          <span className="text-gray-400 text-lg">No featured image selected</span>
         </div>
       )}
 
@@ -123,19 +125,26 @@ const FeaturedImageUpload: React.FC<FeaturedImageUploadProps> = ({
           icon={<PlusOutlined />}
           loading={uploading}
           type="primary"
-          block
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg py-2"
         >
           {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
         </Button>
       </Upload>
 
       {uploading && (
-        <div className="mt-4">
-          <Progress percent={uploadPercent} showInfo />
+        <div className="mt-6">
+          <Progress
+            percent={uploadPercent}
+            showInfo
+            strokeColor={{
+              "0%": "#1890ff",
+              "100%": "#87d068",
+            }}
+          />
         </div>
       )}
     </div>
   );
 };
 
-export default FeaturedImageUpload;
+export default ProductFeatureImage;

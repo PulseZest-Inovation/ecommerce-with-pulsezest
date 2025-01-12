@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
-import { AppData } from '@/types/AppData';
+import { AppDataType } from '@/types/AppData';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs } from '@mui/material';
@@ -15,7 +15,7 @@ import { auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
 
 interface DashboardProps {
-  appData: AppData;
+  appData: AppDataType;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ appData }) => {

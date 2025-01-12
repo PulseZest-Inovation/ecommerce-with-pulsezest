@@ -1,18 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Button, Menu, message, Card, Collapse, } from "antd";
-import { Product } from "@/types/Product";
-import GalleryUpload from "./GalleryUpload";
-import FeaturedImageUpload from "./FeatureImageUpload";
-import CategorySelector from "./ProductCategorySelector";
-import { useRouter } from "next/navigation";
-import Tags from "./Tags";
-import ProductContentRenderer from "./ProductMenu/RenderMenuComponent";
-import VideoUpload from "./VideUpload";
-import { items } from "./ProductMenu/MenuItem";
 import { Timestamp } from "firebase/firestore";
+import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
+import { Tabs,  Button, message, } from "antd";
+import { useRouter } from "next/navigation";
+import { Product } from "@/types/Product";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import ProductDetailTab from "./ProductDetailTab/page";
+import ProdutOtherTab from "./ProductOtherTab/page";
+import ProductGalleryTab from "./ProductGalleryTab/page";
+import { ApplicationConfig } from "@/utils/ApplicationConfig";
 
 interface ProductWrapperProps {
   initialData?: Product;
@@ -20,8 +18,6 @@ interface ProductWrapperProps {
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedKey, setSelectedKey] = useState<string>("price");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [formData, setFormData] = useState<Product>({
     id: "",
     productTitle: "",
@@ -38,7 +34,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     regularPrice: "",
     salePrice: "",
     gstRate: "",
-    
+
     isReadyToWear: false,
     readyToWearCharges: 0,
 
@@ -77,8 +73,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     ],
   });
 
-  const router = useRouter();
-
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
@@ -90,9 +84,10 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           ? initialData.description
           : prev.description,
       }));
-      setSelectedCategories(initialData.categories || []);
     }
   }, [initialData]);
+
+  const router = useRouter();
 
   const handleInputChange = (key: keyof Product, value: any) => {
     if (key === "productTitle" && !initialData) {
@@ -102,7 +97,6 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       setFormData((prev) => ({ ...prev, [key]: value }));
     }
   };
-  
 
   const generateSlug = (name: string) =>
     name
@@ -110,28 +104,17 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-  const handleCategoryChange = (categories: string[]) => {
-    setSelectedCategories(categories);
-    setFormData((prev) => ({ ...prev, categories }));
-  };
-
-  const handleExpandedDescriptionChange = (index: number, value: string) => {
-    const updatedDescriptions = [...formData.description];
-    updatedDescriptions[index].content = value;
-    setFormData((prev) => ({ ...prev, description: updatedDescriptions }));
-  };
-
   const handleSubmit = async () => {
     if (!formData.productTitle) {
       message.error("Product Title is required!");
       return;
     }
-  
+
     if (loading) return; // Prevent multiple submissions
     setLoading(true);
 
     let currentSlug = formData.slug;
-  
+
     if (!initialData) {
       // Only check for slug availability for new products
       const existingSlug = await checkSlugAvailability(currentSlug);
@@ -139,14 +122,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         currentSlug = `${currentSlug}-${Date.now()}`;
       }
     }
-  
+
     try {
       await setDocWithCustomId("products", currentSlug, {
         ...formData,
         slug: currentSlug, // Preserve the existing slug if editing
         id: currentSlug,
       });
-
 
       //saving the sku
       if (formData.sku) {
@@ -161,16 +143,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           : "Product Added Successfully!"
       );
 
-      router.push('/dashboard/manage-product/view-all-product')
-
+      router.push("/dashboard/manage-product/view-all-product");
     } catch (error) {
       message.error("Error adding/updating product.");
-    }finally{
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   };
-  
-  
 
   const checkSlugAvailability = async (slug: string): Promise<string> => {
     try {
@@ -183,120 +162,77 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     }
   };
 
-  const renderExpandableDescriptions: any = () =>
-    formData.description.map((section, index) => (
-      <Collapse.Panel header={section.heading} key={index}>
-        <Input.TextArea
-          value={section.content}
-          onChange={(e) =>
-            handleExpandedDescriptionChange(index, e.target.value)
-          }
-          rows={4}
+  const items = [
+    {
+      label: "Product Details",
+      key: "1",
+      children: (
+        <ProductDetailTab
+          formData={formData}
+          onFormDataChange={handleInputChange}
         />
-      </Collapse.Panel>
-    ));
+      ),
+    },
+    {
+      label: "Other Fields",
+      key: "2",
+      children: (
+        <ProdutOtherTab
+          formData={formData}
+          onFormDataChange={handleInputChange}
+        />
+      ),
+    },
+    {
+      label: "Product Gallery",
+      key: "3",
+      children: (
+        <ProductGalleryTab
+          formData={formData}
+          onFormDataChange={handleInputChange}
+          slug={formData.slug}
+        />
+      ), // Component for Tab 3
+    },
+  ];
 
-  return (
-    <div className="container mx-auto">
-      <div className="flex justify-start">
+  const operations = (
+    <div>
       <Button
-          type="primary"
-          onClick={handleSubmit}
-          disabled={ loading || !formData.productTitle}
-          loading={loading}
-        >
-          Submit
-        </Button>
-      </div>
-      <div className=" my-2">
-        <p className="text-sta font-mono text-blue-400">/{formData.slug}</p>
-      </div>
-      <Row gutter={16}>
-        <Col  span={12}>
-          <Input
-            placeholder="Product Title"
-            value={formData.productTitle}
-            onChange={(e) => handleInputChange("productTitle", e.target.value)}
-            className="mb-4"
-            required
-          />
-          <Input
-            placeholder="Product Subtitle"
-            value={formData.productSubtitle}
-            onChange={(e) =>
-              handleInputChange("productSubtitle", e.target.value)
-            }
-            className="mb-4"
-          />
-          <Input.TextArea
-            rows={2}
-            placeholder="Short Description"
-            value={formData.shortDescription}
-            onChange={(e) =>
-              handleInputChange("shortDescription", e.target.value)
-            }
-            className="mb-4"
-          />
-          <Collapse  >{renderExpandableDescriptions()}</Collapse>
-          <div  >
-              <CategorySelector
-                selectedCategories={selectedCategories}
-                onCategoryChange={handleCategoryChange}
-              />
-              <Tags
-                selectedTags={formData.tags}
-                onTagsChange={(tags) => handleInputChange("tags", tags)}
-                productId={formData.slug}
-              />
-          </div>
+        type="primary"
+        onClick={handleSubmit}
+        disabled={loading || !formData.productTitle}
+        loading={loading}
+      >
+        Submit
+      </Button>
+    </div>
+  );
 
-          <div className="flex " >
-            <Menu
-              onClick={(e) => setSelectedKey(e.key)}
-              style={{ width: 256 }}
-              defaultSelectedKeys={["price"]}
-              mode="inline"
-              items={items}
-            />
-            <div style={{width: '80%'}}>
-            <ProductContentRenderer
-              selectedKey={selectedKey}
-              formData={formData}
-              onFormDataChange={handleInputChange}
-            />
-            </div>
-        
-          </div>
+  const handleCopySlug = () => {
+    navigator.clipboard.writeText(formData.slug);
+    message.success("Slug copied to clipboard!");
+  };
 
-        </Col>
-        <Col   span={12}>
-          <Card className="mt-2">
-            <FeaturedImageUpload
-              featuredImage={formData.featuredImage}
-              onFeaturedImageChange={(url) =>
-                handleInputChange("featuredImage", url)
-              }
-              slug={formData.slug}
-            />
-          </Card>
-          <Card className="mt-9">
-            <GalleryUpload
-              galleryImages={formData.galleryImages}
-              onGalleryChange={(images) =>
-                handleInputChange("galleryImages", images)
-              }
-              slug={formData.slug}
-            />
-          </Card>
-          <Card className="mt-2">
-            <VideoUpload
-              videoUrl={formData.videoUrl}
-              onVideoChange={(url) => handleInputChange("videoUrl", url)}
-              slug={formData.slug}
-            />
-          </Card>
-        </Col>
-      </Row>
+  const handleNavigate = () => {
+    const url = `${ApplicationConfig?.callback_url}/${formData.slug}`;
+    window.open(url, '_blank');
+  };
+
+  
+  return (
+    <div>
+ 
+      <div className="flex items-center space-x-2 mt-2">
+        <p className="text-blue-300 font-mono" onClick={handleCopySlug}>
+          {`${ApplicationConfig?.callback_url}${formData.slug}`}
+        </p>
+        <LinkOutlined 
+          onClick={handleNavigate} 
+          className="cursor-pointer text-blue-500" 
+        />
+      </div>
+      <Tabs centered tabBarExtraContent={operations} items={items} />
     </div>
   );
 };
