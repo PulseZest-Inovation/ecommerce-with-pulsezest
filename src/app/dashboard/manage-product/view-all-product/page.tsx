@@ -10,6 +10,7 @@ import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySe
 import { Link, Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
 import { ApplicationConfig } from '@/utils/ApplicationConfig';
+import ExportProductsButton from './ExportProductButton';
 
 const ViewProduct: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -188,9 +189,13 @@ const ViewProduct: React.FC = () => {
 
       <div className="flex justify-between  pt-2 ">
         <h1 className="font-bold text-2xl">Product List</h1>
+        <div className="space-x-2">
+        <ExportProductsButton products={filteredProducts} />
         <Button type="primary" onClick={() => router.push('add-new-product')}>
           Add New Product
         </Button>
+      </div>
+
       </div>
 
       <div className="flex space-x-3 mt-2 mb-4 pb-2">
