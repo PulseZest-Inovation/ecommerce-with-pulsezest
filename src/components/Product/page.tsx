@@ -232,7 +232,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           className="cursor-pointer text-blue-500" 
         />
       </div>
-      <Tabs centered tabBarExtraContent={operations} items={items} />
+      <Tabs centered tabBarExtraContent={operations} items={items} className="text-2xl font-bold"/>
     </div>
   );
 };

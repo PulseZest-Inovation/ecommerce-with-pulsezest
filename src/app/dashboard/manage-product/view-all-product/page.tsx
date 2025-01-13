@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input } from 'antd';
 import { useRouter } from 'next/navigation';
@@ -6,27 +6,28 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Product } from '@/types/Product';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import moment from 'moment';
-import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector'; // Adjust path accordingly
-import { Search } from '@mui/icons-material';
+import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
+import { Link, Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
+import { ApplicationConfig } from '@/utils/ApplicationConfig';
 
-type Props = {};
-
-const ViewProduct: React.FC<Props> = () => {
+const ViewProduct: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const router = useRouter();
 
-  const fetchProductList = async () => {
+  // Optimized Fetch Logic
+  const fetchProducts = async () => {
+    setLoading(true);
     try {
-      const productList = await getAllDocsFromCollection<Product>('products');
-      setProducts(productList);
-      setFilteredProducts(productList);
+      const products = await getAllDocsFromCollection<Product>('products');
+      setProducts(products);
+      setFilteredProducts(products);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
@@ -35,9 +36,10 @@ const ViewProduct: React.FC<Props> = () => {
   };
 
   useEffect(() => {
-    fetchProductList();
+    fetchProducts();
   }, []);
 
+  // Filtering Logic
   useEffect(() => {
     let filtered = products;
 
@@ -57,19 +59,27 @@ const ViewProduct: React.FC<Props> = () => {
     setFilteredProducts(filtered);
   }, [searchTerm, selectedCategories, products]);
 
-  const handleEdit = (id: string) => {
-    console.log('Edit product with id:', id);
-    router.push(`edit-product/${id}`)
+  const handleEdit = (id: string) => router.push(`edit-product/${id}`);
+  
+
+  const handleViewProduct = (id: string) => {
+    if (!ApplicationConfig?.callback_url || !id) {
+      console.error("Callback URL or ID is not defined");
+      return;
+    }
+  
+    const url = `${ApplicationConfig.callback_url}${id}`;
+    window.open(url, '_blank'); // Opens the link in a new tab
   };
+  
+  
 
   const handleDelete = (product: Product) => {
     setProductToDelete(product);
     setIsModalVisible(true);
   };
 
-  const handleDeleteSuccess = () => {
-    fetchProductList(); 
-  };
+  const handleDeleteSuccess = () => fetchProducts();
 
   const cancelDelete = () => {
     setIsModalVisible(false);
@@ -90,9 +100,13 @@ const ViewProduct: React.FC<Props> = () => {
             style={{ objectFit: 'cover' }}
           />
           <div>
-            <div className='font-bold'> {record.productTitle ? <>{record.productTitle}</>:'No Product Title' }</div>
+            <div className="font-bold">
+              {record.productTitle || 'No Product Title'}
+            </div>
             <div>
-              { record.productSubtitle ? <>{record.productSubtitle.split(' ').slice(0, 10).join(' ')}...</> : <>No Subtitle set</> }
+              {record.productSubtitle
+                ? `${record.productSubtitle.split(' ').slice(0, 10).join(' ')}...`
+                : 'No Subtitle set'}
             </div>
           </div>
         </Space>
@@ -122,12 +136,16 @@ const ViewProduct: React.FC<Props> = () => {
       dataIndex: 'price',
       key: 'price',
       render: (price: string) => `₹${price}`,
+      sorter: (a: Product, b: Product) => parseFloat(a.price) - parseFloat(b.price),
     },
     {
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (createdAt: any) => moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss'),
+      render: (createdAt: any) =>
+        moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss'),
+      sorter: (a: Product, b: Product) =>
+        moment(a.createdAt.toDate()).unix() - moment(b.createdAt.toDate()).unix(),
     },
     {
       title: 'Average Rating',
@@ -140,6 +158,12 @@ const ViewProduct: React.FC<Props> = () => {
       key: 'actions',
       render: (_: any, record: Product) => (
         <Space size="middle">
+            <Tooltip title="View Product">
+            <Button
+              icon={< Link />}
+              onClick={() => handleViewProduct(record.slug)}
+            />
+          </Tooltip>
           <Tooltip title="Edit">
             <Button
               icon={<EditOutlined />}
@@ -160,14 +184,16 @@ const ViewProduct: React.FC<Props> = () => {
 
   return (
     <div>
-      <div className='justify-between flex'>
-        <h1 className='font-bold text-2xl'>Product List</h1>
-        <Button type='primary' onClick={() => router.push('add-new-product')}>
+      <div className='sticky top-0 z-30 bg-white  '>
+
+      <div className="flex justify-between  pt-2 ">
+        <h1 className="font-bold text-2xl">Product List</h1>
+        <Button type="primary" onClick={() => router.push('add-new-product')}>
           Add New Product
         </Button>
       </div>
 
-      <div className='flex space-x-3 mt-2 mb-4'>
+      <div className="flex space-x-3 mt-2 mb-4 pb-2">
         <Input
           prefix={<Search />}
           placeholder="Search by ID or Description"
@@ -182,6 +208,9 @@ const ViewProduct: React.FC<Props> = () => {
         </div>
       </div>
 
+      </div>
+    
+
       <Table
         dataSource={filteredProducts}
         columns={columns}
@@ -194,8 +223,8 @@ const ViewProduct: React.FC<Props> = () => {
       <DeleteConfirmationModal
         visible={isModalVisible}
         product={productToDelete}
-        onDeleteSuccess={handleDeleteSuccess} 
-        onCancel={cancelDelete} 
+        onDeleteSuccess={handleDeleteSuccess}
+        onCancel={cancelDelete}
       />
     </div>
   );

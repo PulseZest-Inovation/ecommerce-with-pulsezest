@@ -1,10 +1,8 @@
 'use client'
 import React, { useState } from 'react';
 import {
-  AppstoreOutlined,
   ContainerOutlined,
   DesktopOutlined,
-  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
@@ -12,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
-import ImageCarousel from '@/components/Theme/ImageCarousel';
+import ImageCarousel from '@/components/Theme/ImageCarousle/ImageCarousel';
 import TopHeader from '@/components/Theme/TopHeader';
 import CategoryStyle from '@/components/Theme/CategoryStyle';
 import Socialmedia from '@/components/Theme/socialmedia';
