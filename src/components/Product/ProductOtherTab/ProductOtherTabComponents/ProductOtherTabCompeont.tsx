@@ -1,12 +1,12 @@
 import React from "react";
-import Price from "../Price";
-import Shipping from "../Shipping";
+import Price from "./Price";
+import Shipping from "./Shipping";
 import { Product } from "@/types/Product";
-import ProductStock from "../stock";
-import GSTSelector from "../GSTSelector";
-import HSN from "../HSN";
-import SkuField from "../Sku";
-import ReadyToWear from "../ReadyToWeart";
+import ProductStock from "./stock";
+import GSTSelector from "./GSTSelector";
+import HSN from "./HSN";
+import SkuField from "./Sku";
+import ReadyToWear from "./ReadyToWeart";
 
 interface ProductContentRendererProps{
     selectedKey: string;
