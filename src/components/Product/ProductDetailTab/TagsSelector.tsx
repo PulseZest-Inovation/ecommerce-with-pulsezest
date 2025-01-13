@@ -190,9 +190,9 @@ const ProductTagSelector: React.FC<TagsProps> = ({ selectedTags, onTagsChange, p
   }, []);
 
   return (
-    <div  className='mt-3'>
+    <div  className='mt-3 w-full'>
     
-      <h2 className='font-bold'>Selct Tags</h2>
+      <h2 className='font-medium text-gray-700'>Selct Tags</h2>
       <Select
         mode="tags"
         style={{ width: '100%' }}

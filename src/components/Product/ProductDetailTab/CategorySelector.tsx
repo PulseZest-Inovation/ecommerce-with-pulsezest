@@ -9,8 +9,10 @@ interface CategorySelectorProps {
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({ selectedCategories, onCategoryChange }) => {
   return (
-    <div className="mb-4 w-4/5 mt-3" >
-      <h2 className="font-bold">Select Cateogires</h2>
+             
+    
+    <div className="mb-4 mt-3 w-full" >
+      <h2 className="font-medium text-gray-700">Select Cateogires</h2>
       <MultipleCategoriesSelector
         value={selectedCategories}
         onChange={onCategoryChange}
