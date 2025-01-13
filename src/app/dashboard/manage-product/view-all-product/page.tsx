@@ -68,7 +68,7 @@ const ViewProduct: React.FC = () => {
       return;
     }
   
-    const url = `${ApplicationConfig.callback_url}${id}`;
+    const url = `${ApplicationConfig.callback_url}/${id}`;
     window.open(url, '_blank'); // Opens the link in a new tab
   };
   
