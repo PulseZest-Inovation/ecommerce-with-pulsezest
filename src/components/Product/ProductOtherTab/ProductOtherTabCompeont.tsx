@@ -1,12 +1,12 @@
 import React from "react";
-import Price from "../Price";
-import Shipping from "../Shipping";
+import Price from "./ProductOtherTabComponents/Price";
+import Shipping from "./ProductOtherTabComponents/Shipping";
 import { Product } from "@/types/Product";
-import ProductStock from "../stock";
-import GSTSelector from "../GSTSelector";
-import HSN from "../HSN";
-import SkuField from "../Sku";
-import ReadyToWear from "../ReadyToWeart";
+import ProductStock from "./ProductOtherTabComponents/stock";
+import GSTSelector from "./ProductOtherTabComponents/GSTSelector";
+import HSN from "./ProductOtherTabComponents/HSN";
+import SkuField from "./ProductOtherTabComponents/Sku";
+import ReadyToWear from "./ProductOtherTabComponents/ReadyToWeart";
 
 interface ProductContentRendererProps{
     selectedKey: string;
@@ -17,7 +17,7 @@ interface ProductContentRendererProps{
 
 
 
-const ProductContentRenderer: React.FC<ProductContentRendererProps> = ({
+const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
     selectedKey,
     formData,
     onFormDataChange,
@@ -48,7 +48,7 @@ const ProductContentRenderer: React.FC<ProductContentRendererProps> = ({
     }
   };
   
-  export default ProductContentRenderer; 
+  export default ProductOtherTabComponents; 
 
 
   

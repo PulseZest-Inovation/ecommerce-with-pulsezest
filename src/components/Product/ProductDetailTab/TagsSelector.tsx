@@ -13,7 +13,7 @@ interface TagsProps {
   productId: string; // ID of the product being edited
 }
 
-const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) => {
+const ProductTagSelector: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) => {
   const [options, setOptions] = useState<DefaultOptionType[]>([]); // Tag options
   const [loading, setLoading] = useState<boolean>(true); // Loading state
 
@@ -214,4 +214,4 @@ const Tags: React.FC<TagsProps> = ({ selectedTags, onTagsChange, productId }) =>
   );
 };
 
-export default Tags;
+export default ProductTagSelector;

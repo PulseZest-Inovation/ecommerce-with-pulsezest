@@ -7,7 +7,7 @@ import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import type { MenuProps } from "antd";
 import { SkuIcon, TaxIcon } from "@/components/Icons/page";
 
-export const items: MenuProps["items"] = [
+export const ProductOtherTabMenu: MenuProps["items"] = [
   {
     key: "price",
     label: "Price",

@@ -1,10 +1,8 @@
 'use client'
 import React, { useState } from 'react';
 import {
-  AppstoreOutlined,
   ContainerOutlined,
   DesktopOutlined,
-  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
@@ -12,10 +10,12 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
-import ImageCarousel from '@/components/Theme/ImageCarousel';
+import ImageCarousel from '@/components/Theme/ImageCarousle/ImageCarousel';
 import TopHeader from '@/components/Theme/TopHeader';
 import CategoryStyle from '@/components/Theme/CategoryStyle';
 import Socialmedia from '@/components/Theme/socialmedia';
+import Footer from '@/components/Theme/Footer/page';
+import { FormatTextdirectionLToROutlined } from '@mui/icons-material';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -25,6 +25,8 @@ const items: MenuItem[] = [
   { key: '2', icon: <DesktopOutlined />, label: 'Categories' },
   { key: '3', icon: <ContainerOutlined />, label: 'Image Carousel' },
   { key: '4', icon: <GlobalOutlined/>, label: 'Social Media'},
+  { key: '5', icon: <FormatTextdirectionLToROutlined/>, label: 'Footer'},
+
 ];
 
 type Props = {}
@@ -53,6 +55,8 @@ const ThemePage = (props: Props) => {
         return <ImageCarousel/> ;
       case '4': 
         return <Socialmedia/> ;
+      case '5':
+        return <Footer/>
       default:
         return <div>Select a menu option</div>;
     }

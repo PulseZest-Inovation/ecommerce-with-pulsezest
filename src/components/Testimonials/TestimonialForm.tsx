@@ -33,7 +33,7 @@ const TestimonialForm: React.FC<TestimonialFormProps> = ({ onSubmit }) => {
     if (testimonialText.trim() && name.trim() && images.length === 2) {
       const imageUrls = await Promise.all(
         images.map((image) =>
-          UploadImageToFirebase(image, `${ApplicationConfig.securityKey}/testimonials-images`)
+          UploadImageToFirebase(image, `${ApplicationConfig?.securityKey}/testimonials-images`)
         )
       );
 

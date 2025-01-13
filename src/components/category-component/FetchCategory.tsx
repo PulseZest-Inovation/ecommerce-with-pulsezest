@@ -243,7 +243,7 @@ const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageUpload = async () => {
-    const key = ApplicationConfig.securityKey;
+    const key = ApplicationConfig?.securityKey;
 
     if (image) {
       const imagePath = `${key}/categories`;

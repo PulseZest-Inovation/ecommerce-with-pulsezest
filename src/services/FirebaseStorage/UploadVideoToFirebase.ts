@@ -21,7 +21,7 @@ export const UploadVideoToFirebase = async (
     }
 
     // Use the current timestamp for a unique file name
-    const fileName = `${ApplicationConfig.securityKey}/${path}/${Date.now()}-${videoFile.name}`;
+    const fileName = `${ApplicationConfig?.securityKey}/${path}/${Date.now()}-${videoFile.name}`;
     const storageRef = ref(storage, fileName);
 
     // Create a resumable upload task
