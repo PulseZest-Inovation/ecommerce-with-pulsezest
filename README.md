@@ -17,4 +17,4 @@ You are ready to use now!
 4. shipRocket intigratoin
 5. Theme Managment
 
-# comes with Pay as your Grow.
+# Comes with Pay as your Grow.
