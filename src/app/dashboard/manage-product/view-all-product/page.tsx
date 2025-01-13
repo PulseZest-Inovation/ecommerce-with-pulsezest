@@ -62,13 +62,13 @@ const ViewProduct: React.FC = () => {
   const handleEdit = (id: string) => router.push(`edit-product/${id}`);
   
 
-  const handleViewProduct = (id: string) => {
+  const handleViewProduct = (id: string, category: string) => {
     if (!ApplicationConfig?.callback_url || !id) {
       console.error("Callback URL or ID is not defined");
       return;
     }
   
-    const url = `${ApplicationConfig.callback_url}/${id}`;
+    const url = `${ApplicationConfig.callback_url}/collection/${category}/product/${id}`;
     window.open(url, '_blank'); // Opens the link in a new tab
   };
   
@@ -161,7 +161,7 @@ const ViewProduct: React.FC = () => {
             <Tooltip title="View Product">
             <Button
               icon={< Link />}
-              onClick={() => handleViewProduct(record.slug)}
+              onClick={() => handleViewProduct(record.slug, record.categories[0])}
             />
           </Tooltip>
           <Tooltip title="Edit">

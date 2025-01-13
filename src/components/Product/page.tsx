@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
-import { Tabs,  Button, message, } from "antd";
+import { Tabs,  Button, message, Tooltip, } from "antd";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/Product";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
@@ -105,8 +105,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       .replace(/^-+|-+$/g, "");
 
   const handleSubmit = async () => {
-    if (!formData.productTitle) {
-      message.error("Product Title is required!");
+    if (!formData.productTitle && !formData.categories[0]) {
+      message.error("Product Title and categories is required!");
       return;
     }
 
@@ -198,16 +198,25 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
   const operations = (
     <div>
-      <Button
-        type="primary"
-        onClick={handleSubmit}
-        disabled={loading || !formData.productTitle}
-        loading={loading}
+      <Tooltip
+        title={
+          !formData.productTitle || !formData.categories[0]
+            ? "Please fill in the Product Title and select at least one category."
+            : ""
+        }
       >
-        Submit
-      </Button>
+        <Button
+          type="primary"
+          onClick={handleSubmit}
+          disabled={loading || !formData.productTitle || !formData.categories[0]}
+          loading={loading}
+        >
+          Submit
+        </Button>
+      </Tooltip>
     </div>
   );
+  
 
   const handleCopySlug = () => {
     navigator.clipboard.writeText(formData.slug);
@@ -215,7 +224,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   };
 
   const handleNavigate = () => {
-    const url = `${ApplicationConfig?.callback_url}/${formData.slug}`;
+    const url = `${ApplicationConfig?.callback_url}/collection/${formData.categories[0]}/product/${formData.slug}`;
     window.open(url, '_blank');
   };
 
@@ -225,7 +234,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
  
       <div className="flex items-center space-x-2 mt-2">
         <p className="text-blue-300 font-mono" onClick={handleCopySlug}>
-          {`${ApplicationConfig?.callback_url}${formData.slug}`}
+          {`${ApplicationConfig?.callback_url}/${formData.slug}`}
         </p>
         <LinkOutlined 
           onClick={handleNavigate} 
