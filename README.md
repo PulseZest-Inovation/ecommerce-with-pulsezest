@@ -8,7 +8,7 @@ step 2 - Enter the Email and Password of your Account.
 
 You Looged into Your Ecommerce Dashboard with PulseZest
 
-You are ready to use now!
+You are ready to use now! 
 
 # Features of the PulseZest Ecommerce Dashboard
 1. Website Traffic.
@@ -16,3 +16,5 @@ You are ready to use now!
 3. Phonepe intigration
 4. shipRocket intigratoin
 5. Theme Managment
+
+# comes with Pay as your Grow.
