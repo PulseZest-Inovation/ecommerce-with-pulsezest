@@ -4,6 +4,11 @@ import { auth, db } from '@/utils/firbeaseConfig';
 // Function to get user details from Firestore by current authenticated user ID
 export const getUser = async () => {
   try {
+    // Check if running in the browser
+    if (typeof window === "undefined") {
+      throw new Error('This code is running on the server, localStorage is not available!');
+    }
+
     // Get the current user from Firebase Authentication
     const currentUser = auth.currentUser;
     if (!currentUser) {
@@ -27,7 +32,7 @@ export const getUser = async () => {
       throw new Error('User document not found!');
     }
   } catch (error) {
-    console.error('Error fetching user data:',  );
+    console.error('Error fetching user data:', error);
     throw error;
   }
 };

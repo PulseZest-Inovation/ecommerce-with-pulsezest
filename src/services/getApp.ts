@@ -7,6 +7,13 @@ export const getAppData = async <T>(
     docName: string
   ): Promise<T | null> => {
     try {
+
+
+       // Ensure the code is running in the browser
+    if (typeof window === "undefined") {
+      throw new Error('localStorage is not available on the server!');
+    }
+    
       // Retrieve the appKey from localStorage
       const appKey = localStorage.getItem('securityKey');
       if (!appKey) {
