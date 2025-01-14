@@ -38,6 +38,14 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     isReadyToWear: false,
     readyToWearCharges: 0,
 
+    // these
+    isReturn: true,
+    returnPeriod: "Hassle-free 10 days return & exchange",
+    isShippingCharge: false, //done
+    deliveryTimePeriod: '2-7 days delivery with in India', //done
+    isCashOnDelivery: true, //done
+    //these
+
     HSN: "",
     createdAt: Timestamp.now(),
     ModifiedAt: Timestamp.now(),

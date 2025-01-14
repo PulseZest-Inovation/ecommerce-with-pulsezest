@@ -7,6 +7,7 @@ import GSTSelector from "./ProductOtherTabComponents/GSTSelector";
 import HSN from "./ProductOtherTabComponents/HSN";
 import SkuField from "./ProductOtherTabComponents/Sku";
 import ReadyToWear from "./ProductOtherTabComponents/ReadyToWeart";
+import ReturnAndExchange from "./ProductOtherTabComponents/ReturnAndExchange";
 
 interface ProductContentRendererProps{
     selectedKey: string;
@@ -29,6 +30,10 @@ const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
         return (
           <Shipping formData={formData} onFormDataChange={onFormDataChange} />
         );
+        case "returnAndExchange":
+          return (
+            <ReturnAndExchange formData={formData} onFormDataChange={onFormDataChange} />
+          );
         case "readyToWear":
           return (
             <ReadyToWear formData={formData} onFormDataChange={onFormDataChange} />

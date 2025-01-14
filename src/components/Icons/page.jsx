@@ -5,7 +5,7 @@ const ProductIcon = () => {
   return (
     <Image
       src="/icons/product.png" // Path relative to the `public` folder
-      alt='auto-rickshaw'
+      alt='product'
       width={25}
       height={25}
 
@@ -18,7 +18,7 @@ const AllProduct = () => {
   return (
     <Image
       src="/icons/products.png" // Path relative to the `public` folder
-      alt='car'
+      alt='all-products'
       width={25}
       height={25}
 
@@ -31,7 +31,7 @@ const AddProuducts = () => {
   return (
     <Image
       src="/icons/add.png" // Path relative to the `public` folder
-      alt='car'
+      alt='add'
       width={25}
       height={25}
 
@@ -44,7 +44,7 @@ const ManageCategoriesIcon = () => {
   return (
     <Image
       src="/icons/manage-categories.png" // Path relative to the `public` folder
-      alt='car'
+      alt='categories'
       width={25}
       height={25}
 
@@ -57,7 +57,7 @@ const OrderIcon = () => {
   return (
     <Image
       src="/icons/order.png" // Path relative to the `public` folder
-      alt='car'
+      alt='order'
       width={25}
       height={25}
 
@@ -71,7 +71,7 @@ const CustomerIcon = () => {
   return (
     <Image
       src="/icons/customer.png" // Path relative to the `public` folder
-      alt='car'
+      alt='customer'
       width={25}
       height={25}
 
@@ -84,7 +84,7 @@ const ReviewAndRatingIcon = () => {
   return (
     <Image
       src="/icons/reviewsandrating.png" // Path relative to the `public` folder
-      alt='car'
+      alt='reviews-and-rating'
       width={25}
       height={25}
 
@@ -96,8 +96,8 @@ const ReviewAndRatingIcon = () => {
 const PendingOrderIcon = () => {
   return (
     <Image
-      src="/icons/reviewsandrating.png" // Path relative to the `public` folder
-      alt='car'
+      src="/icons/pending-order.png" // Path relative to the `public` folder
+      alt='pending-order'
       width={25}
       height={25}
 
@@ -109,7 +109,7 @@ const OrderCompeltedIcon = () => {
   return (
     <Image
       src="/icons/reviewsandrating.png" // Path relative to the `public` folder
-      alt='car'
+      alt='reviews-and-rating'
       width={25}
       height={25}
 
@@ -122,7 +122,7 @@ const DiscountIcon = () => {
   return (
     <Image
       src="/icons/discount.png" // Path relative to the `public` folder
-      alt='car'
+      alt='discount'
       width={25}
       height={25}
 
@@ -135,7 +135,7 @@ const TestimonialIcon = () => {
   return (
     <Image
       src="/icons/testimonial.png" // Path relative to the `public` folder
-      alt='car'
+      alt='testimonail'
       width={25}
       height={25}
 
@@ -148,7 +148,7 @@ const TaxIcon = () => {
   return (
     <Image
       src="/icons/bag.png" // Path relative to the `public` folder
-      alt='car'
+      alt='bag'
       width={20}
       height={20}
       priority // Optional: Ensures the image is optimized
@@ -160,7 +160,20 @@ const SkuIcon = () => {
   return (
     <Image
       src="/icons/sku.png" // Path relative to the `public` folder
-      alt='car'
+      alt='sku'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+
+const ReturnAndExchangeIcon = () => {
+  return (
+    <Image
+      src="/icons/return.png" // Path relative to the `public` folder
+      alt='return-and-exchange'
       width={20}
       height={20}
       priority // Optional: Ensures the image is optimized
@@ -170,6 +183,7 @@ const SkuIcon = () => {
 
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
+   ReturnAndExchangeIcon,
    ManageCategoriesIcon,
      ReviewAndRatingIcon,
      PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon, SkuIcon };
