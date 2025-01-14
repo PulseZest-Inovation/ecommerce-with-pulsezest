@@ -1,9 +1,13 @@
+'use client';
 import React, { useEffect, useState } from 'react';
-import { Input, Button, Alert, message } from 'antd';
-import ReactQuill from 'react-quill'; // Install `react-quill` package
+import { Input, Button, message } from 'antd';
+import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css'; // Import styles for ReactQuill
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
+
+// Dynamically import ReactQuill with SSR disabled
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 type Props = {
   id: string;
@@ -27,7 +31,6 @@ export default function PostMaker({ id }: Props) {
       const result = await getDataByDocName<DocumentData>('pages', id);
 
       if (!result) {
-        // If no data found, create a new document with empty fields
         setData(null); // Set data to null to trigger showing the create button
       } else {
         setData(result);
@@ -51,7 +54,6 @@ export default function PostMaker({ id }: Props) {
 
   const handleUpdate = async () => {
     if (data) {
-      // Add the modifiedAt field with the current timestamp
       const updatedData = {
         ...formData,
         modifiedAt: new Date().toISOString(), // Store the current timestamp
@@ -64,7 +66,6 @@ export default function PostMaker({ id }: Props) {
   };
 
   const handleCreatePage = async () => {
-    // Create the document with empty fields and a modifiedAt field
     const newData = { title: '', content: '', modifiedAt: new Date().toISOString(), id: id };
     await setDocWithCustomId('pages', id, newData);
     setData(newData);
@@ -79,7 +80,7 @@ export default function PostMaker({ id }: Props) {
     return (
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <h2>Create a Page Now 👇🏻 click Create Page.</h2>
-        <Button className='mt-2' type="primary" onClick={handleCreatePage} size="large">
+        <Button className="mt-2" type="primary" onClick={handleCreatePage} size="large">
           Create Page
         </Button>
       </div>
@@ -88,9 +89,9 @@ export default function PostMaker({ id }: Props) {
 
   return (
     <div>
-      <h1 className='text-2xl font-bold'>Edit Post</h1>
-      <div style={{ marginBottom: '16px' }} className='mt-2'>
-        <label className='text-1xl font-thin'>
+      <h1 className="text-2xl font-bold">Edit Post</h1>
+      <div className="mt-2">
+        <label className="text-1xl font-thin">
           Title:
           <Input
             type="text"
@@ -101,22 +102,22 @@ export default function PostMaker({ id }: Props) {
           />
         </label>
       </div>
-      <div className='flex justify-end mb-3'>
-      <Button type="primary" onClick={handleUpdate} className='hover:text-black'>
-        Update
-      </Button>
+      <div className="flex justify-end mb-3">
+        <Button type="primary" onClick={handleUpdate} className="hover:text-black">
+          Update
+        </Button>
       </div>
-      
-      <ReactQuill
-        theme="snow"
-        modules={modules}
-        formats={formats}
-        value={formData.content || ''}
-        onChange={handleContentChange}
-        style={{ height: '300px', marginBottom: '16px' }}
-        placeholder="Write your content here..."
-      />
-   
+      {ReactQuill && (
+        <ReactQuill
+          value={formData.content || ''}
+          onChange={handleContentChange}
+          theme="snow"
+          modules={modules}
+          formats={formats}
+          className="quill-editor"
+          placeholder="Write your content here..."
+        />
+      )}
     </div>
   );
 }
@@ -135,7 +136,7 @@ const modules = {
   ],
 };
 
-// Custom formats to ensure Tailwind classes are applied
+// Custom formats
 const formats = [
   'header',
   'font',
@@ -153,3 +154,4 @@ const formats = [
   'code-block',
   'image',
 ];
+
