@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
 import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
-import { Tabs,  Button, message, Tooltip, } from "antd";
+import { Tabs,  Button, message, Tooltip, Affix, } from "antd";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/Product";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
@@ -239,7 +239,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   
   return (
     <div>
- 
+  
       <div className="flex items-center space-x-2 mt-2">
         <p className="text-blue-300 font-mono" onClick={handleCopySlug}>
           {`${ApplicationConfig?.callback_url}/${formData.slug}`}
@@ -249,7 +249,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           className="cursor-pointer text-blue-500" 
         />
       </div>
-      <Tabs centered tabBarExtraContent={operations} items={items}/>
+     
+      <Tabs centered tabBarExtraContent={operations} items={items} type="card" animated={true}/>
+  
     </div>
   );
 };

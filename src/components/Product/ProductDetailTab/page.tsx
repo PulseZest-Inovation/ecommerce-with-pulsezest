@@ -5,6 +5,7 @@ import { Product } from "@/types/Product";
 import CategorySelector from "./CategorySelector";
 import ProductTagSelector from "./TagsSelector";
 import CollapseExpandDescription from "./CollapseExpandDescription";
+import ProductShortDescription from "./ProductShortDescription";
 
 interface ProductDetailsProp {
   formData: Product;
@@ -55,19 +56,6 @@ export default function ProductDetailTab({
         className="mb-4 w-full"
       />
 
-      <label
-        htmlFor="productTitle"
-        className="block text-sm font-medium text-gray-700 mb-1"
-      >
-        Product Description
-      </label>
-      <Input.TextArea
-        rows={4}
-        placeholder="Short Description"
-        value={formData.shortDescription}
-        onChange={(e) => onFormDataChange("shortDescription", e.target.value)}
-        className="mb-4 w-full"
-      />
 
       <CategorySelector
         selectedCategories={selectedCategories}
@@ -90,6 +78,10 @@ export default function ProductDetailTab({
         formData={formData}
         onFormDataChange={onFormDataChange}
       />
+
+
+      <ProductShortDescription formData={formData} onFormDataChange={onFormDataChange}></ProductShortDescription>   
+
     </div>
   );
 }

@@ -38,7 +38,7 @@ export default function CollapseExpandDescription({
             theme="snow"
             modules={modules}
             formats={formats}
-            className="quill-editor p-4" // Apply Tailwind classes
+            className="quill-editor" // Apply Tailwind classes
             placeholder="Write here..."
           />
         )}
