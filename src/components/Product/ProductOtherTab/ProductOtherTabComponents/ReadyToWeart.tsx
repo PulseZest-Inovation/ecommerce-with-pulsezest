@@ -8,12 +8,7 @@ interface ReadyToWearProp {
 }
 
 const ReadyToWear: React.FC<ReadyToWearProp> = ({ formData, onFormDataChange }) => {
-  const handleSwitchChange = (checked: boolean) => {
-    onFormDataChange("isReadyToWear", checked);
-    if (!checked) {
-      onFormDataChange("readyToWearCharges", undefined); // Reset charges if disabled
-    }
-  };
+ 
 
   const handleChargesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -39,8 +34,10 @@ const ReadyToWear: React.FC<ReadyToWearProp> = ({ formData, onFormDataChange }) 
         </label>
         <div className="flex items-center">
           <Switch
-            checked={formData.isReadyToWear || false}
-            onChange={handleSwitchChange}
+            checked={formData.isReadyToWear}
+            onChange={(checked) =>
+              onFormDataChange("isReadyToWear", checked)
+            }
             className="mr-2"
           />
           <span className="text-sm text-gray-600">

@@ -74,10 +74,12 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     menuOrder: 0,
     metaData: [],
     description: [
-      { heading: "PRODUCT SPECIFICATION", content: "" },
-      { heading: "SHIPPING INFORMATION", content: "" },
-      { heading: "MORE INFORMATION", content: "" },
-      { heading: "NEED HELP", content: "" },
+      { heading: "Details", content: "" },
+      { heading: "Description ", content: "" },
+      { heading: "Shipping", content: "" },
+      { heading: "Return & Exchange", content: "" },
+      { heading: "Manufacturing Information ", content: "" },
+      { heading: "Support", content: "" },
     ],
   });
 
