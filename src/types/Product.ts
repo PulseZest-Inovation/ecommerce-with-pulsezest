@@ -32,12 +32,22 @@ export interface Product {
   onSale: boolean;
   purchaseSale: boolean;
   totalSales: number;
+
+  isReturn: boolean;
+  returnPeriod: string;
+
+  isCashOnDelivery: boolean;
+  
+  isShippingCharge: boolean;
+  shipping_taxable: string;
+  deliveryTimePeriod: string;
+
+
   manageStatus: boolean;
   stockQuantity: number;
   stockStatus: string;
   backorders: boolean; // Fixed spelling issue
   backordersAllowed: boolean; // Fixed spelling issue
-  shipping_taxable: string;
   reviewsAllowed: boolean;
   averageRating: string;
   ratingCount: number;

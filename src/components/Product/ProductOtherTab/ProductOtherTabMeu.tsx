@@ -5,7 +5,7 @@ import EightMpIcon from '@mui/icons-material/EightMp';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 
 import type { MenuProps } from "antd";
-import { SkuIcon, TaxIcon } from "@/components/Icons/page";
+import { SkuIcon, TaxIcon, ReturnAndExchangeIcon } from "@/components/Icons/page";
 
 export const ProductOtherTabMenu: MenuProps["items"] = [
   {
@@ -14,14 +14,19 @@ export const ProductOtherTabMenu: MenuProps["items"] = [
     icon: <CurrencyRupeeIcon />,
   },
   {
-    key: "readyToWear",
-    label: "Ready to Wear",
-    icon: <AlarmOnIcon />,
-  },
-  {
     key: "shipping",
     label: "Shipping",
     icon: <LocalShippingIcon />,
+  },
+  {
+    key: "returnAndExchange",
+    label: "Return & Exchange",
+    icon: <ReturnAndExchangeIcon />,
+  },
+  {
+    key: "readyToWear",
+    label: "Ready to Wear",
+    icon: <AlarmOnIcon />,
   },
   {
     key: "stock",

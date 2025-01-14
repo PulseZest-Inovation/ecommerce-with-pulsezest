@@ -41,27 +41,47 @@ export default function SkuField({ formData, onFormDataChange }: SkuProps) {
   };
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold mb-2">SKU</h3>
-      <Input
-        placeholder="Enter Product SKU CODE"
-        value={formData.sku}
-        onChange={(e) => handleSkuChange(e.target.value)}
-        className={`mb-4 ${
-          isUnique === null
-            ? ''
-            : isUnique
-            ? 'border-green-500'
-            : 'border-red-500'
-        }`}
-      />
-      {loading && <Spin size="small" />}
-      {isUnique === false && (
-        <p className="text-red-500">SKU already exists. Please choose another.</p>
-      )}
-      {isUnique === true && (
-        <p className="text-green-500">SKU is available.</p>
-      )}
+    <div className="p-6 bg-white shadow-md rounded-md">
+      {/* Header */}
+      <h3 className="text-xl font-bold text-gray-800 mb-4">SKU</h3>
+
+      {/* SKU Input */}
+      <div className="relative">
+        <label
+          htmlFor="sku"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Product SKU Code
+        </label>
+        <Input
+          placeholder="Enter Product SKU Code"
+          value={formData.sku}
+          onChange={(e) => handleSkuChange(e.target.value)}
+          className={`w-full transition-all duration-200 ${
+            isUnique === null
+              ? ''
+              : isUnique
+              ? 'border-green-500'
+              : 'border-red-500'
+          }`}
+          status={isUnique === false ? 'error' : undefined}
+        />
+        {loading && (
+          <Spin size="small" className="absolute right-3 top-10 text-gray-500" />
+        )}
+      </div>
+
+      {/* Validation Messages */}
+      <div className="mt-2">
+        {isUnique === false && (
+          <p className="text-sm text-red-500">
+            SKU already exists. Please choose another.
+          </p>
+        )}
+        {isUnique === true && (
+          <p className="text-sm text-green-500">SKU is available.</p>
+        )}
+      </div>
     </div>
   );
 }
