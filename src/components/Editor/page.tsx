@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Input, Button, Alert, message } from 'antd';
+import { Input, Button, Alert, message } from 'antd';
+import ReactQuill from 'react-quill'; // Install `react-quill` package
+import 'react-quill/dist/quill.snow.css'; // Import styles for ReactQuill
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import DOMPurify from 'dompurify'; // Install `dompurify` for safe HTML rendering
-
-const { TabPane } = Tabs;
-const { TextArea } = Input;
 
 type Props = {
   id: string;
@@ -22,7 +20,6 @@ export default function PostMaker({ id }: Props) {
   const [data, setData] = useState<DocumentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [formData, setFormData] = useState<DocumentData>({ title: '', content: '' });
-  const [activeTab, setActiveTab] = useState<string>('text');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,9 +40,13 @@ export default function PostMaker({ id }: Props) {
     fetchData();
   }, [id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleContentChange = (content: string) => {
+    setFormData({ ...formData, content });
   };
 
   const handleUpdate = async () => {
@@ -70,8 +71,6 @@ export default function PostMaker({ id }: Props) {
     message.success('Page created successfully!');
   };
 
-  const htmlPreview = DOMPurify.sanitize(formData.content || '');
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -89,9 +88,9 @@ export default function PostMaker({ id }: Props) {
 
   return (
     <div>
-      <h1>Edit Post</h1>
-      <div style={{ marginBottom: '16px' }}>
-        <label>
+      <h1 className='text-2xl font-bold'>Edit Post</h1>
+      <div style={{ marginBottom: '16px' }} className='mt-2'>
+        <label className='text-1xl font-thin'>
           Title:
           <Input
             type="text"
@@ -102,38 +101,55 @@ export default function PostMaker({ id }: Props) {
           />
         </label>
       </div>
-      <Alert
-        message="Tip"
-        description="You can write HTML code in the content box. For example: <p>Hello, World!</p>"
-        type="info"
-        showIcon
-        style={{ marginBottom: '16px' }}
-      />
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane tab="Text" key="text">
-          <TextArea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            rows={10}
-            placeholder="Write your HTML code here. Example: <h1>Title</h1>"
-          />
-        </TabPane>
-        <TabPane tab="HTML Preview" key="html">
-          <div
-            dangerouslySetInnerHTML={{ __html: htmlPreview }}
-            style={{
-              border: '1px solid #ccc',
-              padding: '16px',
-              borderRadius: '4px',
-              backgroundColor: '#f9f9f9',
-            }}
-          />
-        </TabPane>
-      </Tabs>
-      <Button type="primary" onClick={handleUpdate} style={{ marginTop: '16px' }}>
+      <div className='flex justify-end mb-3'>
+      <Button type="primary" onClick={handleUpdate} className='hover:text-black'>
         Update
       </Button>
+      </div>
+      
+      <ReactQuill
+        theme="snow"
+        modules={modules}
+        formats={formats}
+        value={formData.content || ''}
+        onChange={handleContentChange}
+        style={{ height: '300px', marginBottom: '16px' }}
+        placeholder="Write your content here..."
+      />
+   
     </div>
   );
 }
+
+// Custom Quill modules
+const modules = {
+  toolbar: [
+    [{ header: '1' }, { header: '2' }, { font: [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ align: [] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    ['link'],
+    ['blockquote', 'code-block'],
+    ['image'],
+  ],
+};
+
+// Custom formats to ensure Tailwind classes are applied
+const formats = [
+  'header',
+  'font',
+  'list',
+  'bullet',
+  'align',
+  'bold',
+  'italic',
+  'underline',
+  'strike',
+  'color',
+  'background',
+  'link',
+  'blockquote',
+  'code-block',
+  'image',
+];
