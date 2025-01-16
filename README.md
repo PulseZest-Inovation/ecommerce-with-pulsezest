@@ -14,7 +14,8 @@ You are ready to use now!
 1. Website Traffic.
 2. Business Analytics
 3. Phonepe intigration
-4. shipRocket intigratoin
-5. Theme Managment
+4. Product SEO
+5. shipRocket intigratoin
+6. Theme Managment
 
 # Comes with Pay as your Grow.
