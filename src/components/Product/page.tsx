@@ -10,7 +10,8 @@ import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreD
 import ProductDetailTab from "./ProductDetailTab/page";
 import ProdutOtherTab from "./ProductOtherTab/page";
 import ProductGalleryTab from "./ProductGalleryTab/page";
-import { ApplicationConfig } from "@/utils/ApplicationConfig";
+import { getAppData } from "@/services/getApp";
+import { AppDataType } from "@/types/AppData";
 
 interface ProductWrapperProps {
   initialData?: Product;
@@ -82,6 +83,22 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
       { heading: "Support", content: "" },
     ],
   });
+  const [appData, setAppData]= useState<null| AppDataType>(null);
+
+  const fetchApplicationData = async()=>{
+    const key = localStorage.getItem('securityKey');
+    try {
+
+      if (!key) {
+        console.warn("Security key not found in localStorage.");
+        return null; // Return null if key is not available
+      }
+      const data = await getAppData<AppDataType>('app_name', key)
+      setAppData(data);
+    } catch (error) {
+        console.log(error)
+    }
+  }
 
   useEffect(() => {
     if (initialData) {
@@ -94,6 +111,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           ? initialData.description
           : prev.description,
       }));
+      fetchApplicationData();
     }
   }, [initialData]);
 
@@ -234,7 +252,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   };
 
   const handleNavigate = () => {
-    const url = `${ApplicationConfig?.callback_url}/collection/${formData.categories[0]}/product/${formData.slug}`;
+    const url = `${appData?.callback_url}/collection/${formData.categories[0]}/product/${formData.slug}`;
     window.open(url, '_blank');
   };
 
@@ -244,7 +262,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   
       <div className="flex items-center space-x-2 mt-2">
         <p className="text-blue-300 font-mono" onClick={handleCopySlug}>
-          {`${ApplicationConfig?.callback_url}/${formData.slug}`}
+          {formData.slug}
         </p>
         <LinkOutlined 
           onClick={handleNavigate} 

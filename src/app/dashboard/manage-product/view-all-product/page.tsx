@@ -4,6 +4,8 @@ import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input } from 'antd';
 import { useRouter } from 'next/navigation';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Product } from '@/types/Product';
+import { getAppData } from '@/services/getApp';
+import { AppDataType } from '@/types/AppData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import moment from 'moment';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
@@ -20,6 +22,7 @@ const ViewProduct: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [appData, setAppData]= useState<null| AppDataType>(null);
   const router = useRouter();
 
   // Optimized Fetch Logic
@@ -38,8 +41,23 @@ const ViewProduct: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchApplicationData();
   }, []);
 
+  const fetchApplicationData = async()=>{
+      const key = localStorage.getItem('securityKey');
+      try {
+  
+        if (!key) {
+          console.warn("Security key not found in localStorage.");
+          return null; // Return null if key is not available
+        }
+        const data = await getAppData<AppDataType>('app_name', key)
+        setAppData(data);
+      } catch (error) {
+          console.log(error)
+      }
+    }
   // Filtering Logic
   useEffect(() => {
     let filtered = products;
@@ -58,18 +76,14 @@ const ViewProduct: React.FC = () => {
     }
 
     setFilteredProducts(filtered);
+
   }, [searchTerm, selectedCategories, products]);
 
   const handleEdit = (id: string) => router.push(`edit-product/${id}`);
   
 
   const handleViewProduct = (id: string, category: string) => {
-    if (!ApplicationConfig?.callback_url || !id) {
-      console.error("Callback URL or ID is not defined");
-      return;
-    }
-  
-    const url = `${ApplicationConfig.callback_url}/collection/${category}/product/${id}`;
+    const url = `${appData?.callback_url}/collection/${category}/product/${id}`;
     window.open(url, '_blank'); // Opens the link in a new tab
   };
   

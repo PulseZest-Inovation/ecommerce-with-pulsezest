@@ -5,7 +5,7 @@ import SecurityCheck from './securityCheck'; // Ensure the path is correct
 import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 import { onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
-import { auth, storage } from '@/utils/firbeaseConfig';
+import { auth} from '@/utils/firbeaseConfig';
 import { AppDataType } from '@/types/AppData';
 import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
