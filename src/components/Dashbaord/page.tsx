@@ -2,17 +2,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AppDataType } from '@/types/AppData';
 import Image from 'next/image';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs } from '@mui/material';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme } from '@/utils/menu';
-import { getRouteComponent } from '@/utils/route'; // Import the helper function
+import { getRouteComponent } from '@/utils/route'; 
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { usePathname, useRouter } from 'next/navigation';
 import { Result } from 'antd';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
+import NotificationBar from '../Drawer/Notification/page';
 
 interface DashboardProps {
   appData: AppDataType;
@@ -23,7 +27,11 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   const [user, setUser] = useState<User | null>(null); // Auth user state
   const pathname = usePathname(); // Get the current route
   const router = useRouter();
+  const [isNotificationBarOpen, setIsNotificationBarOpen] = useState(false); // Track notification bar state
 
+  const handleToggleNotificationBar = () => {
+    setIsNotificationBarOpen((prev) => !prev);
+  };
   // Handle authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -88,7 +96,7 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
 
   return (
     <AppProvider
-      navigation={NAVIGATION as any} // You can cast this if necessary
+      navigation={NAVIGATION as any}
       router={routerContext as any}
       theme={demoTheme}
       window={window}
@@ -108,6 +116,15 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
       <DashboardLayout
         slots={{
           sidebarFooter: () => <AccountSidebarInfo />,
+          toolbarAccount: ()=>  (
+            <Box display="flex" alignItems="center" gap={2}>
+            <IconButton color="inherit" onClick={handleToggleNotificationBar}>
+              <Badge badgeContent={5} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Box>
+          )
         }}
       >
         {/* Breadcrumbs Section */}
@@ -115,6 +132,10 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
           <Breadcrumbs aria-label="breadcrumb">{generateBreadcrumbs}</Breadcrumbs>
         </Box>
 
+          {/* Notification Bar */}
+          {isNotificationBarOpen && (
+          <NotificationBar onClose={() => setIsNotificationBarOpen(false)} />
+        )}
         {/* Render Content Section */}
         <Box sx={{ p: 2 }}>{renderContent()}</Box>
       </DashboardLayout>
