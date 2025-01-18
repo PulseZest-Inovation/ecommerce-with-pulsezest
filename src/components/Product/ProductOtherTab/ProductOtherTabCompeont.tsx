@@ -9,53 +9,49 @@ import SkuField from "./ProductOtherTabComponents/Sku";
 import ReadyToWear from "./ProductOtherTabComponents/ReadyToWeart";
 import ReturnAndExchange from "./ProductOtherTabComponents/ReturnAndExchange";
 
-interface ProductContentRendererProps{
-    selectedKey: string;
-    formData: Product;
-    onFormDataChange: (key: keyof Product, value: any) => void;
+interface ProductContentRendererProps {
+  selectedKey: string;
+  formData: Product;
+  onFormDataChange: (key: keyof Product, value: any) => void;
 }
 
-
-
-
 const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
-    selectedKey,
-    formData,
-    onFormDataChange,
-  }) => {
-    switch (selectedKey) {
-      case "price":
-        return <Price formData={formData} onFormDataChange={onFormDataChange} />;
-      case "shipping":
-        return (
-          <Shipping formData={formData} onFormDataChange={onFormDataChange} />
-        );
-        case "returnAndExchange":
-          return (
-            <ReturnAndExchange formData={formData} onFormDataChange={onFormDataChange} />
-          );
-        case "readyToWear":
-          return (
-            <ReadyToWear formData={formData} onFormDataChange={onFormDataChange} />
-          );
-      case "stock":
-        return <ProductStock formData={formData} onFormDataChange={onFormDataChange} />;
-      case "sku":
-        return (
-          <SkuField formData={formData} onFormDataChange={onFormDataChange}/>
-        )  
-       case "GST":
-        return <GSTSelector formData={formData} onFormDataChange={onFormDataChange}/>;
-        case "HSN":
-          return <HSN formData={formData} onFormDataChange={onFormDataChange}/> 
-      default:
-        return null;
-    }
-  };
-  
-  export default ProductOtherTabComponents; 
+  selectedKey,
+  formData,
+  onFormDataChange,
+}) => {
+  return (
+    <div className="p-4 w-full">
+      {/* Dynamically render components based on the selectedKey */}
+      {selectedKey === "price" && (
+        <Price formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "shipping" && (
+        <Shipping formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "returnAndExchange" && (
+        <ReturnAndExchange
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+        />
+      )}
+      {selectedKey === "readyToWear" && (
+        <ReadyToWear formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "stock" && (
+        <ProductStock formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "sku" && (
+        <SkuField formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "GST" && (
+        <GSTSelector formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+      {selectedKey === "HSN" && (
+        <HSN formData={formData} onFormDataChange={onFormDataChange} />
+      )}
+    </div>
+  );
+};
 
-
-  
- 
- 
+export default ProductOtherTabComponents;

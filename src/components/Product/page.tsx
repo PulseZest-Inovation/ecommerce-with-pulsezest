@@ -224,8 +224,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     },
   ];
 
-  const operations = (
-    <div>
+  const operations =  (
+    
+    <div className="flex justify-center sm:justify-end p-2">
       <Tooltip
         title={
           !formData.productTitle || !formData.categories[0]
@@ -238,6 +239,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
           onClick={handleSubmit}
           disabled={loading || !formData.productTitle || !formData.categories[0]}
           loading={loading}
+          className="w-full sm:w-auto"
         >
           Submit
         </Button>
@@ -258,20 +260,31 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
   
   return (
-    <div>
-  
-      <div className="flex items-center space-x-2 mt-2">
-        <p className="text-blue-300 font-mono" onClick={handleCopySlug}>
+    <div className="p-4">
+      {/* Slug and Link Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-2 mt-2">
+        <p
+          className="text-blue-300 font-mono cursor-pointer break-all"
+          onClick={handleCopySlug}
+        >
           {formData.slug}
         </p>
-        <LinkOutlined 
-          onClick={handleNavigate} 
-          className="cursor-pointer text-blue-500" 
+      </div>
+
+      {/* Tabs Section */}
+      <div className="mt-4">
+        <Tabs
+          centered
+          tabBarExtraContent={{left: operations, right: <LinkOutlined
+          onClick={handleNavigate}
+          className="cursor-pointer text-blue-500 text-lg"
+        /> } }
+          items={items}
+          type="card"
+          animated
+          className="custom-tabs"
         />
       </div>
-     
-      <Tabs centered tabBarExtraContent={operations} items={items} type="card" animated={true}/>
-  
     </div>
   );
 };
