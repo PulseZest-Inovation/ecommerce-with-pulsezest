@@ -181,9 +181,22 @@ const ReturnAndExchangeIcon = () => {
   );
 };
 
+
+const RatingIcon = () => {
+  return (
+    <Image
+      src="/icons/star.png" // Path relative to the `public` folder
+      alt='raiting'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ReturnAndExchangeIcon,
    ManageCategoriesIcon,
      ReviewAndRatingIcon,
-     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon, SkuIcon };
+     PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon, SkuIcon, RatingIcon };

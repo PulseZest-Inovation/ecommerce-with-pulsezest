@@ -168,8 +168,11 @@ const ViewProduct: React.FC = () => {
       title: 'Average Rating',
       dataIndex: 'averageRating',
       key: 'averageRating',
-      render: (rating: number) => <Rate disabled defaultValue={Math.round(rating)} />,
-    },
+      render: (rating: any) => {
+        const numericRating = typeof rating === 'number' ? rating : parseFloat(rating);
+        return <Rate disabled value={isNaN(numericRating) ? 0 : numericRating} allowHalf />;
+      },
+    },       
     {
       title: 'Actions',
       key: 'actions',
