@@ -17,5 +17,6 @@ You are ready to use now!
 4. Product SEO
 5. shipRocket intigratoin
 6. Theme Managment
+7. Product Upload with Advance features
 
 # Comes with Pay as your Grow.
