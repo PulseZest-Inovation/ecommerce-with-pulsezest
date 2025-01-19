@@ -7,7 +7,8 @@ import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { Timestamp } from 'firebase/firestore';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';  
+import { useRouter } from 'next/navigation';
+import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData'; // Import the delete function
 
 type Props = {};
 
@@ -16,11 +17,13 @@ export default function Coupons({}: Props) {
   const [open, setOpen] = useState<boolean>(false);
   const [editingCoupon, setEditingCoupon] = useState<CouponsType | null>(null);
   const [form] = Form.useForm();
-  const router = useRouter();  
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false); // State for delete modal visibility
+  const [couponToDelete, setCouponToDelete] = useState<string | null>(null); // State for the coupon to delete
+  const router = useRouter();
 
   const handleCancel = () => {
     setOpen(false);
-    setEditingCoupon(null); 
+    setEditingCoupon(null);
     form.resetFields();
   };
 
@@ -38,52 +41,48 @@ export default function Coupons({}: Props) {
   }, []);
 
   const handleCreateOrUpdateCoupon = async () => {
-
-   
     try {
       const formData = await form.validateFields();
       const slug = formData.couponCode.replace(/\s+/g, '-').toLowerCase();
       const couponData: any = {
-        slug: slug, // Set the coupon code as the id
+        slug: slug,
         code: formData.couponCode,
         createdAt: editingCoupon ? editingCoupon.createdAt : Timestamp.now(),
         dateModifiedAt: Timestamp.now(),
-        // Only setting the essential fields (couponCode and amount)
       };
 
       if (editingCoupon) {
-        // Update existing coupon
         await setDocWithCustomId('coupons', slug, couponData);
         message.success('Coupon updated successfully');
       } else {
-        // Create new coupon
         await setDocWithCustomId('coupons', slug, couponData);
         message.success('Coupon created successfully');
       }
 
-      fetchCoupons(); // Refresh the coupons table
+      fetchCoupons();
       setOpen(false);
       form.resetFields();
-      setEditingCoupon(null); // Reset editing state
+      setEditingCoupon(null);
     } catch (error) {
       message.error('An error occurred while saving the coupon');
     }
   };
 
   const handleEdit = (record: CouponsType) => {
-    // Navigate to the edit page when editing the coupon
-    console.log(`coupons id : ${record.id}`)
-
     router.push(`/dashboard/coupons/${record.id}`);
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      // await deleteDocFromCollection('coupons', id); // Assuming delete function exists
-      message.success('Coupon deleted successfully');
-      fetchCoupons(); // Refresh the coupons table
-    } catch (error) {
-      message.error('An error occurred while deleting the coupon');
+  const handleDelete = async () => {
+    if (couponToDelete) {
+      try {
+        await deleteDocFromCollection('coupons', couponToDelete); // Delete the coupon from Firestore
+        message.success('Coupon deleted successfully');
+        fetchCoupons(); // Refresh the coupons table
+        setDeleteModalVisible(false); // Hide the delete modal
+        setCouponToDelete(null); // Reset the coupon to delete
+      } catch (error) {
+        message.error('An error occurred while deleting the coupon');
+      }
     }
   };
 
@@ -116,7 +115,12 @@ export default function Coupons({}: Props) {
       render: (record: CouponsType) => (
         <Space size="middle">
           <EditOutlined onClick={() => handleEdit(record)} />
-          <DeleteOutlined onClick={() => handleDelete(record.id)} />
+          <DeleteOutlined
+            onClick={() => {
+              setCouponToDelete(record.id); // Set the coupon to delete
+              setDeleteModalVisible(true); // Show the delete confirmation modal
+            }}
+          />
         </Space>
       ),
     },
@@ -150,6 +154,18 @@ export default function Coupons({}: Props) {
             <Input placeholder="Enter coupon code" />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        title="Are you sure?"
+        visible={deleteModalVisible}
+        onOk={handleDelete}
+        onCancel={() => setDeleteModalVisible(false)}
+        okText="Yes, Delete"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to delete this coupon?</p>
       </Modal>
     </div>
   );

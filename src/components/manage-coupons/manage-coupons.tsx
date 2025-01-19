@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Timestamp } from 'firebase/firestore';
+import { serverTimestamp, Timestamp } from 'firebase/firestore';
 import { CouponsType } from '@/types/CouponType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
@@ -15,6 +15,7 @@ const defaultCoupon: CouponsType = {
   id: '',
   code: '',
   amount: 0,
+  slug: '',
   createdAt: new Date() as unknown as Timestamp,
   dateModifiedAt: new Date() as unknown as Timestamp,
   discountType: 'fixed',
@@ -145,11 +146,12 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
             </Col>
             <Col span={12}>
               <Form.Item label="Date Expire">
-                <DatePicker
-                  value={coupon.dateExpire.toDate() ? moment(coupon.dateExpire.toDate()) : undefined}
-                  onChange={(date) => handleInputChange('dateExpire', date?.toDate() || new Date())}
-                  style={{ width: '100%' }}
-                />
+              <DatePicker
+            value={coupon.dateExpire instanceof serverTimestamp ? moment(coupon.dateExpire.toDate()) : undefined}
+            onChange={(date) => handleInputChange('dateExpire', date?.toDate() || new Date())}
+            style={{ width: '100%' }}
+          />
+
               </Form.Item>
             </Col>
           </Row>

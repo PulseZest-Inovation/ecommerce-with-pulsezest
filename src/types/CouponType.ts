@@ -3,6 +3,7 @@ export interface CouponsType {
   id: string;
   code: string;
   amount: number; // Changed to `number`
+  slug: string;
   createdAt: Timestamp;
   dateModifiedAt: Timestamp;
   discountType: 'percentage' | 'fixed'; // Strict typing
