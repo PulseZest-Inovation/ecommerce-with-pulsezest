@@ -1,8 +1,10 @@
+'use client'
 import React, { useState } from 'react';
 import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Typography, Badge, Drawer, Divider, Button } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import CartDrawer from './CartDrawer';
+import FavouriteDrawer from './FavouriteDrawer';
 
 export default function CartView() {
   // Sample data for users
@@ -110,66 +112,21 @@ export default function CartView() {
       </List>
 
       {/* Drawer for Cart */}
-      <Drawer anchor="right" open={cartDrawerOpen} onClose={toggleCartDrawer}>
-        <Box sx={{ width: 300, padding: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Cart Products
-          </Typography>
-          <Divider />
-          <List>
-            {cartProducts.map((product) => (
-              <ListItem key={product.id}>
-                <ListItemText primary={product.name} secondary={product.price} />
-                <IconButton aria-label="WhatsApp">
-                  <WhatsAppIcon />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
-          <Button
-            onClick={() => {
-              markAsRead('cart');
-              toggleCartDrawer();
-            }}
-            sx={{ marginTop: 2 }}
-            fullWidth
-            variant="outlined"
-          >
-            Mark as Read & Close
-          </Button>
-        </Box>
-      </Drawer>
+      <CartDrawer
+        cartDrawerOpen={cartDrawerOpen}
+        toggleCartDrawer={toggleCartDrawer}
+        cartProducts={cartProducts}
+        markAsRead={markAsRead}
+      />
 
-      {/* Drawer for Favorites */}
-      <Drawer anchor="right" open={favDrawerOpen} onClose={toggleFavDrawer}>
-        <Box sx={{ width: 300, padding: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Favorite Products
-          </Typography>
-          <Divider />
-          <List>
-            {favoriteProducts.map((product) => (
-              <ListItem key={product.id}>
-                <ListItemText primary={product.name} secondary={product.price} />
-                <IconButton aria-label="WhatsApp">
-                  <WhatsAppIcon />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
-          <Button
-            onClick={() => {
-              markAsRead('fav');
-              toggleFavDrawer();
-            }}
-            sx={{ marginTop: 2 }}
-            fullWidth
-            variant="outlined"
-          >
-            Mark as Read & Close
-          </Button>
-        </Box>
-      </Drawer>
+      {/* Drawer for FavouriteDrawer */}
+      <FavouriteDrawer
+        favDrawerOpen={favDrawerOpen}
+        toggleFavDrawer={toggleFavDrawer}
+        favoriteProducts={favoriteProducts}
+        markAsRead={markAsRead}
+      />
+
     </Box>
   );
 }
