@@ -14,7 +14,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
   interface CartProduct {
     id: string;
     productName: string;
-    price: string; // Convert price to string for display
+    price: string;  
   }
   
 

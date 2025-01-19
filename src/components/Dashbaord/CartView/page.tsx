@@ -104,7 +104,7 @@ export default function CartView() {
                 sx={{ flex: 1, marginLeft: 2 }}
               />
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton
+                {/* <IconButton
                   color="primary"
                   aria-label="Add to favorites"
                   onClick={toggleFavDrawer}
@@ -112,7 +112,7 @@ export default function CartView() {
                   <Badge badgeContent={favoriteProducts.length} color="secondary">
                     <FavoriteBorderIcon />
                   </Badge>
-                </IconButton>
+                </IconButton> */}
                 <IconButton
                   color="secondary"
                   aria-label="View Cart"
