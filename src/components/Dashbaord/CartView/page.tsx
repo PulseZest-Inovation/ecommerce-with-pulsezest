@@ -7,6 +7,8 @@ import FavouriteDrawer from './FavouriteDrawer';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { CustomerType } from '@/types/Customer';
 import { CartType } from '@/types/CartType'; // Assuming you have a CartType
+import { AppDataType } from '@/types/AppData';
+import { getAppData } from '@/services/getApp';
 
 interface Product {
   id: number;
@@ -18,6 +20,7 @@ export default function CartView() {
   const [cartDrawerOpen, setCartDrawerOpen] = useState<boolean>(false);
   const [favDrawerOpen, setFavDrawerOpen] = useState<boolean>(false);
   const [customers, setCustomers] = useState<CustomerType[]>([]); 
+  const [appData, setAppData] = useState<AppDataType | null>(null);
 
   const favoriteProducts: Product[] = [
     { id: 1, name: 'Product 3', price: '₹15' },
@@ -50,9 +53,19 @@ export default function CartView() {
     }
   };
 
+  const  fetchAppData = async ()=>{
+    const key = localStorage.getItem('securityKey');
+    if (!key){
+      throw new Error('No security key found in localStorage!');
+    }
+
+    const appData = await getAppData<AppDataType>('app_name', key)
+    setAppData(appData);
+  }
   // Fetch customers on component mount
   useEffect(() => {
     fetchCustomer();
+    fetchAppData();
   }, []);
 
   // Current date for the last update
@@ -138,8 +151,14 @@ export default function CartView() {
             id: cartItem.id,
             productName: cartItem.productTitle || 'Unnamed Product',
             price: cartItem.price.toString() || '0', // Convert number to string
+            slug: cartItem.productId || 'not found',
+            productImage: cartItem.image
           }))
         )}
+        phoneNumber={
+          customers.find((customer) => customer.cart.some((item) => item))?.phoneNumber || 'N/A'
+        }
+        website={appData?.callback_url || 'empty'}
       />
 
 

@@ -6,4 +6,5 @@ export interface CartType{
     image: string;
     isReadyToWear: boolean;
     readyToWearCharges: number;
+    productId: string;
   }
