@@ -65,6 +65,8 @@ const ViewProduct: React.FC = () => {
     if (searchTerm) {
       filtered = filtered.filter(product =>
         product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.productSubtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
