@@ -1,4 +1,3 @@
-'use client'
 import React, { useEffect, useState } from 'react';
 import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Typography, Badge } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -7,6 +6,7 @@ import CartDrawer from './CartDrawer';
 import FavouriteDrawer from './FavouriteDrawer';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { CustomerType } from '@/types/Customer';
+import { CartType } from '@/types/CartType'; // Assuming you have a CartType
 
 interface Product {
   id: number;
@@ -15,18 +15,10 @@ interface Product {
 }
 
 export default function CartView() {
-  // State for the drawer visibility
   const [cartDrawerOpen, setCartDrawerOpen] = useState<boolean>(false);
   const [favDrawerOpen, setFavDrawerOpen] = useState<boolean>(false);
+  const [customers, setCustomers] = useState<CustomerType[]>([]); 
 
-  // State for customer data, with correct typing
-  const [customers, setCustomers] = useState<CustomerType[]>([]); // Explicitly typed state
-
-  // Sample data for products in cart and favorites
-  const cartProducts: Product[] = [
-    { id: 1, name: 'Product 1', price: '₹10' },
-    { id: 2, name: 'Product 2', price: '₹20' },
-  ];
   const favoriteProducts: Product[] = [
     { id: 1, name: 'Product 3', price: '₹15' },
     { id: 2, name: 'Product 4', price: '₹25' },
@@ -36,16 +28,28 @@ export default function CartView() {
   const toggleCartDrawer = (): void => setCartDrawerOpen(!cartDrawerOpen);
   const toggleFavDrawer = (): void => setFavDrawerOpen(!favDrawerOpen);
 
-  // Fetch customer data from Firestore
-  const fetchCustomer = async () => {
+  // Function to fetch customer data and their cart data
+  const fetchCustomer = async (): Promise<void> => {
     try {
       const customerData = await getAllDocsFromCollection<CustomerType>('customers');
-      setCustomers(customerData); // Set the fetched customers into state
-      console.log('Fetched customers:', customerData);
+      const formattedCustomerData = customerData.map(async (customerDoc) => {
+        // Fetch cart data for each customer
+        const cartData = await getAllDocsFromCollection<CartType>(`customers/${customerDoc.id}/cart`);
+        return {
+          ...customerDoc, // Keep customer data
+          cart: cartData, // Add cart data to customer
+        };
+      });
+
+      // Wait for all customer data with cart data to be fetched
+      const customersWithCart = await Promise.all(formattedCustomerData);
+      setCustomers(customersWithCart); // Set the fetched customers with cart data into state
+      console.log('Fetched customers with cart:', customersWithCart);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      console.error('Error fetching customers with cart:', error);
     }
   };
+
   // Fetch customers on component mount
   useEffect(() => {
     fetchCustomer();
@@ -111,10 +115,10 @@ export default function CartView() {
                 </IconButton>
                 <IconButton
                   color="secondary"
-                  aria-label="Add to cart"
+                  aria-label="View Cart"
                   onClick={toggleCartDrawer}
                 >
-                  <Badge badgeContent={cartProducts.length} color="primary">
+                  <Badge badgeContent={customer.cart.length} color="primary">
                     <ShoppingCartIcon />
                   </Badge>
                 </IconButton>
@@ -126,15 +130,23 @@ export default function CartView() {
 
       {/* Drawer for Cart */}
       <CartDrawer
-        markAsRead={()=>{}}
+        markAsRead={() => {}}
         cartDrawerOpen={cartDrawerOpen}
         toggleCartDrawer={toggleCartDrawer}
-        cartProducts={cartProducts}
+        cartProducts={customers.flatMap((customer) =>
+          customer.cart.map((cartItem) => ({
+            id: cartItem.id,
+            productName: cartItem.productTitle || 'Unnamed Product',
+            price: cartItem.price.toString() || '0', // Convert number to string
+          }))
+        )}
       />
+
+
 
       {/* Drawer for FavouriteDrawer */}
       <FavouriteDrawer
-        markAsRead={()=>{}}
+        markAsRead={() => {}}
         favDrawerOpen={favDrawerOpen}
         toggleFavDrawer={toggleFavDrawer}
         favoriteProducts={favoriteProducts}

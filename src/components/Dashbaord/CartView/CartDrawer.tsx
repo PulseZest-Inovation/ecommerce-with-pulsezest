@@ -11,11 +11,18 @@ import {
   Button,
 } from '@mui/material';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+  interface CartProduct {
+    id: string;
+    productName: string;
+    price: string; // Convert price to string for display
+  }
+  
+
 
 interface CartDrawerProps {
   cartDrawerOpen: boolean;
   toggleCartDrawer: () => void; // Function to toggle the cart drawer
-  cartProducts: { id: number; name: string; price: string }[]; // Cart products data
+  cartProducts: CartProduct[]; // Cart products data
   markAsRead: (list: string) => void; // Function to mark items as read
 }
 
@@ -36,7 +43,7 @@ export default function CartDrawer({
           {cartProducts.length > 0 ? (
             cartProducts.map((product) => (
               <ListItem key={product.id}>
-                <ListItemText primary={product.name} secondary={product.price} />
+                <ListItemText primary={product.productName} secondary={product.price} />
                 <IconButton aria-label="WhatsApp">
                   <WhatsAppIcon />
                 </IconButton>

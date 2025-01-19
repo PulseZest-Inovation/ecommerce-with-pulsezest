@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import { Billing } from "./Billing";
 import { Shippig } from "./Shipping";
+import { CartType } from "./CartType";
 
 export interface MetaData {
   key: string;
@@ -32,5 +33,6 @@ export interface CustomerType {
     isPayingCustomer: boolean;
     avatarUrl: string;
     metaData: MetaData[];
+    cart: CartType[];
   }
   
