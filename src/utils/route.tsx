@@ -12,7 +12,7 @@ import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
 import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
 import ReturnOrders from '@/app/dashboard/orders/return-order/page';
 import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
-
+import ManageAllProduct from '@/app/dashboard/manage-product/page';
 import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
@@ -42,6 +42,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/recent-order', component: RecentOrders },
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
+  { path: '/dashboard/manage-product', component: ManageAllProduct },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },

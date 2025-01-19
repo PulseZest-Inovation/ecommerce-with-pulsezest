@@ -11,7 +11,6 @@ import moment from 'moment';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
 import { Link, Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
-import { ApplicationConfig } from '@/utils/ApplicationConfig';
 import ExportProductsButton from './ExportProductButton';
 
 const ViewProduct: React.FC = () => {

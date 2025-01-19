@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link'; // Import Link for navigation
 import { AppDataType } from '@/types/AppData';
 import Image from 'next/image';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -61,18 +62,28 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   );
 
   // Generate breadcrumbs dynamically based on the current route
-  const generateBreadcrumbs = useMemo(() => {
-    const pathSegments = pathname?.split('/').filter(Boolean) || [];
-    return pathSegments.map((segment, index) => (
-      <Typography key={index} className="cursor-pointer" color="primary">
-        {segment.toUpperCase()}
-      </Typography>
-    ));
-  }, [pathname]);
+ // Generate breadcrumbs dynamically based on the current route
+
+ // Generate breadcrumbs dynamically based on the current route
+ const generateBreadcrumbs = useMemo(() => {
+   const pathSegments = (pathname || '').split('/').filter(Boolean); // Use an empty string as fallback
+   return pathSegments.map((segment, index) => {
+     const breadcrumbPath = `/${pathSegments.slice(0, index + 1).join('/')}`; // Build path for each breadcrumb
+     return (
+       <Link href={breadcrumbPath} key={index} className='hover:underline'>
+         <Typography className="cursor-pointer" color="primary">
+           {segment.toUpperCase()}
+         </Typography>
+       </Link>
+     );
+   });
+ }, [pathname]);
+ 
+
 
   // Render content based on the current route
   const renderContent = () => {
-    const Component = getRouteComponent(pathname); // Use the helper function
+    const Component = getRouteComponent(pathname ?? '' ); // Use the helper function
     if (Component) {
       return <Component />; // Render the selected component
     }
