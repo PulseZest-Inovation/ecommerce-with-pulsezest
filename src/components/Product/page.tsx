@@ -10,6 +10,7 @@ import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreD
 import ProductDetailTab from "./ProductDetailTab/page";
 import ProdutOtherTab from "./ProductOtherTab/page";
 import ProductGalleryTab from "./ProductGalleryTab/page";
+import { Fab } from '@mui/material';
 import { getAppData } from "@/services/getApp";
 import { AppDataType } from "@/types/AppData";
 
@@ -38,6 +39,9 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
     isReadyToWear: false,
     readyToWearCharges: 0,
+
+    isPrePlated: false,
+    prePlatedCharges: 0,
 
     // these
     isReturn: true,
@@ -258,34 +262,72 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     window.open(url, '_blank');
   };
 
+  const [showOperations, setShowOperations] = useState(false);
+
+ 
   
   return (
-    <div className="p-4">
-      {/* Slug and Link Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-2 mt-2">
-        <p
-          className="text-blue-300 font-mono cursor-pointer break-all"
-          onClick={handleCopySlug}
-        >
-          {formData.slug}
-        </p>
-      </div>
+    <div>
+    {/* Slug and Link Section */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-2 mt-2">
+      <p
+        className="text-blue-300 font-mono cursor-pointer break-all"
+        onClick={handleCopySlug}
+      >
+        {/* Display the slug here */}
+        {formData.slug}
+      </p>
+    </div>
 
-      {/* Tabs Section */}
-      <div className="mt-4">
+    {/* Tabs Section */}
+    <div className="mt-4">
+      <div className="overflow-x-auto">
         <Tabs
           centered
-          tabBarExtraContent={{left: operations, right: <LinkOutlined
-          onClick={handleNavigate}
-          className="cursor-pointer text-blue-500 text-lg"
-        /> } }
+          tabBarExtraContent={{
+            left: (
+              <div className="hidden sm:block">
+                {operations}
+              </div>
+            ),
+            right: (
+              <LinkOutlined
+                onClick={handleNavigate}
+                className="cursor-pointer text-blue-500 text-lg"
+              />
+            ),
+          }}
           items={items}
           type="card"
           animated
           className="custom-tabs"
+          tabBarStyle={{
+            whiteSpace: 'nowrap',
+            overflowX: 'auto', // Enables horizontal scrolling if necessary
+            paddingRight: '0px', // Remove padding to prevent shifting
+            display: 'inline-flex', // Ensures that the tab bar can scroll horizontally if the space is constrained
+          }}
         />
       </div>
     </div>
+
+    {/* Floating Action Button for Mobile */}
+    <div className="fixed bottom-4 right-4 sm:hidden">
+      <Fab
+        onClick={() => setShowOperations(!showOperations)} // Toggle the operations visibility
+        className="bg-blue-500 text-white"
+      >
+        <span className="text-xl">+</span>
+      </Fab>
+      {showOperations && (
+        <div className="absolute bottom-16 right-4 bg-white p-4 rounded-lg shadow-lg">
+          {operations}
+        </div>
+      )}
+    </div>
+  </div>
+  
+  
   );
 };
 

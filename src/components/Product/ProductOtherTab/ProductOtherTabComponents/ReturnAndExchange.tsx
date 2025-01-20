@@ -12,7 +12,7 @@ export default function ReturnAndExchange({
   onFormDataChange,
 }: ReturnAndExchangeProps) {
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
+    <div className="lg:p-6 bg-white shadow-md rounded-md">
       <h3 className="text-xl font-bold mb-4 text-gray-800">
         Return and Exchange Policy
       </h3>

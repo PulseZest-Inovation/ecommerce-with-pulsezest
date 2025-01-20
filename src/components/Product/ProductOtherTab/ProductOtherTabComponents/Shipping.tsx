@@ -10,7 +10,7 @@ interface ShippingProps {
 
 const Shipping: React.FC<ShippingProps> = ({ formData, onFormDataChange }) => {
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
+    <div className="lg:p-6 bg-white shadow-md rounded-md">
       <h3 className="text-xl font-bold mb-4 text-gray-800">Shipping Details</h3>
 
       {/* Delivery Time Period */}

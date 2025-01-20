@@ -9,7 +9,7 @@ interface GSTSelectorProp {
 
 export default function GSTSelector({ formData, onFormDataChange }: GSTSelectorProp) {
   return (
-    <div className="p-6 bg-white shadow-md rounded-md space-y-4">
+    <div className="lg:p-6 bg-white shadow-md rounded-md space-y-4">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Add GST TAX Value</h3>
       
       <div>

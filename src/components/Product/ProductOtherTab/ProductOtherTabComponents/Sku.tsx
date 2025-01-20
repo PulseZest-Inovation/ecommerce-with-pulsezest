@@ -41,7 +41,7 @@ export default function SkuField({ formData, onFormDataChange }: SkuProps) {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-md">
+    <div className="lg:p-6 bg-white shadow-md rounded-md">
       {/* Header */}
       <h3 className="text-xl font-bold text-gray-800 mb-4">SKU</h3>
 

@@ -24,8 +24,8 @@ export const ProductOtherTabMenu: MenuProps["items"] = [
     icon: <ReturnAndExchangeIcon />,
   },
   {
-    key: "readyToWear",
-    label: "Ready to Wear",
+    key: "ready",
+    label: "Ready",
     icon: <AlarmOnIcon />,
   },
   {

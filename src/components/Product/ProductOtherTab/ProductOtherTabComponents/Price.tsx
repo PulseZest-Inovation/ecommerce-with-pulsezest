@@ -41,7 +41,7 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-md space-y-6">
+    <div className="lg:p-3 bg-white shadow-md rounded-md space-y-6">
       {/* On Sale Checkbox */}
       <div className="flex items-center space-x-3">
         <Checkbox
@@ -67,13 +67,13 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
       {/* Display Price Card */}
       <Card className="bg-gray-50">
         {formData.regularPrice && formData.salePrice ? (
-          <Row justify="space-between" align="middle" className="text-lg">
-            <Col>
+          <Row className="text-lg flex-wrap">
+            <Col xs={12} sm={6}>
               <div className="line-through text-red-500">
                 ₹{formData.regularPrice}
               </div>
             </Col>
-            <Col>
+            <Col xs={12} sm={6}>
               <div className="text-green-600 font-bold">
                 ₹{formData.salePrice}
               </div>

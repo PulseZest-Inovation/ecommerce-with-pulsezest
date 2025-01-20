@@ -9,7 +9,7 @@ interface HNS {
 
 export default function HSN({ formData, onFormDataChange }: HNS) {
   return (
-    <div className="p-6 bg-white shadow-md rounded-md space-y-4">
+    <div className="lg:p-6 bg-white shadow-md rounded-md space-y-4">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">HSN Number</h3>
       
       <div>

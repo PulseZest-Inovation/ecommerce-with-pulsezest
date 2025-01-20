@@ -9,6 +9,8 @@ export interface Product {
   createdAt: Timestamp;
   ModifiedAt: Timestamp;
 
+  isPrePlated: boolean;
+  prePlatedCharges: number;
   isReadyToWear: boolean;
   readyToWearCharges: number;
   readyToWear?: {

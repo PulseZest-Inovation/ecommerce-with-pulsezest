@@ -22,7 +22,7 @@ const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
   onFormDataChange,
 }) => {
   return (
-    <div className="p-4 w-full">
+    <div className="w-full">
       {/* Dynamically render components based on the selectedKey */}
       {selectedKey === "price" && (
         <Price formData={formData} onFormDataChange={onFormDataChange} />
@@ -42,7 +42,7 @@ const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
           onFormDataChange={onFormDataChange}
         />
       )}
-      {selectedKey === "readyToWear" && (
+      {selectedKey === "ready" && (
         <ReadyToWear formData={formData} onFormDataChange={onFormDataChange} />
       )}
       {selectedKey === "stock" && (
