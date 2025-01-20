@@ -1,4 +1,4 @@
-import DashboardContent from '@/app/dashboard/Main/page';
+import DashboardContent from '@/app/dashboard/coupons/Main/page';
 import AnalyticsDashboard from '@/app/dashboard/analytics/page';
 import Categories from '@/app/dashboard/manage-category/categories/page';
 import SubCategoires from '@/app/dashboard/manage-category/sub-categories/page';
@@ -15,6 +15,8 @@ import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
 import ManageAllProduct from '@/app/dashboard/manage-product/page';
 import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
+import Attributes from '@/app/dashboard/attributes/page';
+import ManageAttribute from '@/app/dashboard/attributes/[attributeId]/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
 import ThemePage from '@/app/dashboard/theme/page';
 import RecentOrders from '@/app/dashboard/orders/return-order/page';
@@ -53,6 +55,8 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/orders/return-order', component: ReturnOrders },
   { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
   { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true },
+  { path: '/dashboard/attributes', component: Attributes },
+  { path: '/dashboard/attributes/:attributeId', component: ManageAttribute, isDynamic: true },
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },

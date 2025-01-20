@@ -194,7 +194,19 @@ const RatingIcon = () => {
   );
 };
 
-export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
+const AttributeIcon = () => {
+  return (
+    <Image
+      src="/icons/attributes.png" // Path relative to the `public` folder
+      alt='Attribute'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+export { AttributeIcon, AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ReturnAndExchangeIcon,
    ManageCategoriesIcon,
