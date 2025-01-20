@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input } from 'antd';
+import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input, Card } from 'antd';
 import { useRouter } from 'next/navigation';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Product } from '@/types/Product';
@@ -21,7 +21,7 @@ const ViewProduct: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [appData, setAppData]= useState<null| AppDataType>(null);
+  const [appData, setAppData] = useState<null | AppDataType>(null);
   const router = useRouter();
 
   // Optimized Fetch Logic
@@ -43,52 +43,49 @@ const ViewProduct: React.FC = () => {
     fetchApplicationData();
   }, []);
 
-  const fetchApplicationData = async()=>{
-      const key = localStorage.getItem('securityKey');
-      try {
-  
-        if (!key) {
-          console.warn("Security key not found in localStorage.");
-          return null; // Return null if key is not available
-        }
-        const data = await getAppData<AppDataType>('app_name', key)
-        setAppData(data);
-      } catch (error) {
-          console.log(error)
+  const fetchApplicationData = async () => {
+    const key = localStorage.getItem('securityKey');
+    try {
+      if (!key) {
+        console.warn('Security key not found in localStorage.');
+        return null; // Return null if key is not available
       }
+      const data = await getAppData<AppDataType>('app_name', key);
+      setAppData(data);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
   // Filtering Logic
   useEffect(() => {
     let filtered = products;
 
     if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productSubtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (product) =>
+          product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.productSubtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(product =>
-        product.categories.some(category => selectedCategories.includes(category))
+      filtered = filtered.filter((product) =>
+        product.categories.some((category) => selectedCategories.includes(category))
       );
     }
 
     setFilteredProducts(filtered);
-
   }, [searchTerm, selectedCategories, products]);
 
   const handleEdit = (id: string) => router.push(`edit-product/${id}`);
-  
 
   const handleViewProduct = (id: string, category: string) => {
     const url = `${appData?.callback_url}/collection/${category}/product/${id}`;
     window.open(url, '_blank'); // Opens the link in a new tab
   };
-  
-  
 
   const handleDelete = (product: Product) => {
     setProductToDelete(product);
@@ -171,15 +168,15 @@ const ViewProduct: React.FC = () => {
         const numericRating = typeof rating === 'number' ? rating : parseFloat(rating);
         return <Rate disabled value={isNaN(numericRating) ? 0 : numericRating} allowHalf />;
       },
-    },       
+    },
     {
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: Product) => (
         <Space size="middle">
-            <Tooltip title="View Product">
+          <Tooltip title="View Product">
             <Button
-              icon={< Link />}
+              icon={<Link />}
               onClick={() => handleViewProduct(record.slug, record.categories[0])}
             />
           </Tooltip>
@@ -203,45 +200,88 @@ const ViewProduct: React.FC = () => {
 
   return (
     <div>
-      <div className='sticky top-0 z-30 bg-white  '>
+      <div className="sticky top-0 z-30 bg-white">
+        <div className="flex justify-between pt-2">
+          <h1 className="font-bold text-2xl">Product List</h1>
+          <div className="space-x-2">
+            <ExportProductsButton products={filteredProducts} />
+            <Button type="primary" onClick={() => router.push('add-new-product')}>
+              Add New Product
+            </Button>
+          </div>
+        </div>
 
-      <div className="flex justify-between  pt-2 ">
-        <h1 className="font-bold text-2xl">Product List</h1>
-        <div className="space-x-2">
-        <ExportProductsButton products={filteredProducts} />
-        <Button type="primary" onClick={() => router.push('add-new-product')}>
-          Add New Product
-        </Button>
-      </div>
-
-      </div>
-
-      <div className="flex space-x-3 mt-2 mb-4 pb-2">
-        <Input
-          prefix={<Search />}
-          placeholder="Search by ID or Description"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-        <div style={{ width: '100%' }}>
-          <MultipleCategoriesSelector
-            value={selectedCategories}
-            onChange={setSelectedCategories}
+        <div className="flex space-x-3 mt-2 mb-4 pb-2">
+          <Input
+            prefix={<Search />}
+            placeholder="Search by ID or Description"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <div style={{ width: '100%' }}>
+            <MultipleCategoriesSelector
+              value={selectedCategories}
+              onChange={setSelectedCategories}
+            />
+          </div>
         </div>
       </div>
 
+      {/* Table for Desktop */}
+      <div className="hidden md:block">
+        <Table
+          dataSource={filteredProducts}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+          pagination={false}
+          bordered
+        />
       </div>
-    
 
-      <Table
-        dataSource={filteredProducts}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={false}
-        bordered
-      />
+      {/* Cart-like View for Mobile */}
+      <div className="md:hidden">
+        {filteredProducts.map((product) => (
+          <Card key={product.id} className="mb-4">
+            <div className="flex space-x-3">
+              <Image
+                src={product.featuredImage}
+                alt="Featured Image"
+                width={50}
+                height={50}
+                style={{ objectFit: 'cover' }}
+              />
+              <div>
+                <div className="font-bold">{product.productTitle}</div>
+                <div>{product.productSubtitle}</div>
+                <div className="mt-2">
+                  <Button
+                    icon={<Link />}
+                    onClick={() => handleViewProduct(product.slug, product.categories[0])}
+                  >
+                    View
+                  </Button>
+                  <Button
+                    icon={<EditOutlined />}
+                    onClick={() => handleEdit(product.slug)}
+                    className="ml-2"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleDelete(product)}
+                    className="ml-2"
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
 
       <DeleteConfirmationModal
         visible={isModalVisible}
