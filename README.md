@@ -20,4 +20,4 @@ You are ready to use now!
 7. Product Upload with Advance features
 
 # Comes with Pay as your Grow.
-1. 1GB storage free.
+1. 5GB storage free.
