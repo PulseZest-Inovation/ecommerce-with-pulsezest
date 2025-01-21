@@ -11,7 +11,6 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
-import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 export const NAVIGATION = [
@@ -250,6 +249,11 @@ export const NAVIGATION = [
       {
         segment: 'return-refund-policy',
         title: 'Return And Refund Policy',
+        icon: <DescriptionIcon />,
+      },
+      {
+        segment: 'shipping-policy',
+        title: 'Shipping Policy',
         icon: <DescriptionIcon />,
       },
       {

@@ -22,6 +22,7 @@ import CustomersTable from '@/components/Customer/CustomerTable/page';
 import Coupons from '@/app/dashboard/coupons/page';
 import EditViewCoupons from '@/app/dashboard/coupons/[couponCode]/page';
 import FAQ from '@/app/dashboard/pages/faq/page';
+import ShippingPolicy from '@/app/dashboard/pages/shipping-policy/page';
 import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
 import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
@@ -62,6 +63,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/coupons', component: Coupons },
   { path: '/dashboard/theme', component: ThemePage },
   { path: '/dashboard/pages/faq', component: FAQ },
+  { path: '/dashboard/pages/shipping-policy', component: ShippingPolicy },
   { path: '/dashboard/pages/terms-condition', component: TermsCondition },
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
   { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
