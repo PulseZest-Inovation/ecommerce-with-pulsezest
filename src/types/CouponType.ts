@@ -2,13 +2,15 @@ import { Timestamp } from "firebase/firestore";
 export interface CouponsType {
   id: string;
   code: string;
+  couponTitle: string;
+  couponSubtitle: string;
   amount: number; // Changed to `number`
   slug: string;
   createdAt: Timestamp;
   dateModifiedAt: Timestamp;
   discountType: 'percentage' | 'fixed'; // Strict typing
   description: string;
-  dateExpire: Timestamp;
+  // dateExpire: Timestamp;
   usageCount: number;
   productsId?: string[]; // Optional field
   excludeProductIds?: string[]; // Optional field

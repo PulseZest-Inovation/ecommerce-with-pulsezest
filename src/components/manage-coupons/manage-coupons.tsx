@@ -1,28 +1,36 @@
-'use client';
 import React, { useState, useEffect } from 'react';
 import { serverTimestamp, Timestamp } from 'firebase/firestore';
 import { CouponsType } from '@/types/CouponType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
-import { Row, Col, Input, Button, Checkbox, Select, DatePicker, InputNumber, Form, Popover, Divider, Space, message, Spin } from 'antd';
-import moment from 'moment';
-import MultipleCategoriesSelector from '../Selector/MultipleCategorySelector';
-import MultipleProductSelector from '../Selector/MultipleProductSelector';
+import {
+  Row,
+  Col,
+  Input,
+  Button,
+  Select,
+  InputNumber,
+  Form,
+  Popover,
+  message,
+  Spin,
+} from 'antd';
 
 const { Option } = Select;
 
 const defaultCoupon: CouponsType = {
   id: '',
+  couponTitle: '',
+  couponSubtitle: '',
   code: '',
   amount: 0,
   slug: '',
-  createdAt: new Date() as unknown as Timestamp,
-  dateModifiedAt: new Date() as unknown as Timestamp,
+  createdAt: Timestamp.now(),
+  dateModifiedAt: Timestamp.now(),
   discountType: 'fixed',
   description: '',
-  dateExpire: new Date() as unknown as Timestamp,
   usageCount: 0,
-  productsId: [],  // Changed to handle products
+  productsId: [],
   excludeProductIds: [],
   usageLimit: 0,
   usageLimitPerUser: 0,
@@ -47,15 +55,13 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
       try {
         const fetchedCoupon = await getDataByDocName<CouponsType>('coupons', id);
         if (fetchedCoupon) {
-          setCoupon({
-            ...fetchedCoupon,
-            dateExpire: fetchedCoupon.dateExpire || Timestamp.fromDate(new Date()), // Default to current date
-          });
+          setCoupon(fetchedCoupon);
         } else {
           setCoupon({ ...defaultCoupon, id });
         }
       } catch (error) {
         console.error('Error fetching coupon:', error);
+        message.error('Failed to fetch coupon data.');
       } finally {
         setLoading(false);
       }
@@ -65,30 +71,50 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
   }, [id]);
 
   const handleInputChange = (field: keyof CouponsType, value: any) => {
-    setCoupon((prev) => (prev ? { ...prev, [field]: value } : null));
+    setCoupon((prev) =>
+      prev ? { ...prev, [field]: value } : null
+    );
   };
 
   const handleSave = async () => {
-    if (!coupon) return;
+    if (!coupon) {
+      message.error('No coupon data to save.');
+      return;
+    }
+
+    if (!coupon.slug || coupon.slug.trim() === '') {
+      message.error('Invalid coupon ID.');
+      return;
+    }
 
     try {
-      const success = await setDocWithCustomId('coupons', coupon.id, {
+      // Log the coupon data for debugging
+      console.log('Saving coupon data:', coupon);
+
+      const couponData = {
         ...coupon,
-        dateModifiedAt: new Date(),
-      });
+        dateModifiedAt: serverTimestamp(),
+      };
+
+      const success = await setDocWithCustomId('coupons', coupon.slug, couponData);
 
       if (success) {
-        message.success("Update Done");
+        message.success('Coupon saved successfully!');
       } else {
-        alert('Failed to save coupon. Please try again.');
+        message.error('Failed to save coupon. Please try again.');
       }
     } catch (error) {
       console.error('Error saving coupon:', error);
-      message.error("Something went wrong!");
+      message.error('An error occurred while saving the coupon.');
     }
   };
 
-  if (loading) return <div className='justify-center flex items-center h-screen'><Spin /></div>;
+  if (loading)
+    return (
+      <div className="justify-center flex items-center h-screen">
+        <Spin />
+      </div>
+    );
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
@@ -97,7 +123,26 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
         <Form layout="vertical">
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Code">
+              <Form.Item label="Title*" required>
+                <Input
+                  value={coupon.couponTitle}
+                  onChange={(e) => handleInputChange('couponTitle', e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Sub title">
+                <Input
+                  value={coupon.couponSubtitle}
+                  onChange={(e) => handleInputChange('couponSubtitle', e.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Code*" required>
                 <Input
                   value={coupon.code}
                   onChange={(e) => handleInputChange('code', e.target.value)}
@@ -131,7 +176,7 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
             <Col span={12}>
               <Form.Item label="Discount Type">
                 <Popover
-                  content="Choose between 'Fixed' or 'Percentage' discount type for the coupon. A 'fixed' discount gives a fixed value while a 'percentage' discount gives a percentage off."
+                  content="Choose between 'Fixed' or 'Percentage' discount type."
                   title="Discount Type"
                 >
                   <Select
@@ -144,104 +189,10 @@ const ManageCoupons = ({ id }: ManageCouponsProps) => {
                 </Popover>
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item label="Date Expire">
-              <DatePicker
-            value={coupon.dateExpire instanceof serverTimestamp ? moment(coupon.dateExpire.toDate()) : undefined}
-            onChange={(date) => handleInputChange('dateExpire', date?.toDate() || new Date())}
-            style={{ width: '100%' }}
-          />
-
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Usage Count">
-                <InputNumber
-                  value={coupon.usageCount}
-                  onChange={(value) => handleInputChange('usageCount', value)}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Usage Limit">
-                <InputNumber
-                  value={coupon.usageLimit}
-                  onChange={(value) => handleInputChange('usageLimit', value)}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Usage Limit Per User">
-                <InputNumber
-                  value={coupon.usageLimitPerUser}
-                  onChange={(value) => handleInputChange('usageLimitPerUser', value)}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Free Shipping">
-                <Checkbox
-                  checked={coupon.freeShipping}
-                  onChange={(e) => handleInputChange('freeShipping', e.target.checked)}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Minimum Amount">
-                <InputNumber
-                  value={coupon.minimumAmount}
-                  onChange={(value) => handleInputChange('minimumAmount', value)}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Exclude Sale Items">
-                <Checkbox
-                  checked={coupon.excludeSaleItems}
-                  onChange={(e) => handleInputChange('excludeSaleItems', e.target.checked)}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Product Categories">
-                <MultipleCategoriesSelector
-                  value={coupon.productCategories}
-                  onChange={(newCategories) => handleInputChange('productCategories', newCategories)}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Products">
-                <MultipleProductSelector
-                  value={coupon.productsId} // Updated field to `productsId`
-                  onChange={(newProducts) => handleInputChange('productsId', newProducts)} // Updated field to `productsId`
-                />
-              </Form.Item>
-            </Col>
           </Row>
 
           <Form.Item>
-            <Button
-              type="primary"
-              onClick={handleSave}
-              style={{ width: '100%' }}
-            >
+            <Button type="primary" onClick={handleSave} style={{ width: '100%' }}>
               Save Coupon
             </Button>
           </Form.Item>
