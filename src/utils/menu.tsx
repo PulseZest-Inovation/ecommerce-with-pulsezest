@@ -1,6 +1,7 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
+import SettingsIcon from '@mui/icons-material/Settings';
 import PaletteIcon from '@mui/icons-material/Palette';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -263,6 +264,15 @@ export const NAVIGATION = [
       },
     ],
   },
+  {
+    kind: 'divider',
+  },
+  {
+    segment: 'dashboard/setting',
+    title: 'Setting',
+    icon: <SettingsIcon/>,
+  },
+
   {
     kind: 'divider',
   },

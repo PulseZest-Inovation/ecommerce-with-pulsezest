@@ -27,9 +27,10 @@ import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
 import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
+import Setting from '@/app/dashboard/setting/page';
 import PaymentSetting from '@/app/dashboard/payment-setting/page';
 import PulseZestSupport from '@/app/dashboard/support/page';
-
+import EmailSettings from '@/app/dashboard/setting/email/page';
 // Route-to-component mapping
 type RouteComponents = {
   path: string;
@@ -69,6 +70,9 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
   { path: '/dashboard/pages/about-us', component: AboutPage },
   { path: '/dashboard/support', component: PulseZestSupport },
+  { path: '/dashboard/setting', component: Setting },
+  { path: '/dashboard/setting/email', component: EmailSettings },
+
 ];
 
 // Function to find the matching component for a route
