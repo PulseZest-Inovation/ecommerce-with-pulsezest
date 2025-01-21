@@ -13,7 +13,7 @@ export default function EmailSettings() {
   
 
   return (
-    <div >
+    <div>
       <Title level={3}>Settings</Title>
       <Card>
         <Tabs defaultActiveKey="1">

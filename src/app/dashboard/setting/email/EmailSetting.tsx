@@ -57,7 +57,8 @@ export default function EmailSettingsComponent() {
   };
 
   return (
-    <div >
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      <Title level={3}>Email Settings</Title>
       <Card>
         <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
           <Form.Item label="Select Email ✉️ Type:" name="emailType" initialValue="custom">

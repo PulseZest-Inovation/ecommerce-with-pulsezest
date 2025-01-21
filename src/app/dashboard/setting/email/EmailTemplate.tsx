@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Select, Card, Button } from "antd";
+import { Typography, Select, Card, Button, message } from "antd";
 import { Editor } from "@tinymce/tinymce-react"; // Assuming TinyMCE is used for HTML editing
+import { updateDocWithCustomId } from "@/services/FirestoreData/updateFirestoreData";
+import { getDataByDocName } from "@/services/FirestoreData/getFirestoreData"; // Your Firestore data fetching function
 
 const { Title } = Typography;
 const { Option } = Select;
+
+interface EmailTemplates {
+  OrderPlaced?: string;
+  OrderPending?: string;
+  OrderProcessing?: string;
+  OrderConfirmed?: string;
+  OrderCancelled?: string;
+  [key: string]: string | undefined; // Allow dynamic keys if needed
+}
 
 export default function EmailTemplate() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("OrderPlaced");
@@ -17,13 +28,47 @@ export default function EmailTemplate() {
     orderDetails: "Order #12345: 2x Widgets, 1x Gadget",
   };
 
+  // Function to fetch the existing template data from Firestore
+  const fetchTemplateContent = async (templateName: string) => {
+    try {
+      const data = await getDataByDocName<EmailTemplates>("settings", "email-setting");
+      if (data && data[templateName]) {
+        setHtmlContent(data[templateName]);
+      } else {
+        setHtmlContent("<p>Use placeholders like {{username}}, {{email}}, {{number}}, {{address}}, and {{orderDetails}}</p>");
+      }
+    } catch (error) {
+      console.error("Error fetching template data:", error);
+      message.error("Error fetching template data.");
+    }
+  };
+
   const handleTemplateChange = (value: string) => {
     setSelectedTemplate(value);
-    setHtmlContent(""); // Reset the content when switching templates
+    fetchTemplateContent(value); // Fetch the selected template's content from Firestore
   };
 
   const handleEditorChange = (content: string) => {
-    setHtmlContent(content);
+    setHtmlContent(content); // Update the local state with editor content, but no save here
+  };
+
+  // Function to save the template content to Firestore
+  const saveTemplateContent = async (content: string) => {
+    try {
+      const data = {
+        [selectedTemplate]: content,
+      };
+
+      const success = await updateDocWithCustomId("settings", "email-setting", data);
+      if (success) {
+        message.success("Template saved successfully.");
+      } else {
+        message.error("Failed to save template.");
+      }
+    } catch (error) {
+      console.error("Error saving template content:", error);
+      message.error("Error saving template content.");
+    }
   };
 
   const renderPreview = () => {
@@ -40,7 +85,7 @@ export default function EmailTemplate() {
 
   // Update the editor content when the template changes
   useEffect(() => {
-    setHtmlContent("<p>Use placeholders like {{username}}, {{email}}, {{number}}, {{address}}, and {{orderDetails}}</p>");
+    fetchTemplateContent(selectedTemplate); // Fetch content when the component mounts or template changes
   }, [selectedTemplate]);
 
   return (
@@ -87,6 +132,14 @@ export default function EmailTemplate() {
         onClick={() => setHtmlContent("")} // Reset editor content on button click
       >
         Reset Content
+      </Button>
+
+      <Button
+        type="primary"
+        className="mt-4 ml-4"
+        onClick={() => saveTemplateContent(htmlContent)} // Manually save the template content
+      >
+        Save Template
       </Button>
 
       <Card className="mt-4">
