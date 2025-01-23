@@ -33,7 +33,7 @@ export default function Setting() {
       title: "Shipping Settings",
       description: "Set up the ShipRocket Integration.",
       action: (
-        <Button type="primary" onClick={() => router.push("setting/shipping")}>
+        <Button type="primary" onClick={() => router.push("setting/shiprocket")}>
           Configure
         </Button>
       ),
@@ -47,7 +47,7 @@ export default function Setting() {
       title: "Meta Marketing API Key",
       description: "Provide the API key to connect with Meta's marketing tools.",
       action: (
-        <Button type="primary" onClick={() => router.push("setting/meta")}>
+        <Button type="primary" onClick={() => router.push("setting/meta-marketing")}>
           Setup
         </Button>
       ),
@@ -61,15 +61,15 @@ export default function Setting() {
         </Button>
       ),
     },
-    {
-      title: "Store Information",
-      description: "Update your store's name, address, and contact details.",
-      action: (
-        <Button type="primary" onClick={() => router.push("setting/store")}>
-          Edit
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Store Information",
+    //   description: "Update your store's name, address, and contact details.",
+    //   action: (
+    //     <Button type="primary" onClick={() => router.push("setting/store")}>
+    //       Edit
+    //     </Button>
+    //   ),
+    // },
   ];
 
   return (

@@ -31,6 +31,10 @@ import Setting from '@/app/dashboard/setting/page';
 import PaymentSetting from '@/app/dashboard/setting/payment/page';
 import PulseZestSupport from '@/app/dashboard/support/page';
 import EmailSettings from '@/app/dashboard/setting/email/page';
+import ShipRocketPage from '@/app/dashboard/setting/shiprocket/page';
+import InovicePage from '@/app/dashboard/setting/invoice/page';
+import MetaMarketing from '@/app/dashboard/setting/meta-marketing/page';
+
 // Route-to-component mapping
 type RouteComponents = {
   path: string;
@@ -72,6 +76,10 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/support', component: PulseZestSupport },
   { path: '/dashboard/setting', component: Setting },
   { path: '/dashboard/setting/email', component: EmailSettings },
+  { path: '/dashboard/setting/invoice', component: InovicePage },
+  { path: '/dashboard/setting/meta-marketing', component: MetaMarketing },
+  { path: '/dashboard/setting/shiprocket', component: ShipRocketPage },
+
 
 ];
 
