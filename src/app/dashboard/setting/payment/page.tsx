@@ -1,20 +1,34 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Button, Row, Col, Card, Space, message } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
+import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PaymentSetting() {
   const [phonePeKey, setPhonePeKey] = useState('');
-  const [saltKey, setSaltKey] = useState('');
-  const [apiKey, setApiKey] = useState('');
   const [showPhonePeKey, setShowPhonePeKey] = useState(false);
-  const [showSaltKey, setShowSaltKey] = useState(false);
-  const [showApiKey, setShowApiKey] = useState(false);
 
-  const handleSubmit = () => {
-    // Handle submission logic
-    message.success('Payment Settings Saved Successfully!');
+  // Fetch existing secret key when component mounts
+  useEffect(() => {
+    const fetchPhonePeKey = async () => {
+      const data = await getDataByDocName<{secretKey: string}>('settings', 'payment');
+      if (data && data.secretKey) {
+        setPhonePeKey(data.secretKey);
+      }
+    };
+    fetchPhonePeKey();
+  }, []);
+
+  const handleSubmit = async () => {
+    const success = await setDocWithCustomId('settings', 'payment', { secretKey: phonePeKey });
+    if (success) {
+      message.success('Payment Settings Saved Successfully!');
+    } else {
+      message.error('Failed to save Payment Settings!');
+    }
   };
 
   return (
@@ -22,14 +36,19 @@ export default function PaymentSetting() {
       <Card title="Payment Settings" bordered={false} style={{ padding: '20px' }}>
         <Row justify="center">
           <Col span={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <img
-              src="/phonepe.svg"
+            <div className='flex space-x-1'>
+            <Image
+              src="https://firebasestorage.googleapis.com/v0/b/ecommerce-with-pulsezest.firebasestorage.app/o/pulsezest-assets%2Fphone-business.ico?alt=media&token=8b9a7093-5510-461b-9a3f-3b7bb646c277"
               alt="PhonePe Logo"
-              width="150"
+              width={20}
+              height={20}
             />
+            <h1 className='text-green-400 font-bold'>PhonePe</h1>
+            </div>
+           
             <div style={{ marginTop: '10px' }}>
-              <Link href="https://www.phonepe.com/" target="_blank" rel="noopener noreferrer">
-              <p className='text-blue-600'>  PhonePe Website</p>
+              <Link href="https://business.phonepe.com/" target="_blank" rel="noopener noreferrer" className='text-blue-600'>
+                View PhonePe Dashboard
               </Link>
             </div>
           </Col>
@@ -50,44 +69,6 @@ export default function PaymentSetting() {
                   style={{ cursor: 'pointer' }}
                 >
                   {showPhonePeKey ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                </span>
-              }
-            />
-          </div>
-
-          {/* Salt Key Input */}
-          <div>
-            <label>Salt Key:</label>
-            <Input
-              type={showSaltKey ? 'text' : 'password'}
-              value={saltKey}
-              onChange={(e) => setSaltKey(e.target.value)}
-              prefix={<span style={{ fontWeight: 'bold' }}>🔑</span>}
-              suffix={
-                <span
-                  onClick={() => setShowSaltKey(!showSaltKey)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {showSaltKey ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                </span>
-              }
-            />
-          </div>
-
-          {/* API Key Input */}
-          <div>
-            <label>API Key:</label>
-            <Input
-              type={showApiKey ? 'text' : 'password'}
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              prefix={<span style={{ fontWeight: 'bold' }}>🔑</span>}
-              suffix={
-                <span
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {showApiKey ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                 </span>
               }
             />
