@@ -1,5 +1,5 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon, ReturnAndExchangeIcon } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PaletteIcon from '@mui/icons-material/Palette';
@@ -13,6 +13,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import ReturnAndExchange from '@/components/Product/ProductOtherTab/ProductOtherTabComponents/ReturnAndExchange';
 
 export const NAVIGATION = [
   {
@@ -29,10 +30,38 @@ export const NAVIGATION = [
     title: 'Analytics',
     icon: <AnalyticsIcon />,
   },
-  {
-    segment: 'dashboard/recent-order',
-    title: 'Recent Orders',
-    icon: <InventoryIcon />,
+   //Mange Orders
+   {
+    segment: 'dashboard/orders',
+    title: 'Orders',
+    icon: <OrderIcon />,
+    children: [
+      {
+        segment: 'view-all-orders',
+        title: 'View All Orders',
+        icon: <AllProduct />,
+      },
+      {
+        segment: 'pending-orders',
+        title: 'Pending Orders',
+        icon: <PendingOrderIcon />,
+      },  
+      {
+        segment: 'completed-orders',
+        title: 'Compelted Orders',
+        icon: <OrderCompeltedIcon />,
+      },
+      {
+        segment: 'return-order',
+        title: 'Return Order',
+        icon: <ReturnAndExchangeIcon />,
+      },
+      {
+        segment: 'refund-orders',
+        title: 'Refund Requests',
+        icon: <TimerIcon />,
+      },
+    ],
   },
   {
     kind: 'divider',
@@ -63,6 +92,9 @@ export const NAVIGATION = [
         },
 
 
+      
+
+
   //Manage Categories
           {
             segment: 'dashboard/manage-category',
@@ -82,45 +114,7 @@ export const NAVIGATION = [
             ],
           },
 
-  //Mange Orders
-          {
-            segment: 'dashboard/orders',
-            title: 'Orders',
-            icon: <OrderIcon />,
-            children: [
-              {
-                segment: 'view-all-orders',
-                title: 'View All Orders',
-                icon: <AllProduct />,
-              },
-              {
-                segment: 'order-details',
-                title: 'Order Details',
-                icon: <TimerIcon />,
-              },
-              {
-                segment: 'pending-orders',
-                title: 'Pending Orders',
-                icon: <PendingOrderIcon />,
-              },
-              {
-                segment: 'completed-orders',
-                title: 'Compelted Orders',
-                icon: <OrderCompeltedIcon />,
-              },
-              {
-                segment: 'return-order',
-                title: 'Return Order',
-                icon: <TimerIcon />,
-              },
-              {
-                segment: 'refund-orders',
-                title: 'Refund Requests',
-                icon: <TimerIcon />,
-              },
-            ],
-          },
-
+  
           {
             segment: 'dashboard/tags',
             title: 'Tags',

@@ -4,10 +4,10 @@ import Categories from '@/app/dashboard/manage-category/categories/page';
 import SubCategoires from '@/app/dashboard/manage-category/sub-categories/page';
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
+import OrderPage from '@/app/dashboard/orders/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
 import ViewAllOrderPage from '@/app/dashboard/orders/view-all-orders/page';
-import OrderDetailsPage from '@/app/dashboard/orders/order-details/page';
 import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
 import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
 import ReturnOrders from '@/app/dashboard/orders/return-order/page';
@@ -48,12 +48,13 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/recent-order', component: RecentOrders },
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
+  
   { path: '/dashboard/manage-product', component: ManageAllProduct },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
   { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
-  { path: '/dashboard/orders/order-details', component: OrderDetailsPage },
+  { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
   { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
   { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
   { path: '/dashboard/orders/return-order', component: ReturnOrders },
