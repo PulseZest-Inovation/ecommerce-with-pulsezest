@@ -28,7 +28,7 @@ import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
 import Setting from '@/app/dashboard/setting/page';
-import PaymentSetting from '@/app/dashboard/payment-setting/page';
+import PaymentSetting from '@/app/dashboard/setting/payment/page';
 import PulseZestSupport from '@/app/dashboard/support/page';
 import EmailSettings from '@/app/dashboard/setting/email/page';
 // Route-to-component mapping
@@ -60,7 +60,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
   { path: '/dashboard/testimonials', component: TestimonialsPage },
   { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
-  { path: '/dashboard/payment-setting', component: PaymentSetting },
+  { path: '/dashboard/setting/payment', component: PaymentSetting },
   { path: '/dashboard/coupons', component: Coupons },
   { path: '/dashboard/theme', component: ThemePage },
   { path: '/dashboard/pages/faq', component: FAQ },

@@ -190,19 +190,6 @@ export const NAVIGATION = [
       // },
 
  
-  {
-   kind: 'divider',
- },
-
-  {
-    kind: 'header',
-    title: 'Setting',
-  },
-  {
-    segment: 'dashboard/payment-setting',
-    title: 'Payment Setting',
-    icon: <AccountBalanceIcon />,
-  },
   // {
   //   segment: 'orderSetting',
   //   title: 'Order Setting',
