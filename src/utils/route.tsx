@@ -48,7 +48,6 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/recent-order', component: RecentOrders },
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
-  
   { path: '/dashboard/manage-product', component: ManageAllProduct },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
