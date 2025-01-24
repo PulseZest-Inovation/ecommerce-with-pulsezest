@@ -5,53 +5,70 @@ import SecurityCheck from './securityCheck'; // Ensure the path is correct
 import { adminLogin } from '@/services/login'; // Import the adminLogin function
 import { useRouter } from 'next/navigation'; // Import useRouter from next/navigation
 import { onAuthStateChanged } from 'firebase/auth'; // Import Firebase Auth
-import { auth} from '@/utils/firbeaseConfig';
+import { auth } from '@/utils/firbeaseConfig';
 import { AppDataType } from '@/types/AppData';
 import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
 import { getAppData } from '@/services/getApp';
+import Loader from '@/components/Loader'; // Add loader for consistent feedback
 
 const Login: React.FC = () => {
-  const router = useRouter(); // Get the router instance
-  const [isSecurityVerified, setIsSecurityVerified] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>(''); // Added email state
-  const [password, setPassword] = useState<string>(''); // Added password state
-  const [appData, setAppData] = useState<AppDataType | null>(null); // State to store the app data
+  const router = useRouter();
+  const [isSecurityVerified, setIsSecurityVerified] = useState(false);
+  const [loading, setLoading] = useState(true); // Global loading state
+  const [email, setEmail] = useState(''); // Email state
+  const [password, setPassword] = useState(''); // Password state
+  const [appData, setAppData] = useState<AppDataType | null>(null); // App data state
   const { success, error } = useNotification();
 
   useEffect(() => {
-    // Check if the user is already authenticated when the component mounts
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // Check Firebase authentication on component mount
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // If user is authenticated, redirect to dashboard
-        router.push('/dashboard');
+        const securityKey = localStorage.getItem('securityKey');
+        if (securityKey) {
+          try {
+            // Validate app data if user is authenticated
+            const fetchedData = await getAppData<AppDataType>('app_name', securityKey);
+            if (fetchedData) {
+              setAppData(fetchedData);
+              router.push('/dashboard'); // Redirect to dashboard if valid
+              return;
+            }
+          } catch (err) {
+            console.error('Error fetching app data:', err);
+          }
+        }
       }
+      setLoading(false); // Stop loading if not authenticated or no valid securityKey
     });
 
-    // Cleanup the subscription when the component is unmounted
-    return () => unsubscribe();
-  }, [auth, router]);
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, [router]);
 
-  const handleSecuritySuccess = () => {
+  const handleSecuritySuccess = async () => {
     message.success('Security check passed!');
-    fetchAppData(); // Fetch app data when security check passes
     setIsSecurityVerified(true);
+    await fetchAppData(); // Fetch app data after security check
   };
 
   const fetchAppData = async () => {
     try {
-      // Fetch data from Firestore using the 'getDocByDocName' function
-      const fetchedData = await getAppData<AppDataType>("app_name", localStorage.getItem('securityKey') || '');
+      const securityKey = localStorage.getItem('securityKey');
+      if (!securityKey) {
+        message.error('Missing security key in localStorage.');
+        return;
+      }
 
+      const fetchedData = await getAppData<AppDataType>('app_name', securityKey);
       if (fetchedData) {
-        setAppData(fetchedData); // Set the fetched data in state
-        console.log("Fetched App Data:", fetchedData);
+        setAppData(fetchedData); // Store fetched app data in state
+        console.log('Fetched App Data:', fetchedData);
       } else {
         message.error('App data not found.');
       }
-    } catch (error) {
-      console.error('Error fetching app data:', error);
+    } catch (err) {
+      console.error('Error fetching app data:', err);
       message.error('Failed to fetch app data. Please try again later.');
     }
   };
@@ -59,34 +76,34 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     if (loading) return; // Prevent multiple submissions
 
-    // Simple form validation
     if (!email || !password) {
       message.error('Please enter both email and password.');
       return;
     }
 
-    setLoading(true); // Set loading state
+    setLoading(true);
 
     try {
-      // Call adminLogin function
       const isLoggedIn = await adminLogin(email, password);
-
       if (isLoggedIn) {
-        message.success('Login successful!');
         success('Success', 'Login Successful!');
-        router.replace('/dashboard');
+        router.replace('/dashboard'); // Redirect to dashboard
       } else {
-        message.error('Invalid credentials! Please try again.');
         error('Error', 'Invalid Credentials!');
+        message.error('Invalid credentials. Please try again.');
       }
-    } catch (error) {
-      // Catch and display error during login process
+    } catch (err) {
+      console.error('Login error:', err);
+      error('Error', 'An error occurred during login. Please try again later.');
       message.error('An error occurred. Please try again later.');
-      console.error('Login error:', error);
+    } finally {
+      setLoading(false); // Reset loading state
     }
-
-    setLoading(false); // Reset loading state
   };
+
+  if (loading) {
+    return <Loader />; // Show loader while checking authentication
+  }
 
   return (
     <div>
@@ -100,12 +117,12 @@ const Login: React.FC = () => {
             <SecurityCheck onSuccess={handleSecuritySuccess} />
           ) : (
             <LoginToEcommerce
-              handleLogin={handleLogin} // Pass the handleLogin function
-              loading={loading} // Pass the loading state
-              email={email} // Pass email state
-              setEmail={setEmail} // Pass email setter
-              password={password} // Pass password state
-              setPassword={setPassword} // Pass password setter
+              handleLogin={handleLogin}
+              loading={loading}
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
             />
           )}
         </div>
