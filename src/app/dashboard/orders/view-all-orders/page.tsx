@@ -1,19 +1,18 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import { Table, Typography, Input, Space, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Timestamp } from "firebase/firestore";
 import { OrderType } from "@/types/orderType";
-
-
-
+import { useRouter } from "next/navigation";
 
 export default function ViewAllOrderPage() {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -31,16 +30,16 @@ export default function ViewAllOrderPage() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSearchText(value);
-  
+
     const filtered = orders.filter((order) => {
       const orderId = order.orderId?.toLowerCase() || "";
       const phoneNumber = order.phoneNumber?.toLowerCase() || "";
       const email = order.email?.toLowerCase() || "";
-  
+
       const orderDetailsMatch = order.orderDetails?.some((item) =>
         item.name?.toLowerCase().includes(value)
       );
-  
+
       return (
         orderId.includes(value) ||
         phoneNumber.includes(value) ||
@@ -48,10 +47,9 @@ export default function ViewAllOrderPage() {
         orderDetailsMatch
       );
     });
-  
+
     setFilteredOrders(filtered);
   };
-  
 
   const statusColors: Record<OrderType["status"], string> = {
     Pending: "orange",
@@ -109,7 +107,9 @@ export default function ViewAllOrderPage() {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Typography.Link>View Details</Typography.Link>
+        <Typography.Link onClick={() => router.push(`orders/${record.orderId}`)}>
+          View Details
+        </Typography.Link>
       ),
     },
   ];

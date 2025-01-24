@@ -5,6 +5,7 @@ import SubCategoires from '@/app/dashboard/manage-category/sub-categories/page';
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
 import OrderPage from '@/app/dashboard/orders/page';
+import ViewOrderPage from '@/app/dashboard/orders/[orderId]/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
 import ViewAllOrderPage from '@/app/dashboard/orders/view-all-orders/page';
@@ -52,6 +53,8 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
+  { path: '/dashboard/orders', component: OrderPage },
+  { path: '/dashboard/orders/:orderId', component: ViewOrderPage, isDynamic: true },
   { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
   { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
   { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },

@@ -17,7 +17,7 @@ export interface OrderType {
   status: "Pending" | "Confirmed" | "Processing" | "Dispatched" | "Delivered";
 }
 
-interface CartItem {
+export interface CartItem {
   id: string;
   productTitle: string;
   price: number;
