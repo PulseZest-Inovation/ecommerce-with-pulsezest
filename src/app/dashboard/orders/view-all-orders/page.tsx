@@ -16,15 +16,23 @@ export default function ViewAllOrderPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      setLoading(true);
-      const data = await getAllDocsFromCollection<OrderType>("orders");
-      setOrders(data);
-      setFilteredOrders(data);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const data = await getAllDocsFromCollection<OrderType>("orders");
+        setOrders(data);
+        setFilteredOrders(data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-
-    fetchOrders();
+  
+    if (typeof window !== "undefined") {
+      fetchOrders();
+    }
   }, []);
+  
 
   // Handle search input changes
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +115,7 @@ export default function ViewAllOrderPage() {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Typography.Link onClick={() => router.push(`orders/${record.orderId}`)}>
+        <Typography.Link onClick={() => router.push(`orders/order-details/${record.orderId}`)}>
           View Details
         </Typography.Link>
       ),

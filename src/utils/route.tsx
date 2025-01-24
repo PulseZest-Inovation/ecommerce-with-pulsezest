@@ -2,18 +2,25 @@ import DashboardContent from '@/app/dashboard/Main/page';
 import AnalyticsDashboard from '@/app/dashboard/analytics/page';
 import Categories from '@/app/dashboard/manage-category/categories/page';
 import SubCategoires from '@/app/dashboard/manage-category/sub-categories/page';
+
+// Product section
 import AddProduct from '@/app/dashboard/manage-product/add-new-product/page';
 import ViewProduct from '@/app/dashboard/manage-product/view-all-product/page';
-import OrderPage from '@/app/dashboard/orders/page';
-import ViewOrderPage from '@/app/dashboard/orders/[orderId]/page';
 import EditProduct from '@/app/dashboard/manage-product/edit-product/[productId]/page';
+import ManageAllProduct from '@/app/dashboard/manage-product/page';
 import ProductReview from '@/app/dashboard/product-reviews-and-raiting/page';
-import ViewAllOrderPage from '@/app/dashboard/orders/view-all-orders/page';
+
+
+// Orders section
+import OrderPage from '@/app/dashboard/orders/page';
+import ViewOrderPage from '@/app/dashboard/orders/order-details/[orderId]/page';
 import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
 import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
 import ReturnOrders from '@/app/dashboard/orders/return-order/page';
 import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
-import ManageAllProduct from '@/app/dashboard/manage-product/page';
+
+
+
 import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
@@ -47,20 +54,29 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard', component: DashboardContent },
   { path: '/dashboard/analytics', component: AnalyticsDashboard },
   { path: '/dashboard/recent-order', component: RecentOrders },
+
+  // Categoires section
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
+
+  // product section
   { path: '/dashboard/manage-product', component: ManageAllProduct },
   { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
   { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
   { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
+  
+  
+  // Orders Section
   { path: '/dashboard/orders', component: OrderPage },
-  { path: '/dashboard/orders/:orderId', component: ViewOrderPage, isDynamic: true },
-  { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
-  { path: '/dashboard/orders/view-all-orders', component: ViewAllOrderPage },
+  { path: '/dashboard/orders/order-details/:orderId', component: ViewOrderPage, isDynamic: true },
+  { path: '/dashboard/orders/view-all-orders', component: OrderPage },
   { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
   { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
   { path: '/dashboard/orders/return-order', component: ReturnOrders },
   { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
+
+
+  // Coupons section
   { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true },
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },

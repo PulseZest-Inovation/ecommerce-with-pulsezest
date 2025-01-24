@@ -1,51 +1,36 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Table, Typography, Input, Space, Card, Button } from "antd";
+import { Table, Typography, Input, Space, Card, Button, Spin } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useRouter } from "next/navigation"; // For navigation
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Timestamp } from "firebase/firestore";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
-
-interface Order {
-  id: string;
-  address: string;
-  apartment: string;
-  city: string;
-  country: string;
-  createdAt: Timestamp;
-  email: string;
-  fullName: string;
-  houseNumber: string;
-  orderDetails: CartItem[];
-  orderId: string;
-  phoneNumber: string;
-  state: string;
-  status: string; // "Pending", "Confirmed", etc.
-}
+import { OrderType } from "@/types/orderType";
 
 export default function PendingOrdersDetails() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderType[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter(); // Router instance for navigation
 
   useEffect(() => {
     const fetchOrders = async () => {
-      setLoading(true);
-      const data = await getAllDocsFromCollection<Order>("orders");
-      const pendingOrders = data.filter((order) => order.status === "Pending");
-      setOrders(pendingOrders);
-      setFilteredOrders(pendingOrders);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const data = await getAllDocsFromCollection<OrderType>("orders");
+        if (data) {
+          const pendingOrders = data.filter((order) => order.status === "Pending");
+          setOrders(pendingOrders);
+          setFilteredOrders(pendingOrders);
+        } else {
+          console.error("No data found");
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchOrders();
@@ -55,12 +40,15 @@ export default function PendingOrdersDetails() {
     const value = e.target.value.toLowerCase();
     setSearchText(value);
 
-    const filtered = orders.filter(
-      (order) =>
-        order.orderId.toLowerCase().includes(value) ||
-        order.phoneNumber.toLowerCase().includes(value) ||
-        order.email.toLowerCase().includes(value)
-    );
+    const filtered = orders.filter((order) => {
+      const { orderId, phoneNumber, email } = order;
+      // Convert all fields to strings and check for matching text
+      return (
+        (orderId?.toLowerCase().includes(value) || "") ||
+        (phoneNumber?.toLowerCase().includes(value) || "") ||
+        (email?.toLowerCase().includes(value) || "")
+      );
+    });
 
     setFilteredOrders(filtered);
   };
@@ -69,7 +57,7 @@ export default function PendingOrdersDetails() {
     router.push(`/orders/${orderId}`); // Navigate to the order detail page
   };
 
-  const columns: ColumnsType<Order> = [
+  const columns: ColumnsType<OrderType> = [
     {
       title: "Order ID",
       dataIndex: "orderId",
@@ -132,21 +120,29 @@ export default function PendingOrdersDetails() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex justify-center">
+        <Spin />
+      </div>
+    ); // Show loading state while data is being fetched
+  }
+
   return (
     <div>
       <div className="flex justify-evenly">
-           {/* Search Field */}
-      <Space className="flex-col" style={{ marginBottom: 16 }}>
-      <Typography.Title level={2}>Pending Orders</Typography.Title>
+        {/* Search Field */}
+        <Space className="flex-col" style={{ marginBottom: 16 }}>
+          <Typography.Title level={2}>Pending Orders</Typography.Title>
 
-        <Input
-          placeholder="Search by Order ID, Phone Number, or Email"
-          value={searchText}
-          onChange={handleSearch}
-          allowClear
-          style={{ width: 400 }}
-        />
-      </Space>
+          <Input
+            placeholder="Search by Order ID, Phone Number, or Email"
+            value={searchText}
+            onChange={handleSearch}
+            allowClear
+            style={{ width: 400 }}
+          />
+        </Space>
 
         {/* Pending Orders Count Card */}
         <Card
@@ -163,8 +159,6 @@ export default function PendingOrdersDetails() {
           <Typography.Title level={3}>{orders.length}</Typography.Title>
         </Card>
       </div>
-
-   
 
       {/* Pending Orders Table */}
       <Table

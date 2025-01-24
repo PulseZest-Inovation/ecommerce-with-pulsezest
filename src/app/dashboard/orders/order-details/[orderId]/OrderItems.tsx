@@ -1,15 +1,21 @@
-import React from "react";
-import { Card, Typography } from "antd";
+import React, { useState } from "react";
+import { Card, Typography, Select, Button, message } from "antd";
 import { CartItem } from "@/types/orderType";
+import { updateDocWithCustomId } from "@/services/FirestoreData/updateFirestoreData";
 
 interface OrderItemsProps {
   orderDetails: CartItem[];
 }
 
-const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails }) => {
+const { Option } = Select;
+
+const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails,  }) => {
+
+
+
+
   return (
-    <div className="p-4">
-      <Typography.Title level={3}>Order Items</Typography.Title>
+    <div className="p-1">  
       {orderDetails.map((item) => (
         <Card key={item.id} className="mb-4 shadow-lg">
           <div className="flex mb-4">
@@ -43,6 +49,8 @@ const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails }) => {
           </div>
         </Card>
       ))}
+
+
     </div>
   );
 };
