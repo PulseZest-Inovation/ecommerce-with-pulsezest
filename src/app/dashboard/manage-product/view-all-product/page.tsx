@@ -15,7 +15,6 @@ import ProductList from './ProductList';
 const ViewProduct: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -25,16 +24,13 @@ const ViewProduct: React.FC = () => {
 
   // Optimized Fetch Logic
   const fetchProducts = async () => {
-    setLoading(true);
     try {
       const products = await getAllDocsFromCollection<Product>('products');
       setProducts(products);
       setFilteredProducts(products);
     } catch (error) {
       console.error('Failed to fetch products:', error);
-    } finally {
-      setLoading(false);
-    }
+    }  
   };
 
   useEffect(() => {

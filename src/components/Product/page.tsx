@@ -37,6 +37,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     salePrice: "",
     gstRate: "",
 
+    // Dimessions and weight;
+    height:0,
+    length: 0,
+    breadth: 0,
+    weight:0,
+
+
     isReadyToWear: false,
     readyToWearCharges: 0,
 
