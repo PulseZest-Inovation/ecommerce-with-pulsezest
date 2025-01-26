@@ -10,13 +10,15 @@ export default function Home() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Navigate to app if authenticated
-        console.log('User is authenticated');
-        router.push('/dashboard'); // Navigate to app route
+      const securityKey = localStorage.getItem('securityKey');
+
+      if (user && securityKey) {
+        // Navigate to dashboard if authenticated and securityKey exists
+        console.log('User is authenticated and securityKey exists');
+        router.push('/dashboard');
       } else {
-        // Navigate to login if not authenticated
-        console.log('No user found');
+        // Navigate to login if either condition fails
+        console.log('Authentication failed or securityKey missing');
         router.push('/login');
       }
     });

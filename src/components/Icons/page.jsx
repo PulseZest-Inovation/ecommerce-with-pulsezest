@@ -194,6 +194,18 @@ const RatingIcon = () => {
   );
 };
 
+const VolumeIcon = () => {
+  return (
+    <Image
+      src="/icons/star.png" // Path relative to the `public` folder
+      alt='raiting'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
 export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ReturnAndExchangeIcon,

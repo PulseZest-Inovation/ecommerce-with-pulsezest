@@ -7,8 +7,8 @@ export default function Loader() {
   return (
     <div> 
         <div className='flex items-center justify-center h-screen'>
-     <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
-  </div>
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+        </div>
     </div>
   )
 }

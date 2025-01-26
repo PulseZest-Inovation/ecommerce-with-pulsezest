@@ -37,7 +37,7 @@ export const NAVIGATION = [
     icon: <OrderIcon />,
     children: [
       {
-        segment: 'view-all-orders',
+        segment: '',
         title: 'View All Orders',
         icon: <AllProduct />,
       },
