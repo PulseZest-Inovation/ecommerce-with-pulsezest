@@ -2,10 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Image, Tag, Rate, Card } from 'antd';
 import { Product } from '@/types/Product';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import moment from 'moment';
-import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
 import { Link } from '@mui/material';
 
 interface ProductListProps {
@@ -14,6 +13,7 @@ interface ProductListProps {
   onDeleteProduct: (product: Product) => void;
   onEditProduct: (id: string) => void;
   onViewProduct: (id: string, category: string) => void;
+  applicationUrl: string;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -22,6 +22,7 @@ const ProductList: React.FC<ProductListProps> = ({
   onDeleteProduct,
   onEditProduct,
   onViewProduct,
+  applicationUrl
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -128,7 +129,10 @@ const ProductList: React.FC<ProductListProps> = ({
       key: 'actions',
       render: (_: any, record: Product) => (
         <Space size="middle">
-          <Button icon={<Link />} onClick={() => onViewProduct(record.slug, record.categories[0])} />
+          <Button icon={<LinkOutlined/>} onClick={() =>  {
+                        window.open(`${applicationUrl}/collection/${record.categories[0]}/product/${record.slug}`, '_blank')
+
+          }} />
           <Button icon={<EditOutlined />} onClick={() => onEditProduct(record.slug)} />
           <Button danger icon={<DeleteOutlined />} onClick={() => onDeleteProduct(record)} />
         </Space>

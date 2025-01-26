@@ -1,15 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Image, Tooltip, Rate, Input, Card } from 'antd';
+import { Button, Input, } from 'antd';
 import { useRouter } from 'next/navigation';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Product } from '@/types/Product';
 import { getAppData } from '@/services/getApp';
 import { AppDataType } from '@/types/AppData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import moment from 'moment';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
-import { Link, Search } from '@mui/icons-material';
+import {   Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
 import ExportProductsButton from './ExportProductButton';
 import ProductList from './ProductList';
@@ -130,6 +128,7 @@ useEffect(() => {
       </div>
 
       <ProductList
+        applicationUrl={appData?.callback_url || ''}
         searchTerm={searchTerm}
         selectedCategories={selectedCategories}
         onDeleteProduct={handleDeleteProduct}
