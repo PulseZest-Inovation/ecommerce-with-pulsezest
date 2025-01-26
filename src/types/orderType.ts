@@ -15,6 +15,7 @@ export interface OrderType {
   phoneNumber: string;
   state: string;
   status: "Pending" | "Confirmed" | "Processing" | "Dispatched" | "Delivered";
+  [key: string]: any; // For additional details
 }
 
 export interface CartItem {

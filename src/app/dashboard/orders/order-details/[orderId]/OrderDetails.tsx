@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Card, Typography, Select, Button, message } from "antd"; // Added Button import
+import { Card, Typography, Select, Button, message, Divider } from "antd";
 import { OrderType } from "@/types/orderType";
 import { updateDocWithCustomId } from "@/services/FirestoreData/updateFirestoreData";
+
+const { Title, Text } = Typography;
 
 interface OrderDetailsProps {
   order: OrderType;
@@ -18,21 +20,27 @@ const statusOptions = [
   "Delivered",
 ];
 
-const OrderDetails: React.FC<OrderDetailsProps> = ({ order, orderId, currentStatus }) => {
+const OrderDetails: React.FC<OrderDetailsProps> = ({
+  order,
+  orderId,
+  currentStatus,
+}) => {
   const [status, setStatus] = useState<string>(order.status);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Handle status change in the select dropdown
   const handleStatusChange = (newStatus: string) => {
-    setStatus(newStatus); // Update the local state with the new status
+    setStatus(newStatus);
   };
 
-  // Handle status update to Firestore
   const handleStatusUpdate = async () => {
     setLoading(true);
     try {
       const updatedData = { status };
-      const success = await updateDocWithCustomId("orders", orderId, updatedData);
+      const success = await updateDocWithCustomId(
+        "orders",
+        orderId,
+        updatedData
+      );
 
       if (success) {
         message.success("Order status updated successfully!");
@@ -48,70 +56,113 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, orderId, currentStat
   };
 
   return (
-    <div className="p-2">
-    
-
-      {/* Order Information Card */}
-      <Card className="shadow-lg">
-        {/* Highlighted Order ID */}
-        <div className="mb-6">
-          <Typography.Title level={3} className="text-blue-600">
-            <strong>Order ID:</strong> {order.orderId}
-          </Typography.Title>
+    <div className="p-4 sticky top-3">
+      <Card className="shadow-md border border-gray-300 bg-white">
+        {/* Order ID */}
+        <div className="mb-4">
+          <Title level={4} className="text-blue-600">
+            Order ID: {order.orderId}
+          </Title>
         </div>
 
-          {/* Status Update Section */}
-      <Card className=" shadow-lg bg-blue-50 border border-blue-200">
-        <Typography.Title level={5} className="text-blue-600 mb-2">
-          Update Order Status
-        </Typography.Title>
-        <Typography.Text className="text-gray-700 mb-2 block">
-          Current Status: <strong>{currentStatus}</strong>
-        </Typography.Text>
-        <div className="flex items-center gap-4">
-          <Select
-            value={status}
-            onChange={handleStatusChange}
-            className="w-[200px]"
-            options={statusOptions.map((option) => ({ label: option, value: option }))}
-          />
-          <Button
-            type="primary"
-            loading={loading}
-            onClick={handleStatusUpdate}
-            disabled={status === currentStatus} // Disable if no change
-          >
-            Update Status
-          </Button>
-        </div>
-      </Card>
+        {/* Status Update Section */}
+        <Card className="mb-6 shadow-sm border bg-blue-50">
+          <Title level={5} className="text-blue-600">
+            Update Order Status
+          </Title>
+          <Text className="block text-gray-600 mb-2">
+            Current Status: <strong>{currentStatus}</strong>
+          </Text>
+          <div className="flex items-center gap-4">
+            <Select
+              value={status}
+              onChange={handleStatusChange}
+              className="w-[200px]"
+              options={statusOptions.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+            />
+            <Button
+              type="primary"
+              loading={loading}
+              onClick={handleStatusUpdate}
+              disabled={status === currentStatus}
+            >
+              Update Status
+            </Button>
+          </div>
+        </Card>
 
         {/* Order Details */}
-        <div className="pt-2">
-          <Typography.Text className="font-semibold">
+        <div>
+          {order.data?.code && (
+            <Text className="block mb-2 text-green-500">
+              <strong>Order Type:</strong> Online
+            </Text>
+          )}
+
+          {order.data?.data.paymentInstrument.accountType && (
+            <Text className="block mb-2 text-gray-600">
+              <strong>Account Type:</strong>{" "}
+              {order.data.data.paymentInstrument.accountType}
+            </Text>
+          )}
+
+          {order.data?.data.paymentInstrument.upiTransactionId && (
+            <Text className="block mb-2 text-gray-600">
+              <strong>UPI Transaction ID:</strong>{" "}
+              {order.data.data.paymentInstrument.upiTransactionId}
+            </Text>
+          )}
+
+          {order.data?.data.transactionId && (
+            <Text className="block mb-2 text-gray-600">
+              <strong>Transaction ID:</strong>{" "}
+              {order.data.data.transactionId}
+            </Text>
+          )}
+
+          {order.data?.data.paymentInstrument.type && (
+            <Text className="block mb-2 text-gray-600">
+              <strong>Payment Type:</strong>{" "}
+              {order.data.data.paymentInstrument.type}
+            </Text>
+          )}
+        </div>
+
+        <Divider />
+
+        {/* Customer Details */}
+        {order.fullName && (
+          <Text className="block mb-2">
             <strong>Customer Name:</strong> {order.fullName}
-          </Typography.Text>
-        </div>
-        <div className="mb-4">
-          <Typography.Text className="font-semibold">
+          </Text>
+        )}
+        {order.email && (
+          <Text className="block mb-2">
             <strong>Email:</strong> {order.email}
-          </Typography.Text>
-        </div>
-        <div className="mb-4">
-          <Typography.Text className="font-semibold">
+          </Text>
+        )}
+        {order.phoneNumber && (
+          <Text className="block mb-2">
             <strong>Phone Number:</strong> {order.phoneNumber}
-          </Typography.Text>
-        </div>
-        <div className="mb-4">
-          <Typography.Text className="font-semibold">
-            <strong>Address:</strong> {`${order.houseNumber}, ${order.apartment}, ${order.address}, ${order.city}, ${order.state}, ${order.country}`}
-          </Typography.Text>
-        </div>
-        <div className="mb-4">
-          <Typography.Text className="font-semibold">
-            <strong>Order Date:</strong> {new Date(order.createdAt.seconds * 1000).toLocaleDateString()}
-          </Typography.Text>
-        </div>
+          </Text>
+        )}
+        {order.houseNumber && order.address && order.city && (
+          <Text className="block mb-2">
+            <strong>Address:</strong>{" "}
+            {`${order.houseNumber || ""}, ${order.apartment || ""}, ${
+              order.address
+            }, ${order.city}, ${order.state || ""}, ${order.country || ""}`}
+          </Text>
+        )}
+        {order.createdAt?.seconds && (
+          <Text className="block mb-2">
+            <strong>Order Date:</strong>{" "}
+            {new Date(order.createdAt.seconds * 1000).toLocaleDateString()}
+          </Text>
+        )}
       </Card>
     </div>
   );

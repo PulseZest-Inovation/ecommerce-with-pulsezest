@@ -9,6 +9,13 @@ export interface Product {
   createdAt: Timestamp;
   ModifiedAt: Timestamp;
 
+  // Dimensions and Weight
+  height: number; // Product height in cm
+  length: number; // Product length in cm
+  breadth: number; // Product breadth in cm
+  weight: number; // Product weight in kg
+
+  // Pre-Plated and Ready-to-Wear
   isPrePlated: boolean;
   prePlatedCharges: number;
   isReadyToWear: boolean;
@@ -18,12 +25,18 @@ export interface Product {
     length: number;
     hip: number;
   };
+
+  // Product Metadata
   type: string;
   status: string;
   featured: boolean;
   catalog_visibility: string;
+
+  // Descriptions
   description: { heading: string; content: string }[];
   shortDescription: string;
+
+  // Pricing
   sku: string;
   price: string;
   regularPrice: string;
@@ -35,16 +48,15 @@ export interface Product {
   purchaseSale: boolean;
   totalSales: number;
 
+  // Return and Shipping Details
   isReturn: boolean;
   returnPeriod: string;
-
   isCashOnDelivery: boolean;
-  
   isShippingCharge: boolean;
   shipping_taxable: string;
   deliveryTimePeriod: string;
 
-
+  // Stock Details
   manageStatus: boolean;
   stockQuantity: number;
   stockStatus: string;
@@ -53,15 +65,23 @@ export interface Product {
   reviewsAllowed: boolean;
   averageRating: string;
   ratingCount: number;
+
+  // Additional Information
   categories: string[];
   videoUrl: string;
   tags: string[];
-  gstRate: string
+  gstRate: string;
   HSN: string;
+
+  // Media
   featuredImage: string;
   galleryImages: string[];
+
+  // Variations and Attributes
   variation: any[];
   attributes: any[];
+
+  // Other Metadata
   menuOrder: number;
   metaData: any[];
 }

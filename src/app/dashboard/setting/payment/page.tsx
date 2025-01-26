@@ -9,21 +9,29 @@ import Image from 'next/image';
 
 export default function PaymentSetting() {
   const [phonePeKey, setPhonePeKey] = useState('');
+  const [merchantId, setMerchantId] = useState('');
+  const [keyIndex, setKeyIndex] = useState('');
   const [showPhonePeKey, setShowPhonePeKey] = useState(false);
 
-  // Fetch existing secret key when component mounts
+  // Fetch existing payment settings when component mounts
   useEffect(() => {
-    const fetchPhonePeKey = async () => {
-      const data = await getDataByDocName<{secretKey: string}>('settings', 'payment');
-      if (data && data.secretKey) {
+    const fetchPaymentSettings = async () => {
+      const data = await getDataByDocName<{ secretKey: string, merchantId: string, keyIndex: string }>('settings', 'payment');
+      if (data) {
         setPhonePeKey(data.secretKey);
+        setMerchantId(data.merchantId);
+        setKeyIndex(data.keyIndex);
       }
     };
-    fetchPhonePeKey();
+    fetchPaymentSettings();
   }, []);
 
   const handleSubmit = async () => {
-    const success = await setDocWithCustomId('settings', 'payment', { secretKey: phonePeKey });
+    const success = await setDocWithCustomId('settings', 'payment', { 
+      secretKey: phonePeKey,
+      merchantId,
+      keyIndex
+    });
     if (success) {
       message.success('Payment Settings Saved Successfully!');
     } else {
@@ -37,15 +45,14 @@ export default function PaymentSetting() {
         <Row justify="center">
           <Col span={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
             <div className='flex space-x-1 justify-center items-center'>
-            <Image
-              src="https://firebasestorage.googleapis.com/v0/b/ecommerce-with-pulsezest.firebasestorage.app/o/pulsezest-assets%2Fphone-business.ico?alt=media&token=8b9a7093-5510-461b-9a3f-3b7bb646c277"
-              alt="PhonePe Logo"
-              width={40}
-              height={40}
-            />
-            <h1 className='text-green-600 font-bold text-2xl text-center'>PhonePe</h1>
+              <Image
+                src="https://firebasestorage.googleapis.com/v0/b/ecommerce-with-pulsezest.firebasestorage.app/o/pulsezest-assets%2Fphone-business.ico?alt=media&token=8b9a7093-5510-461b-9a3f-3b7bb646c277"
+                alt="PhonePe Logo"
+                width={40}
+                height={40}
+              />
+              <h1 className='text-green-600 font-bold text-2xl text-center'>PhonePe</h1>
             </div>
-           
             <div style={{ marginTop: '10px' }}>
               <Link href="https://business.phonepe.com/" target="_blank" rel="noopener noreferrer" className='text-blue-600'>
                 View PhonePe Dashboard
@@ -71,6 +78,26 @@ export default function PaymentSetting() {
                   {showPhonePeKey ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                 </span>
               }
+            />
+          </div>
+
+          {/* Merchant ID Input */}
+          <div>
+            <label>Merchant ID:</label>
+            <Input
+              value={merchantId}
+              onChange={(e) => setMerchantId(e.target.value)}
+              prefix={<span style={{ fontWeight: 'bold' }}>💼</span>}
+            />
+          </div>
+
+          {/* Key Index Input */}
+          <div>
+            <label>Key Index:</label>
+            <Input
+              value={keyIndex}
+              onChange={(e) => setKeyIndex(e.target.value)}
+              prefix={<span style={{ fontWeight: 'bold' }}>🔢</span>}
             />
           </div>
 

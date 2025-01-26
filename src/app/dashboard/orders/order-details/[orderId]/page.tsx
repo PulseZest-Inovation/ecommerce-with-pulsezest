@@ -66,7 +66,7 @@ export default function ViewOrderPage() {
   return (
     <div>
       {/* Order Status Timeline */}
-      <div className="sticky top-2">
+      <div className="sticky top-0 z-10 rounded-md bg-white">
         <Steps current={currentStep} direction="horizontal">
           {statusSteps.map((status, index) => (
             <Step
