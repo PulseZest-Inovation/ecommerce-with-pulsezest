@@ -77,7 +77,7 @@ export default function VideoSectionOnWebsite() {
 
   return (
     <div className="w-full max-w-screen-xl mx-auto p-6 bg-gray-100 rounded-md shadow-md">
-      <h2 className="text-xl font-bold mb-4">Video Section - Select Products</h2>
+      <h2 className="text-xl font-bold mb-4">Video cataloging - This Product will show in First Page.</h2>
 
       {/* Enable/Disable Toggle */}
       <div className="mb-4 flex items-center justify-evenly">
