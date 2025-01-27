@@ -210,5 +210,5 @@ export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
    CustomerIcon,
    ReturnAndExchangeIcon,
    ManageCategoriesIcon,
-     ReviewAndRatingIcon,
+     ReviewAndRatingIcon,VolumeIcon,
      PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, TestimonialIcon, TaxIcon, SkuIcon, RatingIcon };
