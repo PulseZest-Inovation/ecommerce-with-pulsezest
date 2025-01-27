@@ -1,7 +1,6 @@
 'use client';
 import React, { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link'; // Import Link for navigation
-import { AppDataType } from '@/types/AppData';
+import Link from 'next/link';
 import Image from 'next/image';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import IconButton from '@mui/material/IconButton';
@@ -10,7 +9,7 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { Box, Typography, Breadcrumbs } from '@mui/material';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme } from '@/utils/menu';
-import { getRouteComponent } from '@/utils/route'; 
+import { getRouteComponent } from '@/utils/route';
 import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { usePathname, useRouter } from 'next/navigation';
 import { Result } from 'antd';
@@ -18,6 +17,8 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/utils/firbeaseConfig';
 import Loader from '@/components/Loader';
 import NotificationBar from '../Drawer/Notification/page';
+import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
+import { AppDataType } from '@/types/AppData';
 
 interface DashboardProps {
   appData: AppDataType;
@@ -25,67 +26,70 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null); // Auth user state
-  const pathname = usePathname(); // Get the current route
+  const [user, setUser] = useState<User | null>(null);
+  const pathname = usePathname();
   const router = useRouter();
-  const [isNotificationBarOpen, setIsNotificationBarOpen] = useState(false); // Track notification bar state
+  const [isNotificationBarOpen, setIsNotificationBarOpen] = useState(false);
+  const [badgeCount, setBadgeCount] = useState(0); // State to hold the badge count
 
   const handleToggleNotificationBar = () => {
     setIsNotificationBarOpen((prev) => !prev);
   };
-  // Handle authentication state
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
       } else {
-        router.push('/login'); // Redirect to login page if no user
+        router.push('/login');
       }
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup on unmount
+    return () => unsubscribe();
   }, [router]);
 
+  // Fetch badge count from Firestore
   useEffect(() => {
-    console.log(appData.app_name, appData.app_logo); // Log app data for debugging
-  }, [appData]);
+    const fetchNotifications = async () => {
+      try {
+        const notifications = await getAllDocsFromCollection('notifications'); // Replace 'notifications' with your collection name
+        setBadgeCount(notifications.length); // Set the count of documents
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
 
-  // Memoize the router context to prevent unnecessary re-renders
+    fetchNotifications();
+  }, []);
+
   const routerContext = useMemo(
     () => ({
       pathname,
       searchParams: new URLSearchParams(),
-      navigate: (route: string) => router.push(route), // Simplify navigation logic
+      navigate: (route: string) => router.push(route),
     }),
     [pathname, router]
   );
 
-  // Generate breadcrumbs dynamically based on the current route
- // Generate breadcrumbs dynamically based on the current route
+  const generateBreadcrumbs = useMemo(() => {
+    const pathSegments = (pathname || '').split('/').filter(Boolean);
+    return pathSegments.map((segment, index) => {
+      const breadcrumbPath = `/${pathSegments.slice(0, index + 1).join('/')}`;
+      return (
+        <Link href={breadcrumbPath} key={index} className="hover:underline">
+          <Typography className="cursor-pointer" color="primary">
+            {segment.toUpperCase()}
+          </Typography>
+        </Link>
+      );
+    });
+  }, [pathname]);
 
- // Generate breadcrumbs dynamically based on the current route
- const generateBreadcrumbs = useMemo(() => {
-   const pathSegments = (pathname || '').split('/').filter(Boolean); // Use an empty string as fallback
-   return pathSegments.map((segment, index) => {
-     const breadcrumbPath = `/${pathSegments.slice(0, index + 1).join('/')}`; // Build path for each breadcrumb
-     return (
-       <Link href={breadcrumbPath} key={index} className='hover:underline'>
-         <Typography className="cursor-pointer" color="primary">
-           {segment.toUpperCase()}
-         </Typography>
-       </Link>
-     );
-   });
- }, [pathname]);
- 
-
-
-  // Render content based on the current route
   const renderContent = () => {
-    const Component = getRouteComponent(pathname ?? '' ); // Use the helper function
+    const Component = getRouteComponent(pathname ?? '');
     if (Component) {
-      return <Component />; // Render the selected component
+      return <Component />;
     }
     return (
       <Result
@@ -96,13 +100,12 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     );
   };
 
-  // Loading state and user authentication check
   if (loading) {
-    return <Loader />; // Show loader while checking authentication
+    return <Loader />;
   }
 
   if (!user) {
-    return null; // Prevent rendering if the user is not authenticated
+    return null;
   }
 
   return (
@@ -127,27 +130,24 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
       <DashboardLayout
         slots={{
           sidebarFooter: () => <AccountSidebarInfo />,
-          toolbarAccount: ()=>  (
+          toolbarAccount: () => (
             <Box display="flex" alignItems="center" gap={2}>
-            <IconButton color="inherit" onClick={handleToggleNotificationBar}>
-              <Badge badgeContent={5} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Box>
-          )
+              <IconButton color="inherit" onClick={handleToggleNotificationBar}>
+                <Badge badgeContent={badgeCount} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Box>
+          ),
         }}
       >
-        {/* Breadcrumbs Section */}
         <Box sx={{ p: 2 }}>
           <Breadcrumbs aria-label="breadcrumb">{generateBreadcrumbs}</Breadcrumbs>
         </Box>
 
-          {/* Notification Bar */}
-          {isNotificationBarOpen && (
+        {isNotificationBarOpen && (
           <NotificationBar onClose={() => setIsNotificationBarOpen(false)} />
         )}
-        {/* Render Content Section */}
         <Box sx={{ p: 2 }}>{renderContent()}</Box>
       </DashboardLayout>
     </AppProvider>

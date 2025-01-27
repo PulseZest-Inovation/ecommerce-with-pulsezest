@@ -5,7 +5,7 @@ import EightMpIcon from '@mui/icons-material/EightMp';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 
 import type { MenuProps } from "antd";
-import { SkuIcon, TaxIcon, ReturnAndExchangeIcon, RatingIcon } from "@/components/Icons/page";
+import { SkuIcon, TaxIcon, ReturnAndExchangeIcon, RatingIcon, VolumeIcon } from "@/components/Icons/page";
 
 export const ProductOtherTabMenu: MenuProps["items"] = [
   {
@@ -32,6 +32,11 @@ export const ProductOtherTabMenu: MenuProps["items"] = [
     key: "stock",
     label: "Product Stock",
     icon: <Inventory2Icon />,
+  },
+  {
+    key: "volume",
+    label: "volume",
+    icon: <VolumeIcon />,
   },
   {
     key: "sku",

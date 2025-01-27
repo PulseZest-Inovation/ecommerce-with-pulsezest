@@ -11,10 +11,7 @@ export interface Categories {
     count: number;
     isPosition: number;
     isVisible: boolean;
+    isHeaderVisible: boolean;
     createdAt?: string;
     children ?: Categories[];
-
-
-
-
 }
