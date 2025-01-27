@@ -16,6 +16,7 @@ import CategoryStyle from '@/components/Theme/CategoryStyle';
 import Socialmedia from '@/components/Theme/socialmedia';
 import Footer from '@/components/Theme/Footer/page';
 import { FormatTextdirectionLToROutlined } from '@mui/icons-material';
+import VideoSectionOnWebsite from '@/components/Theme/VideoSection/page';
 
 // Define the menu items
 type MenuItem = Required<MenuProps>['items'][number];
@@ -23,6 +24,7 @@ type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
   { key: '1', icon: <PieChartOutlined />, label: 'Top Header' },
   { key: '2', icon: <DesktopOutlined />, label: 'Categories' },
+  { key: '6', icon: <FormatTextdirectionLToROutlined/>, label: 'Videos at Home'},
   { key: '3', icon: <ContainerOutlined />, label: 'Image Carousel' },
   { key: '4', icon: <GlobalOutlined/>, label: 'Social Media'},
   { key: '5', icon: <FormatTextdirectionLToROutlined/>, label: 'Footer'},
@@ -57,6 +59,8 @@ const ThemePage = (props: Props) => {
         return <Socialmedia/> ;
       case '5':
         return <Footer/>
+        case '6':
+        return <VideoSectionOnWebsite/>
       default:
         return <div>Select a menu option</div>;
     }

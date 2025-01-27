@@ -10,19 +10,15 @@ type Props = {};
 
 export default function CategoryStyle({}: Props) {
   const [categoryStyle, setCategoryStyle] = useState<CategoryStyleType | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const fetchCategoryStyle = async () => {
     try {
-      setLoading(true);
       const data = await getDataByDocName<CategoryStyleType>('theme-settings', 'categories');
       setCategoryStyle(data);
     } catch (error) {
       console.error('Failed to fetch category style data:', error);
       message.error('Error fetching data');
-    } finally {
-      setLoading(false);
-    }
+    }  
   };
 
   useEffect(() => {
