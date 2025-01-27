@@ -18,6 +18,7 @@ interface Notification {
   id: string;
   title: string;
   message: string;
+  url?: string;
 }
 
 interface NotificationBarProps {
@@ -27,23 +28,48 @@ interface NotificationBarProps {
 const NotificationBar: React.FC<NotificationBarProps> = ({ onClose }) => {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch notifications on mount
   useEffect(() => {
     const fetchNotifications = async () => {
-      const data = await getAllDocsFromCollection<Notification>('notifications');
-      setNotifications(data);
+      try {
+        setLoading(true);
+        const data = await getAllDocsFromCollection<Notification>('notifications');
+        setNotifications(data);
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+        setError('Failed to load notifications. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchNotifications();
   }, []);
 
   // Handle delete notification
   const handleDelete = async (id: string) => {
-    const success = await deleteDocFromCollection('notifications', id);
-    if (success) {
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+    try {
+      const success = await deleteDocFromCollection('notifications', id);
+      if (success) {
+        setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      }
+    } catch (err) {
+      console.error('Error deleting notification:', err);
+      alert('Failed to delete the notification. Please try again.');
     }
   };
+
+  // Handle notification click
+  const handleNotificationClick = (url?: string) => {
+    if (url) {
+      window.location.href = url; // Navigate to the URL using window.location
+    }
+  };
+  
 
   return (
     <Box
@@ -85,7 +111,13 @@ const NotificationBar: React.FC<NotificationBarProps> = ({ onClose }) => {
 
       {/* Notification List */}
       <List sx={{ p: 2 }}>
-        {notifications.map(({ id, title, message }) => (
+        {loading && <Typography>Loading notifications...</Typography>}
+        {error && <Typography color="error">{error}</Typography>}
+        {!loading && notifications.length === 0 && !error && (
+          <Typography>No notifications to display.</Typography>
+        )}
+
+        {notifications.map(({ id, title, message, url }) => (
           <React.Fragment key={id}>
             <ListItem
               sx={{
@@ -93,14 +125,17 @@ const NotificationBar: React.FC<NotificationBarProps> = ({ onClose }) => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                ':hover': { backgroundColor: '#f1f1f1' },
+                ':hover': { backgroundColor: '#f1f1f1', cursor: 'pointer' },
               }}
-              className="cursor-pointer"
+              onClick={() => handleNotificationClick(url)} // Handle click for navigation
             >
               <ListItemText primary={title} secondary={message} />
               <IconButton
                 color="success"
-                onClick={() => handleDelete(id)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent click propagation to the ListItem
+                  handleDelete(id);
+                }}
                 title="Mark as Completed"
               >
                 <CheckCircleIcon />
