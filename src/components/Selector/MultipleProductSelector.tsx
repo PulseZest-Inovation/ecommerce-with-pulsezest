@@ -1,31 +1,28 @@
-'use client'
-import React, { useEffect, useState } from "react";
-import { Product } from "@/types/Product";
-import { Select, Spin } from "antd";
-import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData"; // Adjust the path accordingly
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Product } from '@/types/Product';
+import { Select, Spin } from 'antd';
+import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData'; // Adjust the path accordingly
 
 const { Option } = Select;
 
- 
-
 interface MultipleProductSelectorProps {
-  value?: string[];
-  onChange?: (value: string[]) => void;
+  value?: Product[]; // Accepts an array of full Product objects
+  onChange?: (value: Product[]) => void;
 }
 
 const MultipleProductSelector: React.FC<MultipleProductSelectorProps> = ({ value = [], onChange }) => {
-  const [products, setProducts] = useState<Array<Product>>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         // Fetch products from Firestore
-        const fetchedProducts = await getAllDocsFromCollection<Product>("products");
-
+        const fetchedProducts = await getAllDocsFromCollection<Product>('products');
         setProducts(fetchedProducts);
       } catch (error) {
-        console.error("Error fetching products: ", error);
+        console.error('Error fetching products: ', error);
       } finally {
         setLoading(false);
       }
@@ -34,6 +31,11 @@ const MultipleProductSelector: React.FC<MultipleProductSelectorProps> = ({ value
     fetchProducts();
   }, []);
 
+  const handleChange = (selectedIds: string[]) => {
+    const selectedProducts = products.filter((product) => selectedIds.includes(product.id));
+    onChange?.(selectedProducts); // Pass the full selected product objects
+  };
+
   if (loading) {
     return <Spin size="small" />;
   }
@@ -41,15 +43,15 @@ const MultipleProductSelector: React.FC<MultipleProductSelectorProps> = ({ value
   return (
     <Select
       mode="multiple"
-      value={value}
-      onChange={onChange}
+      value={value.map((v) => v.id)} // Pass only IDs for controlled behavior
+      onChange={handleChange}
       placeholder="Select products"
       className="rounded-md"
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
     >
       {products.map((product) => (
-        <Option key={product.slug} value={product.id}>
-          {product.id}
+        <Option key={product.id} value={product.id}>
+          {product.productTitle || product.id} {/* Display product name or fallback to ID */}
         </Option>
       ))}
     </Select>
