@@ -96,12 +96,15 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
 
         {/* Order Details */}
         <div>
-          {order.data?.code && (
-            <Text className="block mb-2 text-green-500">
-              <strong>Order Type:</strong> Online
-            </Text>
-          )}
-
+            {order.type && (
+              <div>
+               <Text className="block mb-2 text-green-500">
+                <strong>Order Type:</strong>  {order.type}
+              </Text>
+              </div>
+            )}
+              
+        
           {order.data?.data.paymentInstrument.accountType && (
             <Text className="block mb-2 text-gray-600">
               <strong>Account Type:</strong>{" "}
