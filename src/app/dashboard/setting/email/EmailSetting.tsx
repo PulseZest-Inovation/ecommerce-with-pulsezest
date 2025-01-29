@@ -4,20 +4,11 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Card, Radio, Typography, message } from "antd";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { getDataByDocName } from "@/services/FirestoreData/getFirestoreData";
-
+import { EmailType } from "@/types/EmailType";
 const { Title } = Typography;
 
 // Define the structure of email settings
-interface EmailSettings {
-  emailType: "custom" | "google";
-  smtpServer?: string;
-  port?: string;
-  customEmail?: string;
-  password?: string;
-  googleEmail?: string;
-  appPassword?: string;
-  isEnabled?: boolean; // Include this to track the enabled state
-}
+
 
 export default function EmailSettingsComponent() {
   const [emailType, setEmailType] = useState<"custom" | "google">("custom");
@@ -28,7 +19,7 @@ export default function EmailSettingsComponent() {
   }, []);
 
   const fetchEmailSettings = async () => {
-    const settings = await getDataByDocName<EmailSettings>("settings", "email-setting");
+    const settings = await getDataByDocName<EmailType>("settings", "email-setting");
 
     if (settings && settings.isEnabled) {
       setEmailType(settings.emailType);
@@ -38,11 +29,11 @@ export default function EmailSettingsComponent() {
     }
   };
 
-  const handleFormSubmit = async (values: EmailSettings) => {
+  const handleFormSubmit = async (values: EmailType) => {
     // Reset previous settings
     await setDocWithCustomId("settings", "email-setting", { isEnabled: false });
 
-    const data: EmailSettings = {
+    const data: EmailType = {
       ...values,
       emailType,
       isEnabled: true, // Mark the current settings as enabled

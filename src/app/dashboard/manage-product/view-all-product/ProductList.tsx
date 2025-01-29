@@ -1,11 +1,9 @@
-// components/ProductList.tsx
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Image, Tag, Rate, Card } from 'antd';
 import { Product } from '@/types/Product';
 import { EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
-import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import moment from 'moment';
 import { Link } from '@mui/material';
+import moment from 'moment';
 
 interface ProductListProps {
   searchTerm: string;
@@ -14,6 +12,7 @@ interface ProductListProps {
   onEditProduct: (id: string) => void;
   onViewProduct: (id: string, category: string) => void;
   applicationUrl: string;
+  products: Product[]; // Accept products as a prop
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -22,28 +21,10 @@ const ProductList: React.FC<ProductListProps> = ({
   onDeleteProduct,
   onEditProduct,
   onViewProduct,
-  applicationUrl
+  applicationUrl,
+  products // Receive products as prop
 }) => {
-  const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const products = await getAllDocsFromCollection<Product>('products');
-        setProducts(products);
-        setFilteredProducts(products);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   // Filtering Logic
   useEffect(() => {
@@ -66,7 +47,7 @@ const ProductList: React.FC<ProductListProps> = ({
     }
 
     setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategories, products]);
+  }, [searchTerm, selectedCategories, products]); // Re-filter when products change
 
   const columns = [
     {
@@ -129,10 +110,15 @@ const ProductList: React.FC<ProductListProps> = ({
       key: 'actions',
       render: (_: any, record: Product) => (
         <Space size="middle">
-          <Button icon={<LinkOutlined/>} onClick={() =>  {
-                        window.open(`${applicationUrl}/collection/${record.categories[0]}/product/${record.slug}`, '_blank')
-
-          }} />
+          <Button
+            icon={<LinkOutlined />}
+            onClick={() => {
+              window.open(
+                `${applicationUrl}/collection/${record.categories[0]}/product/${record.slug}`,
+                '_blank'
+              );
+            }}
+          />
           <Button icon={<EditOutlined />} onClick={() => onEditProduct(record.slug)} />
           <Button danger icon={<DeleteOutlined />} onClick={() => onDeleteProduct(record)} />
         </Space>
@@ -142,31 +128,28 @@ const ProductList: React.FC<ProductListProps> = ({
 
   return (
     <div>
+      <div className="mb-4 flex items-center justify-between bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-4 rounded-lg shadow-lg">
+        <div className="flex items-center space-x-2">
+          <span className="text-2xl font-semibold text-gray-800">
+            Total Products: <span className="text-blue-600">{filteredProducts.length}</span>
+          </span>
+        </div>
 
-<div className="mb-4 flex items-center justify-between bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-4 rounded-lg shadow-lg">
-  <div className="flex items-center space-x-2">
-    <span className="text-2xl font-semibold text-gray-800">
-      Total Products: <span className="text-blue-600">{filteredProducts.length}</span>
-    </span>
-  </div>
-  
         <div className="flex items-center space-x-3">
-            {selectedCategories.length > 0 ? (
+          {selectedCategories.length > 0 ? (
             selectedCategories.map((category, index) => (
-                <div 
+              <div
                 key={index}
                 className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm shadow-md hover:bg-blue-600 transition-all"
-                >
+              >
                 {category}
-                </div>
+              </div>
             ))
-            ) : (
+          ) : (
             <span className="text-gray-600 font-medium">Showing all products</span>
-            )}
+          )}
         </div>
-        </div>
-
-
+      </div>
 
       {/* Table for Desktop */}
       <div className="hidden md:block">
@@ -174,7 +157,6 @@ const ProductList: React.FC<ProductListProps> = ({
           dataSource={filteredProducts}
           columns={columns}
           rowKey="id"
-          loading={loading}
           pagination={false}
           bordered
         />

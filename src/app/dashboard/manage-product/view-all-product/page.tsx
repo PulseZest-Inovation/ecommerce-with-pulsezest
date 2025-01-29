@@ -7,7 +7,7 @@ import { getAppData } from '@/services/getApp';
 import { AppDataType } from '@/types/AppData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
-import {   Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
 import ExportProductsButton from './ExportProductButton';
 import ProductList from './ProductList';
@@ -53,36 +53,37 @@ const ViewProduct: React.FC = () => {
   };
 
   // Filtering Logic
- // In the useEffect hook where categories are updated:
-useEffect(() => {
-  let filtered = products;
+  useEffect(() => {
+    let filtered = products;
 
-  if (searchTerm) {
-    filtered = filtered.filter(
-      (product) =>
-        product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productSubtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (product) =>
+          product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.productTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.productSubtitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-  if (selectedCategories.length > 0) {
-    filtered = filtered.filter((product) =>
-      product.categories.some((category) => selectedCategories.includes(category))
-    );
-  }
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((product) =>
+        product.categories.some((category) => selectedCategories.includes(category))
+      );
+    }
 
-  setFilteredProducts(filtered);  // This should now be a Product[] array
-}, [searchTerm, selectedCategories, products]);
+    setFilteredProducts(filtered);
+  }, [searchTerm, selectedCategories, products]);
 
-
-  const handleDeleteSuccess = () => fetchProducts();
+  const handleDeleteSuccess = () => {
+    fetchProducts(); // Live update after deletion
+  };
 
   const cancelDelete = () => {
     setIsModalVisible(false);
     setProductToDelete(null);
   };
+
   const handleEditProduct = (id: string) => {
     router.push(`edit-product/${id}`);
   };
@@ -91,8 +92,6 @@ useEffect(() => {
     setProductToDelete(product);
     setIsModalVisible(true);
   };
-
- 
 
   return (
     <div>
@@ -130,13 +129,15 @@ useEffect(() => {
         onDeleteProduct={handleDeleteProduct}
         onEditProduct={handleEditProduct}
         onViewProduct={(id, category) => window.open(`view-product/${id}`, '_blank')}
+        products={filteredProducts} 
       />
-      <DeleteConfirmationModal
+     <DeleteConfirmationModal
         visible={isModalVisible}
         product={productToDelete}
         onDeleteSuccess={handleDeleteSuccess}
         onCancel={cancelDelete}
       />
+
     </div>
   );
 };

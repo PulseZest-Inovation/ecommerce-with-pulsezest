@@ -7,69 +7,79 @@ import { getDataByDocName } from "@/services/FirestoreData/getFirestoreData";
 import Image from "next/image";
 
 export default function ShipRocketPage() {
-  const [shipRocketToken, setShipRocketToken] = useState("");
-  const [showShipRocketToken, setShowShipRocketToken] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Fetch existing ShipRocket token when component mounts
+  // Fetch existing API user credentials when component mounts
   useEffect(() => {
-    const fetchShipRocketToken = async () => {
-      const data = await getDataByDocName<{ token: string }>(
+    const fetchApiUserCredentials = async () => {
+      const data = await getDataByDocName<{ email: string; password: string }>(
         "settings",
         "shipping"
       );
-      if (data && data.token) {
-        setShipRocketToken(data.token);
+      if (data) {
+        setEmail(data.email || "");
+        setPassword(data.password || "");
       }
     };
-    fetchShipRocketToken();
+    fetchApiUserCredentials();
   }, []);
 
   const handleSubmit = async () => {
     const success = await setDocWithCustomId("settings", "shipping", {
-      token: shipRocketToken,
+      email,
+      password,
     });
     if (success) {
-      message.success("ShipRocket Token Saved Successfully!");
+      message.success("API User Credentials Saved Successfully!");
     } else {
-      message.error("Failed to save ShipRocket Token!");
+      message.error("Failed to save API User Credentials!");
     }
   };
 
   return (
     <div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
       <Card
-        title="Configure your ShipRocket integration below:"
+        title="Enter API User Account"
         bordered={false}
         style={{ padding: "20px" }}
       >
-        <div className=" flex justify-center items-center">
+        <div className="flex justify-center items-center">
           <Image
             alt="shiprocket"
             height={150}
             width={150}
             src="https://firebasestorage.googleapis.com/v0/b/ecommerce-with-pulsezest.firebasestorage.app/o/pulsezest-assets%2Fshiprocket.png?alt=media&token=ce4ece46-bc64-487e-aa1f-d92810f510cd"
-          ></Image>
+          />
         </div>
 
         <Space direction="vertical" style={{ width: "100%" }}>
-          {/* ShipRocket Token Input */}
+          {/* Email Input */}
           <div>
-            <label>ShipRocket Token:</label>
+            <label>Email:</label>
             <Input
-              type={showShipRocketToken ? "text" : "password"}
-              value={shipRocketToken}
-              onChange={(e) => setShipRocketToken(e.target.value)}
-              prefix={<span style={{ fontWeight: "bold" }}>🔑</span>}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter API user email"
+            />
+          </div>
+
+          {/* Password Input */}
+          <div>
+            <label>Password:</label>
+            <Input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter API user password"
               suffix={
                 <span
-                  onClick={() => setShowShipRocketToken(!showShipRocketToken)}
+                  onClick={() => setShowPassword(!showPassword)}
                   style={{ cursor: "pointer" }}
                 >
-                  {showShipRocketToken ? (
-                    <EyeOutlined />
-                  ) : (
-                    <EyeInvisibleOutlined />
-                  )}
+                  {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                 </span>
               }
             />
@@ -82,7 +92,7 @@ export default function ShipRocketPage() {
             style={{ marginTop: "20px" }}
             block
           >
-            Save ShipRocket Token
+            Save API User Credentials
           </Button>
         </Space>
       </Card>
