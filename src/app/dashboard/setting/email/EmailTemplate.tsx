@@ -111,6 +111,8 @@ export default function EmailTemplate() {
 
      <div className="flex justify-evenly max-w-full p-2">
       
+
+      
      <Button
         type="default"
         className="mt-4 bg-red-400"
