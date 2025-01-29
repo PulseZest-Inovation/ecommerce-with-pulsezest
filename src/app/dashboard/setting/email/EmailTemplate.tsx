@@ -94,10 +94,12 @@ export default function EmailTemplate() {
         Email Templates
       </Title>
 
+    
+
       <Select
         value={selectedTemplate}
         onChange={handleTemplateChange}
-        className="w-full mb-4"
+        className="w-full"
         placeholder="Select a template"
       >
         <Option value="OrderPlaced">Order Placed</Option>
@@ -107,28 +109,13 @@ export default function EmailTemplate() {
         <Option value="OrderCancelled">Order Cancelled</Option>
       </Select>
 
-      <Card className="mb-4">
-        <p className="font-medium mb-2">
-          Currently editing the <strong>{selectedTemplate}</strong> template.
-        </p>
-        <Editor
-          apiKey="g43jhgrqm9nkxhhl6k0c617ht44aohpitdk5veyi6rf86i4u" // Replace with your TinyMCE API key
-          initialValue="<p>Use placeholders like {{username}}, {{email}}, {{number}}, {{address}}, and {{orderDetails}}</p>"
-          value={htmlContent}
-          init={{
-            height: 300,
-            menubar: false,
-            plugins: ["link", "lists", "code", "preview"],
-            toolbar:
-              "undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code preview",
-          }}
-          onEditorChange={handleEditorChange}
-        />
-      </Card>
+     <div className="flex justify-evenly max-w-full p-2">
+      
 
-      <Button
-        type="primary"
-        className="mt-4"
+      
+     <Button
+        type="default"
+        className="mt-4 bg-red-400"
         onClick={() => setHtmlContent("")} // Reset editor content on button click
       >
         Reset Content
@@ -141,6 +128,28 @@ export default function EmailTemplate() {
       >
         Save Template
       </Button>
+     </div>
+
+      <Card className="mb-4">
+        <p className="font-medium mb-2">
+          Currently editing the <strong>{selectedTemplate}</strong> template.
+        </p>
+        <Editor
+          apiKey="g43jhgrqm9nkxhhl6k0c617ht44aohpitdk5veyi6rf86i4u" // Replace with your TinyMCE API key
+          initialValue="<p>Use placeholders like {{username}}, {{email}}, {{number}}, {{address}}, and {{orderDetails}}</p>"
+          value={htmlContent}
+          init={{
+            height: 400,
+            menubar: true,
+            plugins: ["link", "lists", "code", "preview", ],
+            toolbar:
+              "undo redo | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | code preview",
+          }}
+          onEditorChange={handleEditorChange}
+        />
+      </Card>
+
+   
 
       <Card className="mt-4">
         <Title level={4} className="mb-4">

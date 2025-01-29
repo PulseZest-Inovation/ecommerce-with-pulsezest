@@ -87,21 +87,19 @@ export default function TopHeader({}: Props) {
               <Form.Item
                 label="Text"
                 name="text"
-                rules={[{ required: true, message: 'Please enter the text!' }]}
               >
                 <Input placeholder="Enter text" />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={24} md={8}>
-              <Form.Item
+             
+          </Row>
+          <Form.Item
                 label="Description"
                 name="description"
                 rules={[{ required: true, message: 'Please enter the description!' }]}
               >
-                <Input.TextArea placeholder="Enter description" rows={2} />
+                <Input.TextArea placeholder="Enter description" rows={3} cols={2} style={{width: '600px'}}/>
               </Form.Item>
-            </Col>
-          </Row>
           <Row justify="end">
             <Col>
               <Form.Item>
