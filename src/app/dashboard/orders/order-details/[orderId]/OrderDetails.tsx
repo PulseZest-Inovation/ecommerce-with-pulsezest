@@ -36,13 +36,21 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     setLoading(true);
     try {
       const updatedData = { status };
-      const success = await updateDocWithCustomId(
+      const success: boolean = await updateDocWithCustomId(
         "orders",
         orderId,
         updatedData
       );
 
-      if (success) {
+
+      const updaetCustomerorderStatus: boolean = await updateDocWithCustomId(
+        `customers/${order.customerId}/orders`,
+        orderId,
+        updatedData
+      );
+
+
+      if (success && updaetCustomerorderStatus) {
         message.success("Order status updated successfully!");
       } else {
         message.error("Failed to update order status. Please try again.");
