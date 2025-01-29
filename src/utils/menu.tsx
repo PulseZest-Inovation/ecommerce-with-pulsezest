@@ -1,5 +1,5 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon, ReturnAndExchangeIcon } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon, ReturnAndExchangeIcon, UserGuide } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PaletteIcon from '@mui/icons-material/Palette';
@@ -114,6 +114,11 @@ export const NAVIGATION = [
             ],
           },
 
+          {
+            segment: 'dashboard/guide',
+            title: 'Guide',
+            icon: <UserGuide  />,
+          },
   
           {
             segment: 'dashboard/tags',

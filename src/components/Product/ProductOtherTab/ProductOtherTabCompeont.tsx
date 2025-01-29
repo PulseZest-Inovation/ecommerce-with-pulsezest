@@ -10,6 +10,7 @@ import ReadyToWear from "./ProductOtherTabComponents/ReadyToWeart";
 import ReturnAndExchange from "./ProductOtherTabComponents/ReturnAndExchange";
 import Rating from "./ProductOtherTabComponents/Rating";
 import Volume from "./ProductOtherTabComponents/Volume";
+import ProductGuide from "./ProductOtherTabComponents/ProductGuide";
 
 interface ProductContentRendererProps {
   selectedKey: string;
@@ -33,6 +34,13 @@ const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({
       )}
       {selectedKey === "returnAndExchange" && (
         <ReturnAndExchange
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+        />
+      )}
+
+{selectedKey === "guide" && (
+        <ProductGuide
           formData={formData}
           onFormDataChange={onFormDataChange}
         />
