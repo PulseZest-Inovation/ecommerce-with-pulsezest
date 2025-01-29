@@ -42,6 +42,7 @@ import EmailSettings from '@/app/dashboard/setting/email/page';
 import ShipRocketPage from '@/app/dashboard/setting/shiprocket/page';
 import InovicePage from '@/app/dashboard/setting/invoice/page';
 import MetaMarketing from '@/app/dashboard/setting/meta-marketing/page';
+import GuidePage from '@/app/dashboard/guide/page';
 
 // Route-to-component mapping
 type RouteComponents = {
@@ -58,6 +59,10 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   // Categoires section
   { path: '/dashboard/manage-category/categories', component: Categories },
   { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
+  { path: '/dashboard/guide', component: GuidePage },
+
+
+
 
   // product section
   { path: '/dashboard/manage-product', component: ManageAllProduct },

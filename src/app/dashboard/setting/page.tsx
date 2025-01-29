@@ -52,15 +52,15 @@ export default function Setting() {
         </Button>
       ),
     },
-    {
-      title: "Invoice Template",
-      description: "Design and manage your invoice templates.",
-      action: (
-        <Button type="primary" onClick={() => router.push("setting/invoice")}>
-          Edit
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Invoice Template",
+    //   description: "Design and manage your invoice templates.",
+    //   action: (
+    //     <Button type="primary" onClick={() => router.push("setting/invoice")}>
+    //       Edit
+    //     </Button>
+    //   ),
+    // },
     // {
     //   title: "Store Information",
     //   description: "Update your store's name, address, and contact details.",

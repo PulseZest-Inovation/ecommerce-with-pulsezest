@@ -194,6 +194,19 @@ const RatingIcon = () => {
   );
 };
 
+
+const UserGuide = () => {
+  return (
+    <Image
+      src="/icons/user-guide.png" // Path relative to the `public` folder
+      alt='raiting'
+      width={20}
+      height={20}
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
 const VolumeIcon = () => {
   return (
     <Image
@@ -206,7 +219,7 @@ const VolumeIcon = () => {
   );
 };
 
-export { AddProuducts, AllProduct, ProductIcon, OrderIcon,
+export { AddProuducts, AllProduct, ProductIcon, OrderIcon,UserGuide,
    CustomerIcon,
    ReturnAndExchangeIcon,
    ManageCategoriesIcon,

@@ -84,4 +84,7 @@ export interface Product {
   // Other Metadata
   menuOrder: number;
   metaData: any[];
+
+  //guide.
+  guides: { guideId: string; enabled: boolean }[];
 }
