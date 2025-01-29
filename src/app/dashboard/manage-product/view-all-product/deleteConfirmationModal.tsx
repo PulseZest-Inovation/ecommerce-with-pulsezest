@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button, Image } from 'antd';
+import { Modal, Button, Image, message } from 'antd';
 import { Product } from '@/types/Product';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
 
@@ -16,19 +16,21 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   onDeleteSuccess,
   onCancel,
 }) => {
-  const handleDelete = async () => {
-    if (product) {
-      // Use your custom function for deletion
-      const success = await deleteDocFromCollection('products', product.slug);
-      if (success) {
-        console.log(`Product ${product.slug} deleted successfully.`);
-        onDeleteSuccess(); 
-        onCancel(); 
-      } else {
-        console.error(`Failed to delete product ${product.slug}.`);
-      }
+
+ const handleDelete = async () => {
+  if (product) {
+    const success = await deleteDocFromCollection('products', product.slug);
+    if (success) {
+      message.success(`Product ${product.slug} deleted successfully.`);
+      console.log(`Product ${product.slug} deleted successfully.`);
+      onDeleteSuccess();  // Re-fetch products in the parent component
+      onCancel();  // Close the modal
+    } else {
+      console.error(`Failed to delete product ${product.slug}.`);
     }
-  };
+  }
+};
+
 
   return (
     <Modal
