@@ -48,7 +48,7 @@ export const NAVIGATION = [
       },  
       {
         segment: 'completed-orders',
-        title: 'Compelted Orders',
+        title: 'Completed Orders',
         icon: <OrderCompeltedIcon />,
       },
       {

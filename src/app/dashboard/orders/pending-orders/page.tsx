@@ -54,7 +54,7 @@ export default function PendingOrdersDetails() {
   };
 
   const handleViewOrder = (orderId: string) => {
-    router.push(`/orders/${orderId}`); // Navigate to the order detail page
+    router.push(`order-details/${orderId}`); // Navigate to the order detail page
   };
 
   const columns: ColumnsType<OrderType> = [
