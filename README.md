@@ -24,3 +24,4 @@ You are ready to use now!
 1. Buy after 2 Product Sales.
 2. update
 3. Notificaion Updates
+4. Fully Manage shiprocket Intigration.
