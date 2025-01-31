@@ -5,14 +5,14 @@ import { doc, onSnapshot } from "firebase/firestore"; // Import Firestore's real
 import { db } from "@/utils/firbeaseConfig";
 import { Typography, Spin, Row, Col, Steps } from "antd";
 import { OrderType } from "@/types/orderType";
-import OrderDetails from "./OrderDetails";
+import OrderDetails from "./OrderDetail";
 import OrderItems from "./OrderItems";
 
 const { Step } = Steps;
 
 export default function ViewOrderPage() {
   const params = useParams();
-  const orderId = Array.isArray(params.orderId) ? params.orderId[0] : params.orderId;
+  const orderId = Array.isArray(params?.orderId) ? params?.orderId[0] : params?.orderId;
   const [order, setOrder] = useState<OrderType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [securityKey, setSecurityKey] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export default function ViewOrderPage() {
         {/* Order Details */}
         <Col xs={24} sm={24} md={12} lg={12}>
           <OrderDetails order={order}
-            orderId={orderId} 
+            orderId={orderId || ''} 
             currentStatus={order.status} 
           />
         </Col>
