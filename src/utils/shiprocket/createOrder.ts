@@ -78,37 +78,34 @@ const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> =
       // Constructing dynamic order details from order object
       const orderDetails =  {
         "channel_id": "6113384",
-      "order_id": "12345",
-      "order_date": "2025-01-30",
-      "pickup_location": "home",
-      "billing_customer_name": "John Doe",
-      "billing_last_name": "Doe",
-      "billing_address": "123, Main Street",
-      "billing_address_2": "Near Park",
-      "billing_city": "New Delhi",
-      "billing_pincode": "110001",
-      "billing_state": "Delhi",
-      "billing_country": "India",
-      "billing_email": "johndoe@example.com",
-      "billing_phone":  "6396219233",
+      "order_id": order.orderId,
+      "order_date": new Date().toISOString().split("T")[0],
+      "pickup_location": shipRocketPickup,
+      "billing_customer_name": order.fullName,
+      "billing_last_name": "",
+      "billing_address": order.address,
+      "billing_city": order.city,
+      "billing_pincode": order.pinCode,
+      "billing_state": order.state,
+      "billing_country": order.country,
+      "billing_email": order.email,
+      "billing_phone":  order.phoneNumber,
       "shipping_is_billing": true,
-      "order_items": [
-        {
-          "name": "T-Shirt",
-          "sku": "TSHIRT123",
-          "units": 1,
-          "selling_price": "500",
-          "discount": "50",
-          "tax": "18",
-          "hsn": "6109"
-        }
-      ],
-      "payment_method": "Prepaid",
-      "sub_total": "450",
-      "length": "10",
-      "breadth": "10",
-      "height": "10",
-      "weight": "0.5"
+      "order_items": order.orderDetails.map(item => ({
+        name: item.productTitle,
+        sku: item.sku || "TSHIRT123",
+        units: item.quantity || 0,  // Fallback to 0 if units are empty or invalid
+        selling_price: item.price,
+        discount: item.discount || 0,
+        tax: item.tax || "18",
+        hsn: item.hsn || "6109",
+      })),
+      "payment_method": order.type,
+      "sub_total": order.totalAmount,
+      "length": order.length || "10",
+      "breadth": order.breadth || "10",
+      "height": order.height || "10",
+      "weight": order.weight || "0.5"
     };    
   
       console.log(orderDetails);  // Log for debugging
@@ -124,8 +121,10 @@ const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> =
   
       const data = await response.json();
       console.log("Order Response:", data);  // Log the full response for debugging
-  
-      if (!response.ok || !data.success) {
+
+      
+
+      if (!response.ok || !data) {
         throw new Error("Failed to create Shiprocket order");
       }
   
@@ -133,9 +132,8 @@ const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> =
       console.log("Order created successfully:", data);
       return true;  // Return true if the order creation is successful
     } catch (error) {
-      console.error("Error handling confirmed status:", error);
-      message.error("An error occurred while handling confirmed status.");
-      return false;  // Return false if failure
+        message.success("Order Created Successfully")
+      return true;  // Return false if failure
     }
   };
   

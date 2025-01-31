@@ -46,11 +46,13 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   
       // Check if the status is being updated to "Confirmed"
       if (status === "Confirmed" && currentStatus !== "Confirmed") {
+        message.loading("Sending Order Details to 🚀 ShipRocket")
         const success = await handleConfirmedStatusUpdate(order);  // Call the order creation
         if (!success) {
           throw new Error("Failed to create Shiprocket order");  // If creation fails, throw error
         }
         // Proceed to update status only if the order creation was successful
+        message.success("Order Transfered Success")
         setStatus("Confirmed");
       }
   
@@ -65,6 +67,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
         orderId,
         updatedData
       );
+
+      message.loading("Sending Mail to your Customer...")
   
       const emailRequestBody = {
         orderDetails: {
@@ -81,7 +85,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       };
   
       const emailResponse = await fetch(
-        `http://localhost:3001/api/send-email`, // Adjust with the correct URL
+        `${appData?.callback_url}/api/send-email`,  
         {
           method: "POST",
           headers: {
@@ -92,8 +96,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       );
   
       console.log(await emailResponse.json());
-  
-      if (success && updateCustomerOrderStatus && emailResponse.ok) {
+      if(emailResponse.ok){
+        message.success("Mail Sended to your Customer")
+      }
+
+      if (success && updateCustomerOrderStatus ) {
         message.success("Order status updated successfully!");
       } else {
         message.error("Failed to update order status. Please try again.");
@@ -138,10 +145,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
 
   return (
     <div className="p-4 sticky top-3">
-      <Button onClick={() => handleConfirmedStatusUpdate(order)}>
-        Click me
-      </Button>
-
       <Card className="shadow-md border border-gray-300 bg-white">
         {/* Order ID */}
         <div className="mb-4">

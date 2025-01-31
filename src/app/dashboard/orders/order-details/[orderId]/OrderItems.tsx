@@ -28,7 +28,7 @@ const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails,  }) => {
             <div>
               {/* Item Name */}
               <Typography.Text className="text-lg font-semibold">
-                <strong>Item Name:</strong> {item.name}
+                <strong>Item Name:</strong> {item.productTitle}
               </Typography.Text>
               <br />
               {/* Item Price */}
