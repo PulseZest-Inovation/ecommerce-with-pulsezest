@@ -27,7 +27,8 @@ const EditProduct = () => {
     setError(null);
 
     try {
-      const fetchedProduct = await getDataByDocName<Product>('products', productId.toString());
+      const productDoc = productId?.toString() || '';
+      const fetchedProduct = await getDataByDocName<Product>('products', productDoc);
       if (fetchedProduct) {
         setProduct(fetchedProduct);
       } else {
