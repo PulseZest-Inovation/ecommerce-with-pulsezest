@@ -67,75 +67,95 @@ const getShipData = async (): Promise<ShipData> => {
 };
 
 const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> => {
-    try {
-      // Get Shiprocket data (token and pickup location)
-      const { token, shipRocketPickup } = await getShipData();
-  
-      if (!shipRocketPickup) {
-        throw new Error("Pickup location not found.");
-      }
-  
-      // Constructing dynamic order details from order object
-      const orderDetails =  {
-        "channel_id": "6113384",
-      "order_id": order.orderId,
-      "order_date": new Date().toISOString().split("T")[0],
-      "pickup_location": shipRocketPickup,
-      "billing_customer_name": order.fullName,
-      "billing_last_name": "",
-      "billing_address": order.address,
-      "billing_city": order.city,
-      "billing_pincode": order.pinCode,
-      "billing_state": order.state,
-      "billing_country": order.country,
-      "billing_email": order.email,
-      "billing_phone":  order.phoneNumber,
-      "shipping_is_billing": true,
-      "order_items": order.orderDetails.map(item => ({
+  try {
+    // Get Shiprocket data (token and pickup location)
+    const { token, shipRocketPickup } = await getShipData();
+
+    if (!shipRocketPickup) {
+      throw new Error("Pickup location not found.");
+    }
+
+    // Calculate total volume and weight
+    let totalVolume = 0;
+    let totalWeight = 0;
+
+    order.orderDetails.forEach(item => {
+      const itemLength = item.length || 1;
+      const itemBreadth = item.breadth || 1;
+      const itemHeight = item.height || 1;
+      const itemWeight = item.weight || 0.5;
+      const quantity = item.quantity || 1;
+
+      totalVolume += itemLength * itemBreadth * itemHeight * quantity;
+      totalWeight += itemWeight * quantity;
+    });
+
+    // Assign approximate box dimensions based on total volume
+    const cubicRoot = Math.cbrt(totalVolume); // Get an approximate cubic dimension
+    const finalLength = Math.ceil(cubicRoot);
+    const finalBreadth = Math.ceil(cubicRoot);
+    const finalHeight = Math.ceil(cubicRoot);
+
+    // Constructing order details
+    const orderDetails = {
+      channel_id: "6113384",
+      order_id: order.orderId,
+      order_date: new Date().toISOString().split("T")[0],
+      pickup_location: shipRocketPickup,
+      billing_customer_name: order.fullName,
+      billing_last_name: "",
+      billing_address: order.address,
+      billing_city: order.city,
+      billing_pincode: order.pinCode,
+      billing_state: order.state,
+      billing_country: order.country,
+      billing_email: order.email,
+      billing_phone: order.phoneNumber,
+      shipping_is_billing: true,
+      order_items: order.orderDetails.map(item => ({
         name: item.productTitle,
         sku: item.sku || "TSHIRT123",
-        units: item.quantity || 0,  // Fallback to 0 if units are empty or invalid
-        selling_price: item.price,
+        units: item.quantity || 1,
+        selling_price: item.price || 0,
         discount: item.discount || 0,
         tax: item.tax || "18",
         hsn: item.hsn || "6109",
       })),
-      "payment_method": order.type,
-      "sub_total": order.totalAmount,
-      "length": order.length || "10",
-      "breadth": order.breadth || "10",
-      "height": order.height || "10",
-      "weight": order.weight || "0.5"
-    };    
-  
-      console.log(orderDetails);  // Log for debugging
-  
-      const response = await fetch("/api/shiprocket/create-shiprocket-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orderDetails),
-      });
-  
-      const data = await response.json();
-      console.log("Order Response:", data);  // Log the full response for debugging
+      payment_method: order.type,
+      sub_total: order.totalAmount,
+      length: finalLength.toString(),
+      breadth: finalBreadth.toString(),
+      height: finalHeight.toString(),
+      weight: totalWeight.toFixed(2),
+    };
 
-      
+    console.log("Final Order Payload:", orderDetails); // Debugging
 
-      if (!response.ok || !data) {
-        throw new Error("Failed to create Shiprocket order");
-      }
-  
-      // Successfully created the order, return any relevant data
-      console.log("Order created successfully:", data);
-      return true;  // Return true if the order creation is successful
-    } catch (error) {
-        message.success("Order Created Successfully")
-      return true;  // Return false if failure
+    const response = await fetch("/api/shiprocket/create-shiprocket-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(orderDetails),
+    });
+
+    const data = await response.json();
+    console.log("Order Response:", data);
+
+    if (!response.ok || !data) {
+      throw new Error("Failed to create Shiprocket order");
     }
-  };
+
+    console.log("Order created successfully:", data);
+    return true;
+  } catch (error) {
+    console.error("Error:", error);
+    message.success("Order Created Successfully");
+    return true;
+  }
+};
+
   
 
 export { handleConfirmedStatusUpdate };
