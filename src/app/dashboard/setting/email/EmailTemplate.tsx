@@ -102,7 +102,7 @@ export default function EmailTemplate() {
         className="w-full"
         placeholder="Select a template"
       >
-        <Option value="OrderPlaced">Order Placed</Option>
+        <Option value="OrderDelivered">Order Delivered</Option>
         <Option value="OrderPending">Order Pending</Option>
         <Option value="OrderProcessing">Order Processing</Option>
         <Option value="OrderConfirmed">Order Confirmed</Option>
