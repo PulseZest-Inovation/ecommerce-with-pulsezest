@@ -9,18 +9,20 @@ import Image from "next/image";
 export default function ShipRocketPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [channelId, setChannelId] = useState(""); // New State for Channel ID
   const [showPassword, setShowPassword] = useState(false);
 
   // Fetch existing API user credentials when component mounts
   useEffect(() => {
     const fetchApiUserCredentials = async () => {
-      const data = await getDataByDocName<{ email: string; password: string }>(
+      const data = await getDataByDocName<{ email: string; password: string; channelId: string }>(
         "settings",
         "shipping"
       );
       if (data) {
         setEmail(data.email || "");
         setPassword(data.password || "");
+        setChannelId(data.channelId || ""); // Set Channel ID
       }
     };
     fetchApiUserCredentials();
@@ -30,6 +32,7 @@ export default function ShipRocketPage() {
     const success = await setDocWithCustomId("settings", "shipping", {
       email,
       password,
+      channelId, // Save Channel ID
     });
     if (success) {
       message.success("API User Credentials Saved Successfully!");
@@ -40,11 +43,7 @@ export default function ShipRocketPage() {
 
   return (
     <div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
-      <Card
-        title="Enter API User Account"
-        bordered={false}
-        style={{ padding: "20px" }}
-      >
+      <Card title="Enter API User Account & Channel ID" bordered={false} style={{ padding: "20px" }}>
         <div className="flex justify-center items-center">
           <Image
             alt="shiprocket"
@@ -75,23 +74,26 @@ export default function ShipRocketPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter API user password"
               suffix={
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{ cursor: "pointer" }}
-                >
+                <span onClick={() => setShowPassword(!showPassword)} style={{ cursor: "pointer" }}>
                   {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                 </span>
               }
             />
           </div>
 
+          {/* Channel ID Input */}
+          <div>
+            <label>Channel ID:</label>
+            <Input
+              type="text"
+              value={channelId}
+              onChange={(e) => setChannelId(e.target.value)}
+              placeholder="Enter Channel ID"
+            />
+          </div>
+
           {/* Submit Button */}
-          <Button
-            type="primary"
-            onClick={handleSubmit}
-            style={{ marginTop: "20px" }}
-            block
-          >
+          <Button type="primary" onClick={handleSubmit} style={{ marginTop: "20px" }} block>
             Save API User Credentials
           </Button>
         </Space>

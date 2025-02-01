@@ -6,6 +6,7 @@ import { message } from "antd";
 interface ShipData {
   token: string;
   shipRocketPickup: string | null;
+  channelId: string;
 }
 
 // Function to get the Shiprocket token and pickup location
@@ -13,9 +14,11 @@ const getShipData = async (): Promise<ShipData> => {
   try {
     // Getting the Shiprocket login credentials
     const shipdata: ShipRocketLoginType | null = await getShiprocketSetting();
-    if (!shipdata?.email || !shipdata?.password) {
+
+    if (!shipdata?.email || !shipdata?.password || !shipdata.channelId) {
       throw new Error("Missing Shiprocket credentials");
     }
+    const channelId = shipdata.channelId;
 
     // Generate Shiprocket token
     const tokenResponse = await fetch("/api/shiprocket/get-token", {
@@ -58,7 +61,7 @@ const getShipData = async (): Promise<ShipData> => {
     }
     console.log(shipRocketPickup);
 
-    return { token, shipRocketPickup };
+    return { token, shipRocketPickup,  channelId};
   } catch (error) {
     console.error("Error getting Shiprocket data:", error);
     message.error("An error occurred while retrieving Shiprocket data.");
@@ -69,7 +72,7 @@ const getShipData = async (): Promise<ShipData> => {
 const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> => {
   try {
     // Get Shiprocket data (token and pickup location)
-    const { token, shipRocketPickup } = await getShipData();
+    const { token, shipRocketPickup, channelId } = await getShipData();
 
     if (!shipRocketPickup) {
       throw new Error("Pickup location not found.");
@@ -98,7 +101,7 @@ const handleConfirmedStatusUpdate = async (order: OrderType): Promise<boolean> =
 
     // Constructing order details
     const orderDetails = {
-      channel_id: "6113384",
+      channel_id: channelId,
       order_id: order.orderId,
       order_date: new Date().toISOString().split("T")[0],
       pickup_location: shipRocketPickup,
