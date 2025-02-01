@@ -1,50 +1,46 @@
 import React from 'react';
-import { Switch, Button } from 'antd';
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import SortableCategoryItem from './SortableCategoryItem'
 import { Categories } from '@/types/categories';
 
 interface CategoryListProps {
   categories: Categories[];
-  toggleVisibility: (category: Categories) => void;
-  toggleHeaderVisibility: (category: Categories) => void; // New Prop
   setEditModal: React.Dispatch<React.SetStateAction<any>>;
+  handleReorder: (updatedCategories: Categories[]) => void;
+  toggleVisibility: (category: Categories) => void;
+  toggleHeaderVisibility: (category: Categories) => void;
   handleDelete: (category: Categories) => void;
 }
 
 const CategoryList: React.FC<CategoryListProps> = ({
   categories,
-  toggleVisibility,
-  toggleHeaderVisibility, // New Prop
   setEditModal,
+  handleReorder,
+  toggleVisibility,
+  toggleHeaderVisibility,
   handleDelete,
 }) => {
-  return categories.map((category) => (
-    <div
-      key={category.cid}
-      className="flex justify-between items-center p-2 bg-white border-b last:border-b-0"
-    >
-      <div>{category.name}</div>
-      <div className="flex space-x-4">
-        <Switch
-          checked={category.isVisible}
-          onChange={() => toggleVisibility(category)}
-          checkedChildren="Visible"
-          unCheckedChildren="Hidden"
-        />
-        <Switch
-          checked={category.isHeaderVisible} // New Field
-          onChange={() => toggleHeaderVisibility(category)} // New Handler
-          checkedChildren="Header Visible"
-          unCheckedChildren="Header Hidden"
-        />
-        <Button size="small" onClick={() => setEditModal({ visible: true, category })}>
-          Edit
-        </Button>
-        <Button size="small" danger onClick={() => handleDelete(category)}>
-          Delete
-        </Button>
-      </div>
-    </div>
-  ));
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = categories.findIndex((cat) => cat.cid === active.id);
+      const newIndex = categories.findIndex((cat) => cat.cid === over.id);
+      handleReorder(arrayMove(categories, oldIndex, newIndex));
+    }
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={categories.map((cat) => cat.cid)} strategy={verticalListSortingStrategy}>
+        {categories.map((category) => (
+          <SortableCategoryItem  handleDelete={handleDelete} toggleHeaderVisibility={toggleHeaderVisibility} toggleVisibility={toggleVisibility} key={category.cid} category={category} setEditModal={setEditModal} />
+        ))}
+      </SortableContext>
+    </DndContext>
+  );
 };
 
 export default CategoryList;

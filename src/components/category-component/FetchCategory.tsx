@@ -14,13 +14,9 @@ const FetchCategory = () => {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Categories[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [editModal, setEditModal] = useState({
-    visible: false,
-    category: null,
-  });
+  const [editModal, setEditModal] = useState({ visible: false, category: null });
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // Fetch categories from Firestore
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -36,9 +32,7 @@ const FetchCategory = () => {
             nestedCategories.push(category);
           } else {
             const parent = categoryMap[category.parent];
-            if (parent) {
-              parent.children?.push(category);
-            }
+            if (parent) parent.children?.push(category);
           }
         });
 
@@ -54,7 +48,6 @@ const FetchCategory = () => {
     fetchCategories();
   }, []);
 
-  // Filter categories based on search term
   useEffect(() => {
     const filtered = categories.filter((category) =>
       category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -62,7 +55,21 @@ const FetchCategory = () => {
     setFilteredCategories(filtered);
   }, [searchTerm, categories]);
 
-  // Toggle visibility of a category
+  const handleReorder = async (updatedCategories: Categories[]) => {
+    setCategories(updatedCategories);
+    setFilteredCategories(updatedCategories);
+
+    try {
+      const updates = updatedCategories.map((cat, index) =>
+        updateDocFields('categories', cat.cid, { isPosition: index })
+      );
+      await Promise.all(updates);
+      message.success('Category positions updated!');
+    } catch (error) {
+      message.error('Failed to update positions.');
+    }
+  };
+
   const toggleVisibility = async (category: Categories) => {
     try {
       await updateDocFields('categories', category.cid, { isVisible: !category.isVisible });
@@ -72,17 +79,11 @@ const FetchCategory = () => {
           cat.cid === category.cid ? { ...cat, isVisible: !category.isVisible } : cat
         )
       );
-      setFilteredCategories((prev) =>
-        prev.map((cat) =>
-          cat.cid === category.cid ? { ...cat, isVisible: !category.isVisible } : cat
-        )
-      );
     } catch (error) {
       message.error('Failed to update visibility.');
     }
   };
 
-  // Toggle header visibility of a category
   const toggleHeaderVisibility = async (category: Categories) => {
     try {
       await updateDocFields('categories', category.cid, { isHeaderVisible: !category.isHeaderVisible });
@@ -92,37 +93,22 @@ const FetchCategory = () => {
           cat.cid === category.cid ? { ...cat, isHeaderVisible: !category.isHeaderVisible } : cat
         )
       );
-      setFilteredCategories((prev) =>
-        prev.map((cat) =>
-          cat.cid === category.cid ? { ...cat, isHeaderVisible: !category.isHeaderVisible } : cat
-        )
-      );
     } catch (error) {
       message.error('Failed to update header visibility.');
     }
   };
 
-  // Delete a category
   const handleDelete = async (category: Categories) => {
-    if (category.image) {
-      await deleteImageFromFirebase(category.image);
-    }
+    if (category.image) await deleteImageFromFirebase(category.image);
     await deleteDocFromCollection('categories', category.cid);
     setCategories((prev) => prev.filter((cat) => cat.cid !== category.cid));
-    setFilteredCategories((prev) => prev.filter((cat) => cat.cid !== category.cid));
   };
 
-  // Handle the submission of the edit form
   const handleEditSubmit = async (updatedData: Partial<Categories>, categoryId: string) => {
     try {
       await updateDocFields('categories', categoryId, updatedData);
       message.success('Category updated!');
       setCategories((prev) =>
-        prev.map((cat) =>
-          cat.cid === categoryId ? { ...cat, ...updatedData } : cat
-        )
-      );
-      setFilteredCategories((prev) =>
         prev.map((cat) =>
           cat.cid === categoryId ? { ...cat, ...updatedData } : cat
         )
@@ -149,9 +135,10 @@ const FetchCategory = () => {
         <div className="bg-white rounded-md shadow">
           <CategoryList
             categories={filteredCategories}
-            toggleVisibility={toggleVisibility}
-            toggleHeaderVisibility={toggleHeaderVisibility} // Added toggleHeaderVisibility
             setEditModal={setEditModal}
+            handleReorder={handleReorder}
+            toggleVisibility={toggleVisibility}
+            toggleHeaderVisibility={toggleHeaderVisibility}
             handleDelete={handleDelete}
           />
         </div>
