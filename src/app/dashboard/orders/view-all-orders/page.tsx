@@ -170,7 +170,7 @@ export default function ViewAllOrderPage() {
           ),
         }}
         pagination={{
-          pageSize: 5,
+          pageSize: 20,
         }}
       />
     </div>
