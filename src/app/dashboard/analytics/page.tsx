@@ -9,6 +9,7 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import OrderStatus from "@/components/Analytics/OrderStatus/Page";
+import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
 
 const Analytics = () => {
   return (
@@ -30,8 +31,8 @@ const Analytics = () => {
           </span>
         }
         key="2"
-      >
-        <p>Sales Analytics will be displayed here.</p>
+      > 
+                  <SalesAnalytics/>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
