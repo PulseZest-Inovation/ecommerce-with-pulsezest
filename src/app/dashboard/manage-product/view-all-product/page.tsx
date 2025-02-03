@@ -11,6 +11,7 @@ import { Search } from '@mui/icons-material';
 import DeleteConfirmationModal from './deleteConfirmationModal';
 import ExportProductsButton from './ExportProductButton';
 import ProductList from './ProductList';
+import DuplicateProductModal from './DublicateProductModel';
 
 const ViewProduct: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,6 +21,8 @@ const ViewProduct: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [appData, setAppData] = useState<null | AppDataType>(null);
+  const [isDuplicateModalVisible, setIsDuplicateModalVisible] = useState<boolean>(false);
+  const [productToDuplicate, setProductToDuplicate] = useState<Product | null>(null);
   const router = useRouter();
 
   // Optimized Fetch Logic
@@ -93,6 +96,15 @@ const ViewProduct: React.FC = () => {
     setIsModalVisible(true);
   };
 
+  const handleDuplicateProduct = (product: Product) => {
+    setProductToDuplicate(product);
+    setIsDuplicateModalVisible(true);
+  };
+  
+  const handleDuplicateSuccess = () => {
+    fetchProducts(); // Refresh product list after duplication
+  };
+
   return (
     <div>
       <div className="sticky top-0 z-30 bg-white">
@@ -123,6 +135,7 @@ const ViewProduct: React.FC = () => {
       </div>
 
       <ProductList
+      onDuplicateProduct={handleDuplicateProduct}
         applicationUrl={appData?.callback_url || ''}
         searchTerm={searchTerm}
         selectedCategories={selectedCategories}
@@ -136,6 +149,14 @@ const ViewProduct: React.FC = () => {
         product={productToDelete}
         onDeleteSuccess={handleDeleteSuccess}
         onCancel={cancelDelete}
+      />
+
+
+      <DuplicateProductModal
+        visible={isDuplicateModalVisible}
+        product={productToDuplicate}
+        onDuplicateSuccess={handleDuplicateSuccess}
+        onCancel={() => setIsDuplicateModalVisible(false)}
       />
 
     </div>
