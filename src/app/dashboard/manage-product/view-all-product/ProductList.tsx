@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Image, Tag, Rate, Card } from 'antd';
+import { Table, Button, Space, Image, Tag, Rate, Card, Dropdown, Menu } from 'antd';
 import { Product } from '@/types/Product';
-import { EditOutlined, DeleteOutlined, LinkOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, LinkOutlined, CopyOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { Link } from '@mui/material';
 import moment from 'moment';
 
@@ -11,8 +11,9 @@ interface ProductListProps {
   onDeleteProduct: (product: Product) => void;
   onEditProduct: (id: string) => void;
   onViewProduct: (id: string, category: string) => void;
+  onDuplicateProduct: (product: Product) => void; // Function to handle duplication
   applicationUrl: string;
-  products: Product[]; // Accept products as a prop
+  products: Product[];
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -21,12 +22,12 @@ const ProductList: React.FC<ProductListProps> = ({
   onDeleteProduct,
   onEditProduct,
   onViewProduct,
+  onDuplicateProduct,
   applicationUrl,
-  products // Receive products as prop
+  products,
 }) => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
-  // Filtering Logic
   useEffect(() => {
     let filtered = products;
 
@@ -47,7 +48,13 @@ const ProductList: React.FC<ProductListProps> = ({
     }
 
     setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategories, products]); // Re-filter when products change
+  }, [searchTerm, selectedCategories, products]);
+
+  const handleShareOnWhatsApp = (product: Product) => {
+    const message = `Check out this product: ${product.productTitle}\n${applicationUrl}/collection/${product.categories[0]}/product/${product.slug}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   const columns = [
     {
@@ -55,13 +62,7 @@ const ProductList: React.FC<ProductListProps> = ({
       key: 'productDetails',
       render: (_: any, record: Product) => (
         <Space direction="horizontal">
-          <Image
-            src={record.featuredImage}
-            alt="Featured Image"
-            width={50}
-            height={50}
-            style={{ objectFit: 'cover' }}
-          />
+          <Image src={record.featuredImage} alt="Featured Image" width={50} height={50} style={{ objectFit: 'cover' }} />
           <div>
             <div className="font-bold">{record.productTitle}</div>
             <div>{record.productSubtitle}</div>
@@ -93,8 +94,7 @@ const ProductList: React.FC<ProductListProps> = ({
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (createdAt: any) =>
-        moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss'),
+      render: (createdAt: any) => moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: 'Average Rating',
@@ -108,21 +108,40 @@ const ProductList: React.FC<ProductListProps> = ({
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, record: Product) => (
-        <Space size="middle">
-          <Button
-            icon={<LinkOutlined />}
-            onClick={() => {
-              window.open(
-                `${applicationUrl}/collection/${record.categories[0]}/product/${record.slug}`,
-                '_blank'
-              );
-            }}
-          />
-          <Button icon={<EditOutlined />} onClick={() => onEditProduct(record.slug)} />
-          <Button danger icon={<DeleteOutlined />} onClick={() => onDeleteProduct(record)} />
-        </Space>
-      ),
+      render: (_: any, record: Product) => {
+        const menu = (
+          <Menu>
+            <Menu.Item key="share" onClick={() => handleShareOnWhatsApp(record)}>
+              <span className="flex items-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="16" className="mr-2" />
+                Share on WhatsApp
+              </span>
+            </Menu.Item>
+            <Menu.Item key="duplicate" onClick={() => onDuplicateProduct(record)} icon={<CopyOutlined />}>
+              Duplicate
+            </Menu.Item>
+          </Menu>
+        );
+
+        return (
+          <Space size="middle">
+            <Button
+              icon={<LinkOutlined />}
+              onClick={() =>
+                window.open(
+                  `${applicationUrl}/collection/${record.categories[0]}/product/${record.slug}`,
+                  '_blank'
+                )
+              }
+            />
+            <Button icon={<EditOutlined />} onClick={() => onEditProduct(record.slug)} />
+            <Button danger icon={<DeleteOutlined />} onClick={() => onDeleteProduct(record)} />
+            <Dropdown overlay={menu} trigger={['click']}>
+              <Button icon={<EllipsisOutlined />} />
+            </Dropdown>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -138,10 +157,7 @@ const ProductList: React.FC<ProductListProps> = ({
         <div className="flex items-center space-x-3">
           {selectedCategories.length > 0 ? (
             selectedCategories.map((category, index) => (
-              <div
-                key={index}
-                className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm shadow-md hover:bg-blue-600 transition-all"
-              >
+              <div key={index} className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm shadow-md hover:bg-blue-600 transition-all">
                 {category}
               </div>
             ))
@@ -153,13 +169,7 @@ const ProductList: React.FC<ProductListProps> = ({
 
       {/* Table for Desktop */}
       <div className="hidden md:block">
-        <Table
-          dataSource={filteredProducts}
-          columns={columns}
-          rowKey="id"
-          pagination={false}
-          bordered
-        />
+        <Table dataSource={filteredProducts} columns={columns} rowKey="id" pagination={false} bordered />
       </div>
 
       {/* Card View for Mobile */}
@@ -167,13 +177,7 @@ const ProductList: React.FC<ProductListProps> = ({
         {filteredProducts.map((product) => (
           <Card key={product.id} className="mb-4">
             <div className="flex space-x-3">
-              <Image
-                src={product.featuredImage}
-                alt="Featured Image"
-                width={50}
-                height={50}
-                style={{ objectFit: 'cover' }}
-              />
+              <Image src={product.featuredImage} alt="Featured Image" width={50} height={50} style={{ objectFit: 'cover' }} />
               <div>
                 <div className="font-bold">{product.productTitle}</div>
                 <div>{product.productSubtitle}</div>
