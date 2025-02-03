@@ -30,6 +30,27 @@ export const getOrderStatusCount = async (status: string) => {
   }
 };
 
+
+// Get today's orders count
+export const getTodaysOrders = async () => {
+  try {
+    const orders = await fetchOrders();
+    const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+    return orders.filter((order) => {
+      if (order.createdAt instanceof Timestamp) {
+        const orderDate = order.createdAt.toDate().toISOString().split("T")[0];
+        return orderDate === today;
+      }
+      return false;
+    }).length;
+  } catch (error) {
+    console.error("Error fetching today's orders:", error);
+    return 0;
+  }
+};
+
+
 // Get order trends (group orders by date)
 export const getOrdersTrend = async () => {
     try {

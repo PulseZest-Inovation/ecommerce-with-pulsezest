@@ -1,106 +1,113 @@
 'use client';
 
-import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Typography, Row, Col, Tooltip } from 'antd';
+import { ShoppingCartOutlined, ClockCircleOutlined, CheckCircleOutlined, TruckOutlined, SyncOutlined, StarOutlined } from '@ant-design/icons';
 import SummaryCard from '@/components/Dashbaord/Card/SummaryCard';
 import ConfirmedOrderCard from '@/components/Dashbaord/Card/ConfirmedOrderCard';
 import DashboardGraphs from '@/components/Dashbaord/Graph/DashboardGraph';
 import CartView from '@/components/Dashbaord/CartView/page';
+import { getTotalOrders, getOrderStatusCount, getTodaysOrders } from '@/utils/analytics/orderStatus';
 
 const DashboardPage = () => {
-  // Data for today's order summary
-  const todayOrderSummary = [
-    { title: 'Order Placed', value: '0', subtitle: 'Updated 11:24 PM, Today' },
-    { title: 'Order Confirmed', value: '0', subtitle: 'Updated 11:24 PM, Today' },
-    { title: 'FB Marketing Spend', value: '₹0.00', subtitle: 'Updated 11:24 PM, Today' },
-    { title: 'Projected Revenue', value: '0', subtitle: 'Updated 11:24 PM, Today' },
-    { title: 'Cost per Order', value: '₹0.00', subtitle: 'Updated 11:24 PM, Today' },
-  ];
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [confirmedOrders, setConfirmedOrders] = useState(0);
+  const [deliveredOrders, setDeliveredOrders] = useState(0);
+  const [processingOrders, setProcessingOrders] = useState(0);
+  const [todaysOrders, setTodaysOrders] = useState(0);
 
-  // Data for repeat orders
-  const repeatOrders = [
-    { title: 'Avg. Order/Customer (Orders Delivered)', value: 'Null' },
-    { title: 'Avg. Order/Customer (Orders Placed)', value: 'Null' },
-  ];
+  useEffect(() => {
+    const fetchOrderSummary = async () => {
+      const [total, pending, confirmed, delivered, processing] = await Promise.all([
+        getTotalOrders(),
+        getOrderStatusCount('Pending'),
+        getOrderStatusCount('Confirmed'),
+        getOrderStatusCount('Delivered'),
+        getOrderStatusCount('Processing'),
+      ]);
 
-  // Data for customer ratings
-  const customerRatings = [
-    { title: 'Last 15 Days', value: '0 ⭐' },
-    { title: 'Lifetime Ratings', value: '0 ⭐' },
-  ];
+      const todayCount = await getTodaysOrders();
 
-  // Data for confirmed order summary
-  const confirmedOrderSummary = [
-    'All Confirmed Orders',
-    'Orders in Print/Pack',
-    'Orders in Handover',
-    'Orders in Transit',
-    'Orders Delivered',
-    'RTO',
-    'Return',
-    'Lost',
+      setTotalOrders(total);
+      setPendingOrders(pending);
+      setConfirmedOrders(confirmed);
+      setDeliveredOrders(delivered);
+      setProcessingOrders(processing);
+      setTodaysOrders(todayCount);
+    };
+
+    fetchOrderSummary();
+  }, []);
+
+  // Order Summary Data with Icons
+  const orderSummary = [
+    { title: 'Total Orders', value: totalOrders, icon: <ShoppingCartOutlined />, tooltip: 'Total number of orders received' },
+    { title: "Today's Orders", value: todaysOrders, icon: <ClockCircleOutlined />, tooltip: 'Orders placed today' },
+    { title: 'Pending Orders', value: pendingOrders, icon: <ClockCircleOutlined />, tooltip: 'Orders awaiting confirmation' },
+    { title: 'Confirmed Orders', value: confirmedOrders, icon: <CheckCircleOutlined />, tooltip: 'Orders that are confirmed' },
+    { title: 'Delivered Orders', value: deliveredOrders, icon: <TruckOutlined />, tooltip: 'Orders successfully delivered' },
+    { title: 'Processing Orders', value: processingOrders, icon: <SyncOutlined spin />, tooltip: 'Orders currently being processed' },
   ];
 
   return (
     <div>
-      <Grid container spacing={3}>
-        {/* Left side: Today's Order Summary and Repeat Orders */}
-        <Grid item xs={12} md={8}>
-          {/* Section: Today's Order Summary */}
-          <Typography variant="h6" className="mb-4 font-bold">
-            Today's Order Summary
-          </Typography>
-          <Grid container spacing={3} className="mb-8">
-          {todayOrderSummary.map((item, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <SummaryCard title={item.title} value={item.value} subtitle={item.subtitle} />
-            </Grid>
-          ))}
-        </Grid>
+      {/* Section: Order Summary */}
+      <Typography.Title level={4} className="mb-4">
+        📦 Order Summary
+      </Typography.Title>
+      <Row gutter={[16, 16]} className="mb-8">
+        {orderSummary.map((item, index) => (
+          <Col xs={24} sm={12} md={8} lg={6} key={index}>
+            <Tooltip title={item.tooltip}>
+              <SummaryCard title={item.title} value={item.value} icon={item.icon} />
+            </Tooltip>
+          </Col>
+        ))}
+      </Row>
 
-          {/* Section: Repeat Orders */}
-          <Typography variant="h6" className="mb-4 font-bold">
-            Repeat Orders
-          </Typography>
-          <Grid container spacing={2} className="mb-8">
-            {repeatOrders.map((item, index) => (
-              <Grid item xs={12} sm={6} key={index}>
-                <SummaryCard title={item.title} value={item.value} />
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
+      {/* Section: Repeat Orders */}
+      <Typography.Title level={4} className="mb-4">
+        🔁 Repeat Orders
+      </Typography.Title>
+      <Row gutter={[16, 16]} className="mb-8">
+        <Col xs={24} sm={12}>
+          <Tooltip title="Average orders per customer for delivered orders">
+            <SummaryCard title="Avg. Order/Customer (Orders Delivered)" value="Null" icon={<ShoppingCartOutlined />} />
+          </Tooltip>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Tooltip title="Average orders per customer for placed orders">
+            <SummaryCard title="Avg. Order/Customer (Orders Placed)" value="Null" icon={<ShoppingCartOutlined />} />
+          </Tooltip>
+        </Col>
+      </Row>
 
-        {/* Right side: CartView */}
-        <Grid item xs={12} md={4}>
+      {/* Right side: CartView */}
+      <Row gutter={[16, 16]} className="mb-8">
+        <Col span={24}>
           <CartView />
-        </Grid>
-      </Grid>
+        </Col>
+      </Row>
 
       {/* Section: Customer Rating */}
-      <Typography variant="h6" className="font-semibold mb-4">
-        Customer Rating
-      </Typography>
-      <Grid container spacing={2} className="mb-8">
-        {customerRatings.map((item, index) => (
-          <Grid item xs={12} sm={6} key={index}>
-            <SummaryCard title={item.title} value={item.value} />
-          </Grid>
-        ))}
-      </Grid>
+      <Typography.Title level={4} className="mb-4">
+        ⭐ Customer Rating
+      </Typography.Title>
+      <Row gutter={[16, 16]} className="mb-8">
+        <Col xs={24} sm={12}>
+          <Tooltip title="Customer ratings for the last 15 days">
+            <SummaryCard title="Last 15 Days" value="0 ⭐" icon={<StarOutlined />} />
+          </Tooltip>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Tooltip title="Overall lifetime customer ratings">
+            <SummaryCard title="Lifetime Ratings" value="0 ⭐" icon={<StarOutlined />} />
+          </Tooltip>
+        </Col>
+      </Row>
 
-      {/* Section: Confirmed Order Summary */}
-      <Typography variant="h6" className="font-semibold mb-4">
-        Confirmed Order Summary
-      </Typography>
-      <Grid container spacing={2}>
-        {confirmedOrderSummary.map((title, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-            <ConfirmedOrderCard title={title} value="0" />
-          </Grid>
-        ))}
-      </Grid>
-
+   
       {/* Show the Graphs */}
       <DashboardGraphs />
     </div>
