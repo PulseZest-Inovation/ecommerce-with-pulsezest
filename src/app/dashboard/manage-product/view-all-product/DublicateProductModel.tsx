@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Input, Button } from 'antd';
+import { Modal, Input, Button, message } from 'antd';
 import { Product } from '@/types/Product';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import slugify from 'slugify';
@@ -28,6 +28,7 @@ const DuplicateProductModal: React.FC<DuplicateProductModalProps> = ({
     const duplicatedProduct: Product = {
       ...product,
       id: newSlug, 
+      slug: newSlug,
       productTitle: newTitle,
       createdAt: Timestamp.now(), 
     };
@@ -36,6 +37,7 @@ const DuplicateProductModal: React.FC<DuplicateProductModalProps> = ({
       const success = await setDocWithCustomId<Product>('products', newSlug, duplicatedProduct);
       if (success) {
         onDuplicateSuccess();
+        message.success("Dublicate Created")
         onCancel();
       }
     } catch (error) {
