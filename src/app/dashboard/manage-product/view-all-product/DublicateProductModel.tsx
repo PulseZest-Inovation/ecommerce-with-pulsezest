@@ -27,9 +27,9 @@ const DuplicateProductModal: React.FC<DuplicateProductModalProps> = ({
   
     const duplicatedProduct: Product = {
       ...product,
-      id: newSlug, // Set new ID as slug
+      id: newSlug, 
       productTitle: newTitle,
-      createdAt: Timestamp.now(), // New timestamp
+      createdAt: Timestamp.now(), 
     };
   
     try {
