@@ -1,21 +1,20 @@
-"use client";
 import React, { useEffect, useState } from "react";
-import { Table, Typography, Tag, Spin, Select, Space } from "antd";
+import { Table, Typography, Tag, Spin, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Timestamp } from "firebase/firestore";
 import { OrderType } from "@/types/orderType";
 import { useRouter } from "next/navigation";
 import OrderSearch from "./OrderSearch";
-
-const { Option } = Select;
+import ExportOderDetails from "./DownloadOrder";
+import OrderStatusFilter from "./OrderStatusFilter";  // Import the new component
 
 const OrderTable = () => {
   const [orders, setOrders] = useState<OrderType[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [searchText, setSearchText] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState<string>(""); 
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);  // The selected filter
   const router = useRouter();
 
   useEffect(() => {
@@ -28,7 +27,7 @@ const OrderTable = () => {
         const sortedOrders = data.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
 
         setOrders(sortedOrders);
-        setFilteredOrders(sortedOrders);
+        setFilteredOrders(sortedOrders); // Initially, set filteredOrders to all orders
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -41,22 +40,15 @@ const OrderTable = () => {
     }
   }, []);
 
-  const statusColors: Record<OrderType["status"], string> = {
-    Pending: "orange",
-    Confirmed: "blue",
-    Processing: "purple",
-    Dispatched: "gold",
-    Delivered: "green",
-  };
-
-  const handleStatusFilter = (value: string | null) => {
-    setStatusFilter(value);
-    if (value) {
-      setFilteredOrders(orders.filter(order => order.status === value));
+  useEffect(() => {
+    // Reapply filtering logic when statusFilter changes
+    if (statusFilter) {
+      const filtered = orders.filter(order => order.status === statusFilter);
+      setFilteredOrders(filtered);
     } else {
-      setFilteredOrders(orders);
+      setFilteredOrders(orders); // No filter, show all orders
     }
-  };
+  }, [statusFilter, orders]); // Run when statusFilter or orders change
 
   const columns: ColumnsType<OrderType> = [
     {
@@ -92,14 +84,16 @@ const OrderTable = () => {
       key: "createdAt",
       render: (createdAt: Timestamp) =>
         new Date(createdAt.seconds * 1000).toLocaleDateString(),
-      sorter: (a, b) => b.createdAt.seconds - a.createdAt.seconds, // Ensuring sorting remains correct
+      sorter: (a, b) => b.createdAt.seconds - a.createdAt.seconds,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status: OrderType["status"]) => (
-        <Tag color={statusColors[status]}>{status}</Tag>
+        <Tag color={status === "Pending" ? "orange" : status === "Confirmed" ? "blue" : status === "Processing" ? "purple" : status === "Dispatched" ? "gold" : "green"}>
+          {status}
+        </Tag>
       ),
     },
     {
@@ -123,10 +117,9 @@ const OrderTable = () => {
 
   return (
     <div>
-      <Typography.Title level={2}>Orders</Typography.Title>
+      <div className="flex justify-evenly">
+        <Typography.Title level={2}>Orders</Typography.Title>
 
-      {/* Search and Filter Options */}
-      <Space style={{ marginBottom: 16 }}>
         <OrderSearch
           searchText={searchText}
           setSearchText={setSearchText}
@@ -134,21 +127,15 @@ const OrderTable = () => {
           orders={orders}
         />
 
-        {/* Order Status Filter */}
-        <Select
-          placeholder="Filter by Status"
-          style={{ width: 200 }}
-          allowClear
-          onChange={handleStatusFilter}
-          value={statusFilter}
-        >
-          {Object.keys(statusColors).map((status) => (
-            <Option key={status} value={status}>
-              {status}
-            </Option>
-          ))}
-        </Select>
-      </Space>
+        <ExportOderDetails data={filteredOrders} filename="order_details.csv" />
+      </div>
+
+      {/* Use the new OrderStatusFilter component */}
+      <OrderStatusFilter
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        orders={orders}
+      />
 
       {/* Orders Table */}
       <Table
