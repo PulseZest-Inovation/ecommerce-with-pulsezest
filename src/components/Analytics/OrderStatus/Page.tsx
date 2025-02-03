@@ -46,7 +46,10 @@ const OrderStatus = () => {
     fetchData();
   }, []);
 
-  if (loading) return <Spin size="large" />;
+  if (loading) return <div className="flex justify-center items-center">
+      <Spin size="large" />
+    </div>;
+  ;
 
   // Custom Tooltip content
   const CustomTooltip = ({ payload, label }: any) => {

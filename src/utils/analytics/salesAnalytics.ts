@@ -29,10 +29,40 @@ export const getTotalRevenue = async (status?: "Pending" | "Confirmed" | "Delive
 
 // Get Best Selling Products (based on total sales)
 export const getBestSellingProducts = async () => {
-  const products = await fetchProducts();
-  const bestSelling = products.sort((a, b) => b.totalSales - a.totalSales).slice(0, 5); // Top 5 best-selling products
+  const products = await fetchProducts(); // Fetch all products
+  const orders = await getAllDocsFromCollection<OrderType>("orders"); // Fetch all orders
+  
+  // Initialize a map to store total quantity sold for each product
+  const productSales: Record<string, number> = {};
+
+  // Calculate total quantity sold for each product based on order details
+  orders.forEach((order) => {
+    order.orderDetails.forEach((orderItem) => {
+      const productId = orderItem.productId;
+      const quantitySold = orderItem.quantity;
+
+      // Add to the total quantity sold for the product
+      if (productSales[productId]) {
+        productSales[productId] += quantitySold;
+      } else {
+        productSales[productId] = quantitySold;
+      }
+    });
+  });
+
+  // Add the total quantity sold to the products
+  const productsWithSales = products.map((product) => {
+    const productId = product.id; // Assuming the product has an `id` field
+    const totalQuantitySold = productSales[productId] || 0; // Default to 0 if no sales data
+    return { ...product, totalQuantitySold };
+  });
+
+  // Sort the products based on total quantity sold and return top 5
+  const bestSelling = productsWithSales.sort((a, b) => b.totalQuantitySold - a.totalQuantitySold).slice(0, 5);
   return bestSelling;
 };
+
+
 
 // Sales by Date
 export const getSalesByDate = async (

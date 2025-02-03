@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { getTotalRevenue, getBestSellingProducts, getSalesByDate } from "@/utils/analytics/salesAnalytics";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Flex, Spin, Card, Typography } from "antd";
+import { Flex, Spin } from "antd";
 import StatsCard from "../StatsCard";
 import SalesAnalyticsFilter from "./SalesAnalyticsFilter";
 
@@ -39,7 +39,9 @@ const SalesAnalytics = () => {
     fetchData();
   }, [orderStatus, dateRange]);
 
-  if (loading) return <Spin size="large" />;
+  if (loading) return <div className="flex justify-center items-center">
+    <Spin size="large" />
+  </div>;
 
   const CustomTooltip = ({ payload, label }: any) => {
     if (!payload || payload.length === 0) return null;
@@ -67,12 +69,7 @@ const SalesAnalytics = () => {
         <StatsCard title="Total Revenue" value={`₹${totalRevenue.toFixed(2)}`} />
       </Flex>
 
-      <h3 style={{ marginTop: "20px" }}>Best Selling Products</h3>
-      {bestSellingProducts.map((product: any) => (
-        <Card key={product.productId} title={product.productTitle}>
-          <Typography.Text>Sold: {product.count} units</Typography.Text>
-        </Card>
-      ))}
+     
 
       {dateRange !== "totalRevenue" && (
         <>
@@ -88,6 +85,24 @@ const SalesAnalytics = () => {
           </ResponsiveContainer>
         </>
       )}
+
+
+
+    <div className="mt-6 bg-white shadow-lg p-6 rounded-lg">
+        <h3 className="text-lg font-semibold mb-4">Best Selling Products</h3>
+        <div className="max-h-64 overflow-y-auto">
+          {bestSellingProducts.map((product: any) => (
+            <div
+              key={product.id}
+              className="p-4 border-b last:border-b-0 flex justify-between"
+            >
+              <span className="font-medium">{product.productTitle}</span>
+              <span className="text-gray-600">{product.totalQuantitySold} units</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 };
