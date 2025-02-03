@@ -42,17 +42,17 @@ const CustomerDetails: React.FC<CustomerDetailsDrawerProps> = ({ visible, onClos
           <Tabs defaultActiveKey="1" centered>
             {/* Current Order Tab */}
             <TabPane tab="Current Order" key="1">
-                  <CustomerCurrentOrder/>
+                  <CustomerCurrentOrder customerId={customer.id}/>
             </TabPane>
 
             {/* Pending Order Tab */}
             <TabPane tab="Pending Order" key="2">
-             <CustomerPendingOrder/>
+             <CustomerPendingOrder customerId={customer.id}/>
             </TabPane>
 
             {/* Order History Tab */}
             <TabPane tab="Order History" key="3">
-              <CustomerOrderHistory/>
+              <CustomerOrderHistory customerId={customer.id}/>
             </TabPane>
           </Tabs>
         </div>

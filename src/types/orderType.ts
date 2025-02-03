@@ -14,7 +14,7 @@ export interface OrderType {
   orderId: string;
   phoneNumber: string;
   state: string;
-  status: "Pending" | "Confirmed" | "Processing" | "Dispatched" | "Delivered";
+  status: "Pending" | "Confirmed" | "Processing" | "Dispatched" | "Delivered" | "Returned";
   [key: string]: any; // For additional details
 }
 
