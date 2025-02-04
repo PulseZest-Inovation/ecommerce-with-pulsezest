@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import OrderStatus from "@/components/Analytics/OrderStatus/Page";
 import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
+import CustomerInsights from "@/components/Analytics/CustomerInsights/page";
 
 const Analytics = () => {
   return (
@@ -42,7 +43,7 @@ const Analytics = () => {
         }
         key="3"
       >
-        <p>Customer Insights will be displayed here.</p>
+        <CustomerInsights/>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
