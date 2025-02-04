@@ -18,6 +18,14 @@ const OrderStatusFilter: React.FC<OrderStatusFilterProps> = ({ statusFilter, set
     Processing: "purple",
     Dispatched: "gold",
     Delivered: "green",
+    AcceptedRefund:"red",
+    AcceptReturned: 'red',
+    Refunded: 'red',
+    RejectedRefund: 'red',
+    RejectReturned: 'red',
+    RequestRefund: 'red',
+    RequestReturned: 'red',
+    Returned: 'red'
   };
 
   const handleStatusChange = (value: string | null) => {
