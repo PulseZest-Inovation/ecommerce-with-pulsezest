@@ -21,6 +21,7 @@ import VideoSectionOnWebsite from '@/components/Theme/VideoSection/page';
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
+  { key: '0', icon: <PieChartOutlined />, label: 'Main Home' },
   { key: '1', icon: <PieChartOutlined />, label: 'Top Header' },
   { key: '2', icon: <DesktopOutlined />, label: 'Categories' },
   { key: '6', icon: <VideoCall/>, label: 'Videos at Home'},
@@ -48,6 +49,8 @@ const ThemePage = (props: Props) => {
   // Conditionally render components based on selected menu item
   const renderContent = () => {
     switch (selectedKey) {
+      case '0':
+        return <>websiste</>
       case '1':
         return <TopHeader/>;
       case '2':
