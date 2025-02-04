@@ -160,6 +160,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
+      
     </div>
   );
 }
