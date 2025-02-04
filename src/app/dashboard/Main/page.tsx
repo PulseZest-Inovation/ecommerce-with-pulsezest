@@ -1,117 +1,166 @@
-'use client';
+import React, { useEffect, useState } from "react";
+import { Card, Row, Col, Statistic, Tooltip } from "antd";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { getTotalRevenue, getBestSellingProducts, getSalesByDate } from "@/utils/analytics/salesAnalytics";
+import { getTotalCustomers, getRepeatCustomers } from "@/utils/analytics/CustomerInsights";
+import { getTotalOrders, getOrderStatusCount, getTodaysOrders, getOrdersTrend } from "@/utils/analytics/orderStatus"; // Import the order analytics functions
 
-import React, { useState, useEffect } from 'react';
-import { Typography, Row, Col, Tooltip } from 'antd';
-import { ShoppingCartOutlined, ClockCircleOutlined, CheckCircleOutlined, TruckOutlined, SyncOutlined, StarOutlined } from '@ant-design/icons';
-import SummaryCard from '@/components/Dashbaord/Card/SummaryCard';
-import ConfirmedOrderCard from '@/components/Dashbaord/Card/ConfirmedOrderCard';
-import DashboardGraphs from '@/components/Dashbaord/Graph/DashboardGraph';
-import CartView from '@/components/Dashbaord/CartView/page';
-import { getTotalOrders, getOrderStatusCount, getTodaysOrders } from '@/utils/analytics/orderStatus';
+interface BestSellingProduct {
+  name: string;
+  totalQuantitySold: number;
+}
 
-const DashboardPage = () => {
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [pendingOrders, setPendingOrders] = useState(0);
-  const [confirmedOrders, setConfirmedOrders] = useState(0);
-  const [deliveredOrders, setDeliveredOrders] = useState(0);
-  const [processingOrders, setProcessingOrders] = useState(0);
-  const [todaysOrders, setTodaysOrders] = useState(0);
+interface SalesData {
+  date: string;
+  totalRevenue: number;
+}
+
+interface OrderTrendData {
+  date: string;
+  count: number;
+}
+
+export default function DashboardPage() {
+  const [totalRevenue, setTotalRevenue] = useState<number>(0);
+  const [bestSelling, setBestSelling] = useState<BestSellingProduct[]>([]);
+  const [salesData, setSalesData] = useState<SalesData[]>([]);
+  const [totalCustomers, setTotalCustomers] = useState<number>(0);
+  const [repeatCustomers, setRepeatCustomers] = useState<number>(0);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
+  const [pendingOrders, setPendingOrders] = useState<number>(0);
+  const [todaysOrders, setTodaysOrders] = useState<number>(0);
+  const [orderTrends, setOrderTrends] = useState<OrderTrendData[]>([]);
 
   useEffect(() => {
-    const fetchOrderSummary = async () => {
-      const [total, pending, confirmed, delivered, processing] = await Promise.all([
-        getTotalOrders(),
-        getOrderStatusCount('Pending'),
-        getOrderStatusCount('Confirmed'),
-        getOrderStatusCount('Delivered'),
-        getOrderStatusCount('Processing'),
-      ]);
+    const fetchData = async () => {
+      try {
+        // Fetch analytics data
+        const revenue = await getTotalRevenue();
+        setTotalRevenue(revenue);
 
-      const todayCount = await getTodaysOrders();
+        const bestSellingProducts = await getBestSellingProducts();
+        setBestSelling(
+          bestSellingProducts.map((product) => ({
+            name: product.productTitle, // Mapping productTitle to name
+            totalQuantitySold: product.totalQuantitySold,
+          }))
+        );
 
-      setTotalOrders(total);
-      setPendingOrders(pending);
-      setConfirmedOrders(confirmed);
-      setDeliveredOrders(delivered);
-      setProcessingOrders(processing);
-      setTodaysOrders(todayCount);
+        const sales = await getSalesByDate("Delivered", "last7days");
+        setSalesData(sales);
+
+        setTotalCustomers(await getTotalCustomers());
+        setRepeatCustomers(await getRepeatCustomers());
+
+        // Fetch order data
+        setTotalOrders(await getTotalOrders());
+        setPendingOrders(await getOrderStatusCount("Pending"));
+        setTodaysOrders(await getTodaysOrders());
+        setOrderTrends(await getOrdersTrend());
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
     };
 
-    fetchOrderSummary();
+    fetchData();
   }, []);
 
-  // Order Summary Data with Icons
-  const orderSummary = [
-    { title: 'Total Orders', value: totalOrders, icon: <ShoppingCartOutlined />, tooltip: 'Total number of orders received' },
-    { title: "Today's Orders", value: todaysOrders, icon: <ClockCircleOutlined />, tooltip: 'Orders placed today' },
-    { title: 'Pending Orders', value: pendingOrders, icon: <ClockCircleOutlined />, tooltip: 'Orders awaiting confirmation' },
-    { title: 'Confirmed Orders', value: confirmedOrders, icon: <CheckCircleOutlined />, tooltip: 'Orders that are confirmed' },
-    { title: 'Delivered Orders', value: deliveredOrders, icon: <TruckOutlined />, tooltip: 'Orders successfully delivered' },
-    { title: 'Processing Orders', value: processingOrders, icon: <SyncOutlined spin />, tooltip: 'Orders currently being processed' },
-  ];
-
   return (
-    <div>
-      {/* Section: Order Summary */}
-      <Typography.Title level={4} className="mb-4">
-        📦 Order Summary
-      </Typography.Title>
-      <Row gutter={[16, 16]} className="mb-8">
-        {orderSummary.map((item, index) => (
-          <Col xs={24} sm={12} md={8} lg={6} key={index}>
-            <Tooltip title={item.tooltip}>
-              <SummaryCard title={item.title} value={item.value} icon={item.icon} />
+    <div className="p-6">
+
+<Row gutter={[16, 16]} >
+        <Col span={8}>
+          <Card>
+            <Tooltip title="The total number of orders placed in your store">
+              <Statistic title="Total Orders" value={totalOrders} />
             </Tooltip>
-          </Col>
-        ))}
-      </Row>
-
-      {/* Section: Repeat Orders */}
-      <Typography.Title level={4} className="mb-4">
-        🔁 Repeat Orders
-      </Typography.Title>
-      <Row gutter={[16, 16]} className="mb-8">
-        <Col xs={24} sm={12}>
-          <Tooltip title="Average orders per customer for delivered orders">
-            <SummaryCard title="Avg. Order/Customer (Orders Delivered)" value="Null" icon={<ShoppingCartOutlined />} />
-          </Tooltip>
+          </Card>
         </Col>
-        <Col xs={24} sm={12}>
-          <Tooltip title="Average orders per customer for placed orders">
-            <SummaryCard title="Avg. Order/Customer (Orders Placed)" value="Null" icon={<ShoppingCartOutlined />} />
-          </Tooltip>
+        <Col span={8}>
+          <Card>
+            <Tooltip title="The number of orders that are still pending">
+              <Statistic title="Pending Orders" value={pendingOrders} />
+            </Tooltip>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Tooltip title="The number of orders placed today">
+              <Statistic title="Today's Orders" value={todaysOrders} />
+            </Tooltip>
+          </Card>
         </Col>
       </Row>
 
-      {/* Right side: CartView */}
-      <Row gutter={[16, 16]} className="mb-8">
-        <Col span={24}>
-          <CartView />
+      <Row gutter={[16, 16]} className="mt-6">
+        <Col span={8}>
+          <Card>
+            <Tooltip title="Total revenue from all orders">
+              <Statistic title="Total Revenue" value={totalRevenue} prefix="₹" />
+            </Tooltip>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Tooltip title="The total number of customers who have made a purchase">
+              <Statistic title="Total Customers" value={totalCustomers} />
+            </Tooltip>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Tooltip title="The number of customers who made repeat purchases">
+              <Statistic title="Repeat Customers" value={repeatCustomers} />
+            </Tooltip>
+          </Card>
         </Col>
       </Row>
 
-      {/* Section: Customer Rating */}
-      <Typography.Title level={4} className="mb-4">
-        ⭐ Customer Rating
-      </Typography.Title>
-      <Row gutter={[16, 16]} className="mb-8">
-        <Col xs={24} sm={12}>
-          <Tooltip title="Customer ratings for the last 15 days">
-            <SummaryCard title="Last 15 Days" value="0 ⭐" icon={<StarOutlined />} />
-          </Tooltip>
+    
+
+      <Row gutter={[16, 16]} className="mt-6">
+        <Col span={12}>
+          <Card title="Best Selling Products">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={bestSelling}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="totalQuantitySold" fill="#1890ff" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
         </Col>
-        <Col xs={24} sm={12}>
-          <Tooltip title="Overall lifetime customer ratings">
-            <SummaryCard title="Lifetime Ratings" value="0 ⭐" icon={<StarOutlined />} />
-          </Tooltip>
+
+        <Col span={12}>
+          <Card title="Sales in the Last 7 Days">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesData}>
+                <XAxis dataKey="date" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="totalRevenue" fill="#52c41a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
         </Col>
       </Row>
 
-   
-      {/* Show the Graphs */}
-      <DashboardGraphs />
+      <Row gutter={[16, 16]} className="mt-6">
+        <Col span={12}>
+          <Card title="Order Trends (Last 7 Days)">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={orderTrends}>
+                <XAxis dataKey="date" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="count" fill="#ff4d4f" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+      </Row>
+      
     </div>
   );
-};
-
-export default DashboardPage;
+}
