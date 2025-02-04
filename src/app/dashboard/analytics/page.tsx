@@ -11,6 +11,7 @@ import {
 import OrderStatus from "@/components/Analytics/OrderStatus/Page";
 import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
 import CustomerInsights from "@/components/Analytics/CustomerInsights/page";
+import ProductPerformance from "@/components/Analytics/ProductPerformance/page";
 
 const Analytics = () => {
   return (
@@ -53,7 +54,7 @@ const Analytics = () => {
         }
         key="4"
       >
-        <p>Product Performance Analytics will be displayed here.</p>
+         <ProductPerformance/>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
