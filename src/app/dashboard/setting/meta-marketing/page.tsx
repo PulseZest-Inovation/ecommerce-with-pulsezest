@@ -1,15 +1,13 @@
 'use client'
 import { useState } from "react";
 import { Button } from "antd";
-import { useRouter } from "next/navigation";
 
 const MetaMarketing = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleMetaLogin = () => {
     setIsLoading(true);
-    const appId = "YOUR_META_APP_ID";
+    const appId = "1121410479289575";
     const redirectUri = "YOUR_REDIRECT_URI";
     const scope = "pages_show_list,business_management,catalog_management";
 
