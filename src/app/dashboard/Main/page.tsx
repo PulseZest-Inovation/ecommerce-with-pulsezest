@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Statistic, Tooltip } from "antd";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
@@ -160,7 +161,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
-      
+
     </div>
   );
 }
