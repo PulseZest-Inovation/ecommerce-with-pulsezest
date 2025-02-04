@@ -10,6 +10,8 @@ import {
 } from "@ant-design/icons";
 import OrderStatus from "@/components/Analytics/OrderStatus/Page";
 import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
+import CustomerInsights from "@/components/Analytics/CustomerInsights/page";
+import ProductPerformance from "@/components/Analytics/ProductPerformance/page";
 
 const Analytics = () => {
   return (
@@ -42,7 +44,7 @@ const Analytics = () => {
         }
         key="3"
       >
-        <p>Customer Insights will be displayed here.</p>
+        <CustomerInsights/>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
@@ -52,7 +54,7 @@ const Analytics = () => {
         }
         key="4"
       >
-        <p>Product Performance Analytics will be displayed here.</p>
+         <ProductPerformance/>
       </Tabs.TabPane>
       <Tabs.TabPane
         tab={
@@ -62,7 +64,7 @@ const Analytics = () => {
         }
         key="5"
       >
-        <p>Time-Based Reports will be displayed here.</p>
+        <p>Time-Based Reports will be displayed here. Currently we are working on it...</p>
       </Tabs.TabPane>
     </Tabs>
   );
