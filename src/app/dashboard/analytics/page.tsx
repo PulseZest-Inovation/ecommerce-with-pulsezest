@@ -64,7 +64,7 @@ const Analytics = () => {
         }
         key="5"
       >
-        <p>Time-Based Reports will be displayed here.</p>
+        <p>Time-Based Reports will be displayed here. Currently we are working on it...</p>
       </Tabs.TabPane>
     </Tabs>
   );
