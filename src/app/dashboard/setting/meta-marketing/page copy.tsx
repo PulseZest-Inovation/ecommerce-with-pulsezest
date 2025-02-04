@@ -1,9 +1,8 @@
-'use client'
 import { useState } from "react";
 import { Button } from "antd";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 
-const MetaMarketing = () => {
+const MetaIntegration = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -31,4 +30,4 @@ const MetaMarketing = () => {
   );
 };
 
-export default MetaMarketing;
+export default MetaIntegration;
