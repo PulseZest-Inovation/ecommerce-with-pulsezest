@@ -1,4 +1,4 @@
-import { ApplicationConfig } from "@/utils/ApplicationConfig";
+import { ApplicationConfig } from "@/config/ApplicationConfig";
 import { Button, Input, message, Upload } from "antd";
 import { useState } from "react";
 import { Categories } from '@/types/categories';

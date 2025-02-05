@@ -1,5 +1,5 @@
-import { ApplicationConfig } from "@/utils/ApplicationConfig";
-import { storage } from "@/utils/firbeaseConfig";
+import { ApplicationConfig } from "@/config/ApplicationConfig";
+import { storage } from "@/config/firbeaseConfig";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 /**

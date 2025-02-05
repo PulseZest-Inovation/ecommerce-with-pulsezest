@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Select, message } from 'antd';
 import { collection, getDocs, setDoc, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
-import { db } from '@/utils/firbeaseConfig'; // Import your Firestore configuration
+import { db } from '@/config/firbeaseConfig'; // Import your Firestore configuration
 import { DefaultOptionType } from 'antd/es/select';
 
 const { Option } = Select;

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { doc, onSnapshot } from "firebase/firestore"; // Import Firestore's real-time listener
-import { db } from "@/utils/firbeaseConfig";
+import { db } from "@/config/firbeaseConfig";
 import { Typography, Spin, Row, Col, Steps } from "antd";
 import { OrderType } from "@/types/orderType";
 import OrderDetails from "./OrderDetail";

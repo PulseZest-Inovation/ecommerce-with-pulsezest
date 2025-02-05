@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/utils/firbeaseConfig';
+import { auth, db } from '@/config/firbeaseConfig';
 
 // Function to get user details from Firestore by current authenticated user ID
 export const getUser = async () => {

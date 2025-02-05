@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/utils/firbeaseConfig';
+import { auth } from '@/config/firbeaseConfig';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextProps {

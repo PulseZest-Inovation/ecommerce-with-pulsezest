@@ -1,9 +1,9 @@
 'use client'
 import React, { useState } from "react";
-import { storage } from "@/utils/firbeaseConfig"; // Firebase config file
+import { storage } from "@/config/firbeaseConfig"; // Firebase config file
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { doc, getDoc, updateDoc } from "firebase/firestore"; // Firestore methods
-import { db } from "@/utils/firbeaseConfig"; // Firestore config
+import { db } from "@/config/firbeaseConfig"; // Firestore config
 import { message, Progress, Button, Upload, Image } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 

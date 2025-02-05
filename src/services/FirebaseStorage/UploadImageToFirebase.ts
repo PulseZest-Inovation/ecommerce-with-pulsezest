@@ -1,5 +1,5 @@
 
-import { storage } from "@/utils/firbeaseConfig";
+import { storage } from "@/config/firbeaseConfig";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Compressor from "compressorjs";
 

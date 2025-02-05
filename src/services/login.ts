@@ -1,6 +1,6 @@
 // adminlogin.ts
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "@/utils/firbeaseConfig"; // Your Firebase config
+import { app } from "@/config/firbeaseConfig"; // Your Firebase config
 
 const auth = getAuth(app);
 

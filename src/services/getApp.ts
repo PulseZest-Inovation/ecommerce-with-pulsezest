@@ -1,5 +1,5 @@
 import { doc, getDoc, } from "firebase/firestore";
-import { db } from "@/utils/firbeaseConfig";
+import { db } from "@/config/firbeaseConfig";
 
 
 export const getAppData = async <T>(

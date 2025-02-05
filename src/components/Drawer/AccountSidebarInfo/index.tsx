@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { getUser } from '@/services/getUser';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/utils/firbeaseConfig';
+import { auth } from '@/config/firbeaseConfig';
 import { signOut } from 'firebase/auth';
 import SettingsModal from './SettingModal';
 

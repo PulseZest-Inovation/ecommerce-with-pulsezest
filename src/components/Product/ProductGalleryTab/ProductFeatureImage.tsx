@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Upload, Button, message, Progress, Image } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig"; // Assuming Firebase configuration is already set
+import { storage } from "@/config/firbeaseConfig"; // Assuming Firebase configuration is already set
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 interface FeaturedImageUploadProps {
