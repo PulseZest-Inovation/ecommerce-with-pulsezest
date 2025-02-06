@@ -9,13 +9,12 @@ const MetaMarketing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [hasFetchedToken, setHasFetchedToken] = useState(false); // Prevent multiple API calls
+  const [hasFetchedToken, setHasFetchedToken] = useState(false); 
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    // First, check Firestore for an existing token
     fetchStoredToken();
   }, []);
 
@@ -29,7 +28,7 @@ const MetaMarketing = () => {
     }
   }, [searchParams, hasFetchedToken]);
 
-  // 🔹 Check if a token is already stored in Firestore
+  // 🔹 Fetch stored token and validate it
   const fetchStoredToken = async () => {
     setIsLoading(true);
     const storedToken = await getDataByDocName<{ clientMetaToken: string }>(
@@ -38,10 +37,80 @@ const MetaMarketing = () => {
     );
 
     if (storedToken?.clientMetaToken) {
-      setAccessToken(storedToken.clientMetaToken);
-      setIsConnected(true);
+      const isValid = await validateAccessToken(storedToken.clientMetaToken);
+      if (isValid) {
+        setAccessToken(storedToken.clientMetaToken);
+        setIsConnected(true);
+      } else {
+        console.log("Token expired! Refreshing...");
+        refreshAccessToken(storedToken.clientMetaToken);
+      }
     }
     setIsLoading(false);
+  };
+
+  // 🔹 Validate Token
+  const validateAccessToken = async (token: string) => {
+    try {
+      const res = await fetch(`/api/meta-auth/debug-token?access_token=${token}`);
+      const data = await res.json();
+      return data.is_valid;
+    } catch (error) {
+      console.error("Error validating token:", error);
+      return false;
+    }
+  };
+
+  // 🔹 Refresh Access Token
+  const refreshAccessToken = async (expiredToken: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/meta-auth/refresh-token?access_token=${expiredToken}`);
+      const data = await res.json();
+
+      if (data.access_token) {
+        console.log("Refreshed Access Token:", data.access_token);
+
+        await setDocWithCustomId("settings", "meta-settings", {
+          clientMetaToken: data.access_token
+        });
+
+        setAccessToken(data.access_token);
+        setIsConnected(true);
+      } else {
+        console.error("Failed to refresh access token:", data.error);
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 🔹 Fetch New Access Token
+  const fetchAccessToken = async (code: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/meta-auth/get-token?code=${code}`);
+      const data = await res.json();
+
+      if (data.access_token) {
+        console.log("Fetched Access Token:", data.access_token);
+
+        await setDocWithCustomId("settings", "meta-settings", {
+          clientMetaToken: data.access_token
+        });
+
+        setAccessToken(data.access_token);
+        setIsConnected(true);
+      } else {
+        console.error("Failed to get access token:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching token:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleMetaLogin = () => {
@@ -53,35 +122,6 @@ const MetaMarketing = () => {
     const loginUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;
 
     window.location.href = loginUrl;
-  };
-
-  // 🔹 Fetch access token from Meta API and store it in Firestore
-  const fetchAccessToken = async (code: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/meta-auth/get-token?code=${code}`);
-      const data = await res.json();
-
-      if (data.access_token) {
-        console.log("Fetched Access Token:", data.access_token);
-
-        // ✅ Save token in Firestore
-        const dataSave = await setDocWithCustomId("settings", "meta-settings", {
-          clientMetaToken: data.access_token
-        });
-
-        if (dataSave) {
-          setAccessToken(data.access_token);
-          setIsConnected(true);
-        }
-      } else {
-        console.error("Failed to get access token:", data.error);
-      }
-    } catch (error) {
-      console.error("Error fetching token:", error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
