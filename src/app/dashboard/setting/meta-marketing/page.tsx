@@ -116,7 +116,7 @@ const MetaMarketing = () => {
   const handleMetaLogin = () => {
     setIsLoading(true);
     const appId = "1121410479289575";
-    const redirectUri = "http://localhost:3000/dashboard/setting/meta-marketing";
+    const redirectUri = "https://ecommerce-with-pulsezest.vercel.app/dashboard/setting/meta-marketing";
     const scope = "pages_show_list,business_management,catalog_management";
 
     const loginUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code`;

@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const appId = "1121410479289575";
     const appSecret = "89b1db419392438a0908a14ce1a78602"; // Don't expose this in frontend
-    const redirectUri = "http://localhost:3000/dashboard/setting/meta-marketing";
+    const redirectUri = "https://ecommerce-with-pulsezest.vercel.app/dashboard/setting/meta-marketing";
 
     const tokenUrl = `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${appId}&client_secret=${appSecret}&redirect_uri=${redirectUri}&code=${code}`;
 
