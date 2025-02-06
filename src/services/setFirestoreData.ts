@@ -1,6 +1,6 @@
 // setFirestoreData.ts
 import { doc, setDoc, collection, addDoc } from "firebase/firestore";
-import { db } from "@/utils/firbeaseConfig";
+import { db } from "@/config/firbeaseConfig";
 
 /**
  * Set data with a specific collection and document name.

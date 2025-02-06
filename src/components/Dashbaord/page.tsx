@@ -14,7 +14,7 @@ import AccountSidebarInfo from '@/components/Drawer/AccountSidebarInfo';
 import { usePathname, useRouter } from 'next/navigation';
 import { Result } from 'antd';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/utils/firbeaseConfig';
+import { auth } from '@/config/firbeaseConfig';
 import Loader from '@/components/Loader';
 import NotificationBar from '../Drawer/Notification/page';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';

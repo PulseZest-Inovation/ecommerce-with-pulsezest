@@ -1,6 +1,6 @@
 // getFirestoreData.ts
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/utils/firbeaseConfig";
+import { db } from "@/config/firbeaseConfig";
 const appKey = typeof window !== "undefined" ? localStorage.getItem("securityKey") : null;
 
 /**

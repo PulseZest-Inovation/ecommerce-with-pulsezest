@@ -1,4 +1,4 @@
-import { storage } from "@/utils/firbeaseConfig";
+import { storage } from "@/config/firbeaseConfig";
 import { ref, deleteObject } from "firebase/storage";
 
 export const deleteImageFromFirebase = async (imageUrl: string) => {

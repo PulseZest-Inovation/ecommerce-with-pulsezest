@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Upload, message, Modal, Spin } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { storage } from "@/utils/firbeaseConfig";
+import { storage } from "@/config/firbeaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Compressor from "compressorjs";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";

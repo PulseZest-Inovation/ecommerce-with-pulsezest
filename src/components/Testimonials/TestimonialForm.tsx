@@ -3,7 +3,7 @@
 import { Input, Button, Upload, message, Image } from 'antd';
 import React, { useState } from 'react';
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
-import { ApplicationConfig } from '@/utils/ApplicationConfig';
+import { ApplicationConfig } from '@/config/ApplicationConfig';
 
 interface TestimonialFormProps {
   onSubmit: (testimonialData: { text: string; name: string; imageUrls?: string[] }) => void;

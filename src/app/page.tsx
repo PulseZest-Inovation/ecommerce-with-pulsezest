@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '../utils/firbeaseConfig';
+import { auth } from '../config/firbeaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import Loader from '@/components/Loader';
 
