@@ -1,6 +1,6 @@
 export const allowedOrigins = [
     "https://ecommerce-with-pulsezest.vercel.app",
-    "https://apnimaativastram.com/",
+    "https://apnimaativastram.com",
     "http://localhost:3000/",
     "http://localhost:3001/",
   ];
