@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { setCorsHeaders } from "@/config/corsConfig";
 
 interface ShiprocketPickupResponse {
   pickupData?: any;
@@ -9,6 +10,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ShiprocketPickupResponse>
 ) {
+  // Set CORS headers
+  setCorsHeaders(req, res);
+
+  // Handle preflight requests (OPTIONS method)
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }

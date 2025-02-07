@@ -1,15 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
+import { setCorsHeaders } from "@/config/corsConfig";
 
-interface ShiprocketOrderResponse {
-  orderData?: any;
-  error?: string;
-}
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Set CORS headers
+  setCorsHeaders(req, res);
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ShiprocketOrderResponse>
-) {
+  // Handle preflight requests (OPTIONS method)
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
@@ -27,7 +28,6 @@ export default async function handler(
   }
 
   try {
-    // Create order in Shiprocket using axios
     const orderResponse = await axios.post(
       "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
       orderDetails,

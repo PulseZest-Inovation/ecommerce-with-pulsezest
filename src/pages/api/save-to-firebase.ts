@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { collectionName, docName, data } = req.body;
+    const {appId, collectionName, docName, data } = req.body;
 
     // Validation checks
     if (!collectionName || typeof collectionName !== "string") {
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let docRef;
     if (docName) {
       // If docName is provided, set the document with that ID
-      docRef = db.collection(collectionName).doc(docName);
+      docRef = db.collection('app_name').doc(appId).collection(collectionName).doc(docName);
       await docRef.set(data, { merge: true }); // Merge to avoid overwriting existing fields
     } else {
       // If no docName, auto-generate a new document
@@ -37,3 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: "Something went wrong" });
   }
 }
+
+
+//req be liike {
+// {
+//   "appId": "Security_key",
+//   "collectionName": "collectionName",
+//   "docName": "docName",
+//   "data":  {}
+// }
+// }
