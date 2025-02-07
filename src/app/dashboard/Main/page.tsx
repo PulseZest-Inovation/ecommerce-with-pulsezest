@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveCont
 import { getTotalRevenue, getBestSellingProducts, getSalesByDate } from "@/utils/analytics/salesAnalytics";
 import { getTotalCustomers, getRepeatCustomers } from "@/utils/analytics/CustomerInsights";
 import { getTotalOrders, getOrderStatusCount, getTodaysOrders, getOrdersTrend } from "@/utils/analytics/orderStatus"; // Import the order analytics functions
+import CartView from "@/components/Dashbaord/CartView/page";
 
 interface BestSellingProduct {
   name: string;
@@ -68,6 +69,8 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6">
+
+    <CartView/>
 
 <Row gutter={[16, 16]} >
         <Col span={8}>

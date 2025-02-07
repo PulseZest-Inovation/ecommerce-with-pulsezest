@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from "react";
 import {
   Box,
   Drawer,
@@ -8,100 +8,130 @@ import {
   ListItem,
   ListItemText,
   IconButton,
-  Button,
   ListItemAvatar,
-} from '@mui/material';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+} from "@mui/material";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 interface CartProduct {
   id: string;
-  productName: string;
-  price: string;
+  productTitle: string;
+  price: number;
   slug: string;
-  website?: string;
-  productImage: string;
+  image?: string;
+}
+
+interface CustomerType {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
 }
 
 interface CartDrawerProps {
   cartDrawerOpen: boolean;
   toggleCartDrawer: () => void;
+  selectedCustomer: CustomerType | null;
   cartProducts: CartProduct[];
-  markAsRead: (list: string) => void;
-  phoneNumber: string;
   website: string;
+  phoneNumber: string;
 }
+
+const handleWhatsAppClick = (
+  fullName: string,
+  phone: string,
+  website: string
+) => {
+  const checkoutLink = `${website}/checkout`;
+
+  const message = `Hi ${fullName}, We noticed you left some great items in your cart at https://apnimaativastram.com/. They’re still waiting for you! 🎉
+
+Get a special 10% OFF just for you! Use code FIRST10 at checkout. But hurry—this offer expires soon! ⏳
+
+Complete your purchase here: ${checkoutLink}
+
+Need any help? We’re here for you! 😊
+
+- Shravani
+Apni Maati Vastram`;
+
+  // Encode the message correctly
+  const encodedMessage = encodeURIComponent(message);
+
+  // Use `wa.me` for better compatibility
+  const url = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+  // Open the WhatsApp chat
+  window.open(url, "_blank");
+};
+
+
 
 export default function CartDrawer({
   cartDrawerOpen,
   toggleCartDrawer,
+  selectedCustomer,
   cartProducts,
-  markAsRead,
+  website,
   phoneNumber,
-  website
 }: CartDrawerProps) {
-  // Function to navigate to WhatsApp with a pre-written message
-  const handleWhatsAppClick = (
-    productName: string,
-    productSlug: string,
-  ) => {
-    const productUrl = `${website}/${productSlug}`; // Corrected URL formatting
-    const message = `${productUrl} Are you interested in ${productName}?`; // Fixed grammar
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank'); // Open the WhatsApp link in a new tab
-  };
-  
+  const customerName = useMemo(
+    () => selectedCustomer?.fullName || "Guest",
+    [selectedCustomer]
+  );
+  const customerPhone = useMemo(
+    () => selectedCustomer?.phoneNumber || phoneNumber || "",
+    [selectedCustomer, phoneNumber]
+  );
 
   return (
-    <Drawer anchor="right" open={cartDrawerOpen} onClose={toggleCartDrawer}>
+    <Drawer
+      anchor="right"
+      open={cartDrawerOpen}
+      onClose={toggleCartDrawer}
+      aria-label="Shopping cart drawer"
+    >
       <Box sx={{ width: 400, padding: 2 }}>
         <Typography variant="h6" gutterBottom>
-          Cart Products
+          {customerName}'s Cart
         </Typography>
         <Divider />
         <List>
-  {cartProducts.length > 0 ? (
-    cartProducts.map((product) => (
-      <ListItem key={product.id}>
-        <ListItemAvatar>
-          <Box
-            component="img"
-            src={product.productImage}
-            alt={product.productName}
-            sx={{
-              width: 50,
-              height: 50,
-              borderRadius: '4px',
-              objectFit: 'cover',
-            }}
-          />
-        </ListItemAvatar>
-        <ListItemText primary={product.productName} secondary={`₹${product.price}`} />
-        <IconButton
-          aria-label="WhatsApp"
-          onClick={() => handleWhatsAppClick(product.productName, product.slug)} // Navigate to WhatsApp
-        >
-          <WhatsAppIcon />
-        </IconButton>
-      </ListItem>
-    ))
-  ) : (
-    <Typography variant="body2" sx={{ marginTop: 2 }}>
-      No products in the cart.
-    </Typography>
-  )}
-</List>
-
-        {/* <Button
-          onClick={() => {
-            markAsRead('cart');
-            toggleCartDrawer();
-          }}
-          sx={{ marginTop: 2 }}
-          fullWidth
-          variant="outlined"
-        >
-          Mark as Read & Close
-        </Button> */}
+          {cartProducts.length > 0 ? (
+            cartProducts.map((product) => (
+              <ListItem key={product.id}>
+                <ListItemAvatar>
+                  <Box
+                    component="img"
+                    src={product.image || "https://via.placeholder.com/50"}
+                    alt={product.productTitle}
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: "4px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={product.productTitle}
+                  secondary={`₹${product.price.toLocaleString("en-IN")}`}
+                />
+                <IconButton
+                  aria-label={`Share ${product.productTitle} on WhatsApp`}
+                  onClick={() =>
+                    handleWhatsAppClick(customerName, customerPhone, website)
+                  }
+                  disabled={!customerPhone} // Disable if no phone number
+                >
+                  <WhatsAppIcon />
+                </IconButton>
+              </ListItem>
+            ))
+          ) : (
+            <Typography variant="body2" sx={{ marginTop: 2 }}>
+              No products in the cart.
+            </Typography>
+          )}
+        </List>
       </Box>
     </Drawer>
   );

@@ -1,175 +1,131 @@
-import React, { useEffect, useState } from 'react';
-import { Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton, Typography, Badge } from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import CartDrawer from './CartDrawer';
-import FavouriteDrawer from './FavouriteDrawer';
-import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import { CustomerType } from '@/types/Customer';
-import { CartType } from '@/types/CartType'; // Assuming you have a CartType
-import { AppDataType } from '@/types/AppData';
-import { getAppData } from '@/services/getApp';
-
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-}
+import React, { useEffect, useState } from "react";
+import { Drawer, Avatar, List, Badge, Typography, Button } from "antd";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import CartDrawer from "./CartDrawer";
+import FavouriteDrawer from "./FavouriteDrawer";
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { CustomerType } from "@/types/Customer";
+import { CartType } from "@/types/CartType";
+import { AppDataType } from "@/types/AppData";
+import { getAppData } from "@/services/getApp";
 
 export default function CartView() {
   const [cartDrawerOpen, setCartDrawerOpen] = useState<boolean>(false);
   const [favDrawerOpen, setFavDrawerOpen] = useState<boolean>(false);
-  const [customers, setCustomers] = useState<CustomerType[]>([]); 
+  const [customers, setCustomers] = useState<CustomerType[]>([]);
   const [appData, setAppData] = useState<AppDataType | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
 
-  const favoriteProducts: Product[] = [
-    { id: 1, name: 'Product 3', price: '₹15' },
-    { id: 2, name: 'Product 4', price: '₹25' },
-  ];
-
-  // Function to toggle the drawers
-  const toggleCartDrawer = (): void => setCartDrawerOpen(!cartDrawerOpen);
-  const toggleFavDrawer = (): void => setFavDrawerOpen(!favDrawerOpen);
-
-  // Function to fetch customer data and their cart data
-  const fetchCustomer = async (): Promise<void> => {
-    try {
-      const customerData = await getAllDocsFromCollection<CustomerType>('customers');
-      const formattedCustomerData = customerData.map(async (customerDoc) => {
-        // Fetch cart data for each customer
-        const cartData = await getAllDocsFromCollection<CartType>(`customers/${customerDoc.id}/cart`);
-        return {
-          ...customerDoc, // Keep customer data
-          cart: cartData, // Add cart data to customer
-        };
-      });
-
-      // Wait for all customer data with cart data to be fetched
-      const customersWithCart = await Promise.all(formattedCustomerData);
-      setCustomers(customersWithCart); // Set the fetched customers with cart data into state
-      console.log('Fetched customers with cart:', customersWithCart);
-    } catch (error) {
-      console.error('Error fetching customers with cart:', error);
-    }
+  const toggleCartDrawer = (customer?: CustomerType): void => {
+    setSelectedCustomer(customer || null);
+    setCartDrawerOpen(!!customer);
   };
 
-  const  fetchAppData = async ()=>{
-    const key = localStorage.getItem('securityKey');
-    if (!key){
-      throw new Error('No security key found in localStorage!');
-    }
+  const toggleFavDrawer = (): void => setFavDrawerOpen(!favDrawerOpen);
 
-    const appData = await getAppData<AppDataType>('app_name', key)
-    setAppData(appData);
-  }
-  // Fetch customers on component mount
   useEffect(() => {
+    const fetchCustomer = async (): Promise<void> => {
+      try {
+        const customerData = await getAllDocsFromCollection<CustomerType>("customers");
+        const customersWithCart = await Promise.all(
+          customerData.map(async (customer) => {
+            const cartData = await getAllDocsFromCollection<CartType>(
+              `customers/${customer.id}/cart`
+            );
+            return { ...customer, cart: cartData || [] };
+          })
+        );
+        setCustomers(customersWithCart);
+      } catch (error) {
+        console.error("Error fetching customers with cart:", error);
+      }
+    };
+
+    const fetchAppData = async () => {
+      try {
+        const key = localStorage.getItem("securityKey");
+        if (!key) throw new Error("No security key found in localStorage!");
+        const appData = await getAppData<AppDataType>("app_name", key);
+        setAppData(appData);
+      } catch (error) {
+        console.error("Error fetching app data:", error);
+      }
+    };
+
     fetchCustomer();
     fetchAppData();
   }, []);
 
-  // Current date for the last update
   const currentDate: string = new Date().toLocaleDateString();
 
   return (
-    <Box
-      sx={{
-        height: '500px',
-        width: '400px',
-        padding: 2,
-        backgroundColor: '#67cf8a',
-        overflowY: 'auto',
-        borderRadius: '10px',
-        scrollbarColor: 'revert-layer',
-        scrollbarWidth: 'thin',
+    <div
+      style={{
+        width: 400,
+        padding: 16,
+        backgroundColor: "#67cf8a",
+        borderRadius: 10,
+        overflowY: "auto",
       }}
     >
-      <Typography variant="h6" gutterBottom textAlign="center">
+      <Typography.Title level={5} style={{ textAlign: "center" }}>
         Your Customer Updates
-      </Typography>
-      <List>
-        {customers.length === 0 ? (
-          <Typography>No customers available.</Typography>
-        ) : (
-          customers.map((customer) => (
-            <ListItem
-              key={customer.id}
-              sx={{
-                backgroundColor: '#fff',
-                borderRadius: 2,
-                marginBottom: 2,
-                boxShadow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  src={customer.profileUrl || 'https://via.placeholder.com/50'} // Fallback if profileUrl is not available
-                  alt={customer.fullName}
-                  sx={{ width: 50, height: 50 }}
+      </Typography.Title>
+      <List
+        dataSource={customers}
+        renderItem={(customer) => (
+          <List.Item
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 8,
+              marginBottom: 10,
+              padding: 10,
+            }}
+            actions={[
+              <Badge count={customer.cart?.length || 0} key={customer.id}>
+                <Button
+                  icon={<ShoppingCartOutlined />}
+                  onClick={() => toggleCartDrawer(customer)}
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={customer.fullName || 'Unknown User'} // Fallback if fullName is not available
-                secondary={`Phone: ${customer.phoneNumber || 'N/A'} | Last Update on: ${currentDate}`}
-                sx={{ flex: 1, marginLeft: 2 }}
-              />
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                {/* <IconButton
-                  color="primary"
-                  aria-label="Add to favorites"
-                  onClick={toggleFavDrawer}
-                >
-                  <Badge badgeContent={favoriteProducts.length} color="secondary">
-                    <FavoriteBorderIcon />
-                  </Badge>
-                </IconButton> */}
-                <IconButton
-                  color="secondary"
-                  aria-label="View Cart"
-                  onClick={toggleCartDrawer}
-                >
-                  <Badge badgeContent={customer.cart.length} color="primary">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </IconButton>
-              </Box>
-            </ListItem>
-          ))
+              </Badge>,
+            ]}
+          >
+            <List.Item.Meta
+              avatar={
+                <Avatar
+                  src={customer.profileUrl ?? "https://via.placeholder.com/50"}
+                  size={50}
+                />
+              }
+              title={customer.fullName || "Unknown User"}
+              description={`Phone: ${
+                customer.phoneNumber || "N/A"
+              } | Last Update: ${currentDate}`}
+            />
+          </List.Item>
         )}
-      </List>
-
-      {/* Drawer for Cart */}
-      <CartDrawer
-        markAsRead={() => {}}
-        cartDrawerOpen={cartDrawerOpen}
-        toggleCartDrawer={toggleCartDrawer}
-        cartProducts={customers.flatMap((customer) =>
-          customer.cart.map((cartItem) => ({
-            id: cartItem.id,
-            productName: cartItem.productTitle || 'Unnamed Product',
-            price: cartItem.price.toString() || '0', // Convert number to string
-            slug: cartItem.productId || 'not found',
-            productImage: cartItem.image
-          }))
-        )}
-        phoneNumber={
-          customers.find((customer) => customer.cart.some((item) => item))?.phoneNumber || 'N/A'
-        }
-        website={appData?.callback_url || 'empty'}
       />
 
+      {selectedCustomer && (
+        <CartDrawer
+          selectedCustomer={selectedCustomer}
+          cartDrawerOpen={cartDrawerOpen}
+          toggleCartDrawer={() => toggleCartDrawer()}
+          cartProducts={selectedCustomer.cart?.map((product) => ({
+            ...product,
+            slug: product.slug || "default-slug", // Provide a default value if missing
+          })) ?? []} // Ensure it's never undefined
+          phoneNumber={selectedCustomer.phoneNumber || "N/A"}
+          website={appData?.callback_url || "empty"}
+        />
+      )}
 
-
-      {/* Drawer for FavouriteDrawer */}
       <FavouriteDrawer
         markAsRead={() => {}}
         favDrawerOpen={favDrawerOpen}
         toggleFavDrawer={toggleFavDrawer}
-        favoriteProducts={favoriteProducts}
+        favoriteProducts={[]}
       />
-    </Box>
+    </div>
   );
 }
