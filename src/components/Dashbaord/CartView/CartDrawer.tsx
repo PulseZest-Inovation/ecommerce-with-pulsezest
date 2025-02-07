@@ -32,7 +32,9 @@ const handleWhatsAppClick = (
 ) => {
   const checkoutLink = `${website}/checkout`;
 
-  const message = `Hi ${fullName}, We noticed you left some great items in your cart at https://apnimaativastram.com/. They’re still waiting for you! 🎉
+  const message = `Hi ${fullName}, 
+  
+We noticed you left some great items in your cart at https://apnimaativastram.com/. They’re still waiting for you! 🎉
 
 Get a special 10% OFF just for you! Use code FIRST10 at checkout. But hurry—this offer expires soon! ⏳
 
