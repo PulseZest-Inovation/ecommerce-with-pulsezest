@@ -36,7 +36,7 @@ type Props = {}
 
 const ThemePage = (props: Props) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string>('1'); // Track selected menu item
+  const [selectedKey, setSelectedKey] = useState<string>('0'); // Track selected menu item
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
