@@ -1,16 +1,6 @@
 import React, { useMemo } from "react";
-import {
-  Box,
-  Drawer,
-  Typography,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  ListItemAvatar,
-} from "@mui/material";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import { Drawer, Typography, Divider, List, Avatar, Button } from "antd";
+import { WhatsAppOutlined } from "@ant-design/icons";
 
 interface CartProduct {
   id: string;
@@ -53,17 +43,10 @@ Need any help? We’re here for you! 😊
 - Shravani
 Apni Maati Vastram`;
 
-  // Encode the message correctly
   const encodedMessage = encodeURIComponent(message);
-
-  // Use `wa.me` for better compatibility
   const url = `https://wa.me/${phone}?text=${encodedMessage}`;
-
-  // Open the WhatsApp chat
   window.open(url, "_blank");
 };
-
-
 
 export default function CartDrawer({
   cartDrawerOpen,
@@ -84,55 +67,50 @@ export default function CartDrawer({
 
   return (
     <Drawer
-      anchor="right"
-      open={cartDrawerOpen}
+      title={`${customerName}'s Cart`}
+      placement="right"
       onClose={toggleCartDrawer}
-      aria-label="Shopping cart drawer"
+      open={cartDrawerOpen}
+      width={400}
+      className="p-4"
     >
-      <Box sx={{ width: 400, padding: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          {customerName}'s Cart
-        </Typography>
-        <Divider />
-        <List>
-          {cartProducts.length > 0 ? (
-            cartProducts.map((product) => (
-              <ListItem key={product.id}>
-                <ListItemAvatar>
-                  <Box
-                    component="img"
-                    src={product.image || "https://via.placeholder.com/50"}
-                    alt={product.productTitle}
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: "4px",
-                      objectFit: "cover",
-                    }}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={product.productTitle}
-                  secondary={`₹${product.price.toLocaleString("en-IN")}`}
-                />
-                <IconButton
-                  aria-label={`Share ${product.productTitle} on WhatsApp`}
-                  onClick={() =>
-                    handleWhatsAppClick(customerName, customerPhone, website)
-                  }
-                  disabled={!customerPhone} // Disable if no phone number
-                >
-                  <WhatsAppIcon />
-                </IconButton>
-              </ListItem>
-            ))
-          ) : (
-            <Typography variant="body2" sx={{ marginTop: 2 }}>
-              No products in the cart.
-            </Typography>
+      <Divider />
+      {cartProducts.length > 0 ? (
+        <List
+          dataSource={cartProducts}
+          renderItem={(product) => (
+            <List.Item className="flex items-center gap-4">
+              <Avatar
+                shape="square"
+                size={50}
+                src={product.image || "https://via.placeholder.com/50"}
+                className="rounded-lg"
+              />
+              <div className="flex-1">
+                <Typography.Text strong>{product.productTitle}</Typography.Text>
+                <br />
+                <Typography.Text type="secondary">
+                  ₹{product.price.toLocaleString("en-IN")}
+                </Typography.Text>
+              </div>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<WhatsAppOutlined />}
+                onClick={() =>
+                  handleWhatsAppClick(customerName, customerPhone, website)
+                }
+                disabled={!customerPhone}
+                className="bg-green-500 border-none text-white"
+              />
+            </List.Item>
           )}
-        </List>
-      </Box>
+        />
+      ) : (
+        <Typography.Text type="secondary" className="mt-4 block">
+          No products in the cart.
+        </Typography.Text>
+      )}
     </Drawer>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Avatar, List, Badge, Typography, Button } from "antd";
+import {  Avatar, List, Badge, Typography, Button } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import CartDrawer from "./CartDrawer";
 import FavouriteDrawer from "./FavouriteDrawer";

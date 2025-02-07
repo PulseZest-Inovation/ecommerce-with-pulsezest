@@ -1,11 +1,13 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Statistic, Tooltip } from "antd";
+import { motion } from "framer-motion";
+import { Card, Row, Col, Statistic, Tooltip, Button, Drawer } from "antd";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
 import { getTotalRevenue, getBestSellingProducts, getSalesByDate } from "@/utils/analytics/salesAnalytics";
 import { getTotalCustomers, getRepeatCustomers } from "@/utils/analytics/CustomerInsights";
-import { getTotalOrders, getOrderStatusCount, getTodaysOrders, getOrdersTrend } from "@/utils/analytics/orderStatus"; // Import the order analytics functions
+import { getTotalOrders, getOrderStatusCount, getTodaysOrders, getOrdersTrend } from "@/utils/analytics/orderStatus";
 import CartView from "@/components/Dashbaord/CartView/page";
+import { ShoppingCartOutlined } from "@mui/icons-material";
 
 interface BestSellingProduct {
   name: string;
@@ -32,29 +34,24 @@ export default function DashboardPage() {
   const [pendingOrders, setPendingOrders] = useState<number>(0);
   const [todaysOrders, setTodaysOrders] = useState<number>(0);
   const [orderTrends, setOrderTrends] = useState<OrderTrendData[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch analytics data
-        const revenue = await getTotalRevenue();
-        setTotalRevenue(revenue);
+        setTotalRevenue(await getTotalRevenue());
 
         const bestSellingProducts = await getBestSellingProducts();
         setBestSelling(
           bestSellingProducts.map((product) => ({
-            name: product.productTitle, // Mapping productTitle to name
+            name: product.productTitle,
             totalQuantitySold: product.totalQuantitySold,
           }))
         );
 
-        const sales = await getSalesByDate("Delivered", "last7days");
-        setSalesData(sales);
-
+        setSalesData(await getSalesByDate("Delivered", "last7days"));
         setTotalCustomers(await getTotalCustomers());
         setRepeatCustomers(await getRepeatCustomers());
-
-        // Fetch order data
         setTotalOrders(await getTotalOrders());
         setPendingOrders(await getOrderStatusCount("Pending"));
         setTodaysOrders(await getTodaysOrders());
@@ -68,34 +65,48 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-6 relative">
+      {/* Cart Button in Top Right */}
+      <div className="absolute top-4 right-4 z-10">
+        <motion.div
+          className="absolute -top-4 -right-4 w-16 h-16 bg-blue-400 rounded-full opacity-50"
+          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.3, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <Button
+          type="primary"
+          icon={<ShoppingCartOutlined />}
+          onClick={() => setOpen(true)}
+          className="bg-blue-600 p-3 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all"
+        />
+      </div>
 
-    <CartView/>
-
-<Row gutter={[16, 16]} >
+      {/* Order Statistics */}
+      <Row gutter={[16, 16]}>
         <Col span={8}>
           <Card>
-            <Tooltip title="The total number of orders placed in your store">
+            <Tooltip title="Total number of orders placed in your store">
               <Statistic title="Total Orders" value={totalOrders} />
             </Tooltip>
           </Card>
         </Col>
         <Col span={8}>
           <Card>
-            <Tooltip title="The number of orders that are still pending">
+            <Tooltip title="Number of orders that are still pending">
               <Statistic title="Pending Orders" value={pendingOrders} />
             </Tooltip>
           </Card>
         </Col>
         <Col span={8}>
           <Card>
-            <Tooltip title="The number of orders placed today">
+            <Tooltip title="Orders placed today">
               <Statistic title="Today's Orders" value={todaysOrders} />
             </Tooltip>
           </Card>
         </Col>
       </Row>
 
+      {/* Revenue & Customer Insights */}
       <Row gutter={[16, 16]} className="mt-6">
         <Col span={8}>
           <Card>
@@ -106,22 +117,21 @@ export default function DashboardPage() {
         </Col>
         <Col span={8}>
           <Card>
-            <Tooltip title="The total number of customers who have made a purchase">
+            <Tooltip title="Total number of customers">
               <Statistic title="Total Customers" value={totalCustomers} />
             </Tooltip>
           </Card>
         </Col>
         <Col span={8}>
           <Card>
-            <Tooltip title="The number of customers who made repeat purchases">
+            <Tooltip title="Number of repeat customers">
               <Statistic title="Repeat Customers" value={repeatCustomers} />
             </Tooltip>
           </Card>
         </Col>
       </Row>
 
-    
-
+      {/* Charts Section */}
       <Row gutter={[16, 16]} className="mt-6">
         <Col span={12}>
           <Card title="Best Selling Products">
@@ -165,6 +175,16 @@ export default function DashboardPage() {
         </Col>
       </Row>
 
+      {/* Drawer for Cart View */}
+      <Drawer
+        title="Dashboard Menu"
+        placement="right"
+        width={450}
+        onClose={() => setOpen(false)}
+        open={open}
+      >
+        <CartView />
+      </Drawer>
     </div>
   );
 }
