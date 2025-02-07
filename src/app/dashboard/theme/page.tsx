@@ -15,13 +15,14 @@ import TopHeader from '@/components/Theme/TopHeader';
 import CategoryStyle from '@/components/Theme/CategoryStyle';
 import Socialmedia from '@/components/Theme/socialmedia';
 import Footer from '@/components/Theme/Footer/page';
-import { FormatTextdirectionLToROutlined, VideoCall } from '@mui/icons-material';
+import { FormatTextdirectionLToROutlined, VideoCall, WebStories } from '@mui/icons-material';
 import VideoSectionOnWebsite from '@/components/Theme/VideoSection/page';
+import HomeTheme from '@/components/Theme/HomeTheme/page';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
-  { key: '0', icon: <PieChartOutlined />, label: 'Main Home' },
+  { key: '0', icon: <WebStories />, label: 'Website home' },
   { key: '1', icon: <PieChartOutlined />, label: 'Top Header' },
   { key: '2', icon: <DesktopOutlined />, label: 'Categories' },
   { key: '6', icon: <VideoCall/>, label: 'Videos at Home'},
@@ -50,7 +51,7 @@ const ThemePage = (props: Props) => {
   const renderContent = () => {
     switch (selectedKey) {
       case '0':
-        return <>websiste</>
+        return <HomeTheme/>
       case '1':
         return <TopHeader/>;
       case '2':
@@ -84,7 +85,7 @@ const ThemePage = (props: Props) => {
           items={items}
         />
       </div>
-      <div className='pl-5'>
+      <div className='w-full'>
         {renderContent()} {/* Render content based on selected menu item */}
       </div>
     </div>
