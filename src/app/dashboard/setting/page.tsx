@@ -44,14 +44,23 @@ export default function Setting() {
       action: <Switch defaultChecked />,
     },
     {
-      title: "Meta Marketing API Key",
+      title: "Facebook Pixel",
       description: "Provide the API key to connect with Meta's marketing tools.",
       action: (
-        <Button type="primary" onClick={() => router.push("setting/meta-marketing")}>
+        <Button type="primary" onClick={() => router.push("setting/facebook-pixel")}>
           Setup
         </Button>
       ),
     },
+    // {
+    //   title: "Meta Marketing API Key",
+    //   description: "Provide the API key to connect with Meta's marketing tools.",
+    //   action: (
+    //     <Button type="primary" onClick={() => router.push("setting/meta-marketing")}>
+    //       Setup
+    //     </Button>
+    //   ),
+    // },
     // {
     //   title: "Invoice Template",
     //   description: "Design and manage your invoice templates.",
