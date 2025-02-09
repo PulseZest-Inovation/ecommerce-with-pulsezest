@@ -16,10 +16,11 @@ You are ready to use now!
 3. Phonepe intigration
 4. Product SEO
 5. shipRocket intigratoin
-6. Theme Managment
-7. Product Upload with Advance features
-8. Email System.
-9. Blogs
+6. Facebook Pixel.
+7. Theme Managment
+8. Product Upload with Advance features
+9. Email System.
+10. Blogs
 
 # Comes with Pay as your Grow.
 1. Buy after 2 Product Sales.
