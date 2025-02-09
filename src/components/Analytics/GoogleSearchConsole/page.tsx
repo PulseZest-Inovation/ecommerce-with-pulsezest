@@ -1,5 +1,8 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
 // Define Type for Row Data
@@ -12,6 +15,9 @@ interface SearchConsoleRow {
 }
 
 const SearchConsole = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+  
   const [properties, setProperties] = useState<string[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [data, setData] = useState<SearchConsoleRow[]>([]);
@@ -24,6 +30,11 @@ const SearchConsole = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!session) {
+      setLoading(false); // ✅ No session, so stop loading
+      return;
+    }
+
     fetch("/api/search-console/properties")
       .then((res) => res.json())
       .then((data) => {
@@ -36,10 +47,10 @@ const SearchConsole = () => {
         }
       })
       .catch((err) => console.error("Error fetching properties:", err));
-  }, []);
+  }, [session]);
 
   useEffect(() => {
-    if (!selectedProperty) return;
+    if (!selectedProperty || !session) return;
 
     setLoading(true);
 
@@ -62,29 +73,48 @@ const SearchConsole = () => {
         console.error("Error fetching Search Console data:", err);
         setLoading(false);
       });
-  }, [selectedProperty]);
+  }, [selectedProperty, session]);
 
   return (
     <div className="p-6 font-sans bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">Google Search Console Data</h2>
+      <div className="flex justify-center items-center">
+        <Image 
+          className="mx-auto" 
+          src="/images/Google_Search_Console.svg.png" 
+          height={500} 
+          width={500} 
+          alt="google-search-console"
+        />
+      </div>
 
-      {/* Dropdown to select property */}
-      <select
-        value={selectedProperty || ""}
-        onChange={(e) => setSelectedProperty(e.target.value)}
-        className="mb-4 p-2 border rounded w-full max-w-md"
-      >
-        {properties.map((site) => (
-          <option key={site} value={site}>
-            {site}
-          </option>
-        ))}
-      </select>
-
-      {loading ? (
+      {/* If no session, show login setup button */}
+      {!session ? (
+        <div className="flex flex-col items-center">
+          <p className="text-lg text-gray-600 mb-4">🔴 Not Connected to Google Search Console</p>
+          <button
+            onClick={() => router.push("/dashboard/setting/search-console")}
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Go to Setup
+          </button>
+        </div>
+      ) : loading ? (
         <p className="text-lg text-gray-600">Loading...</p>
       ) : (
         <>
+          {/* Dropdown to select property */}
+          <select
+            value={selectedProperty || ""}
+            onChange={(e) => setSelectedProperty(e.target.value)}
+            className="mb-4 p-2 border rounded w-full max-w-md mt-2"
+          >
+            {properties.map((site) => (
+              <option key={site} value={site}>
+                {site}
+              </option>
+            ))}
+          </select>
+
           {/* Total Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white shadow-lg p-4 rounded-lg text-center">
