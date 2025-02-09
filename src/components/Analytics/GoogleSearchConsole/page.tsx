@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { CircularProgress } from "@mui/material";
+import SearchConsoleGraph from "./SearchConsoleGraph";
+import SearchConsoleSummary from "./SearchConsoleSummary";
 
 // Define Type for Row Data
 interface SearchConsoleRow {
@@ -117,39 +119,10 @@ const SearchConsole = () => {
           </select>
 
           {/* Total Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white shadow-lg p-4 rounded-lg text-center">
-              <h3 className="text-lg font-semibold">Total Clicks</h3>
-              <p className="text-xl font-bold">{summary.totalClicks}</p>
-            </div>
-            <div className="bg-white shadow-lg p-4 rounded-lg text-center">
-              <h3 className="text-lg font-semibold">Total Impressions</h3>
-              <p className="text-xl font-bold">{summary.totalImpressions}</p>
-            </div>
-            <div className="bg-white shadow-lg p-4 rounded-lg text-center">
-              <h3 className="text-lg font-semibold">Average CTR</h3>
-              <p className="text-xl font-bold">{summary.avgCTR.toFixed(2)}%</p>
-            </div>
-            <div className="bg-white shadow-lg p-4 rounded-lg text-center">
-              <h3 className="text-lg font-semibold">Average Position</h3>
-              <p className="text-xl font-bold">{summary.avgPosition.toFixed(2)}</p>
-            </div>
-          </div>
+         <SearchConsoleSummary summary={summary}/>
 
           {/* Graphs */}
-          <h3 className="text-xl font-semibold mb-2">Clicks & Impressions Over Time</h3>
-          <div className="bg-white p-4 shadow-lg rounded-lg">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="keys[0]" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="clicks" stroke="#8884d8" name="Clicks" />
-                <Line type="monotone" dataKey="impressions" stroke="#82ca9d" name="Impressions" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+         <SearchConsoleGraph data={data} />
         </>
       )}
     </div>
