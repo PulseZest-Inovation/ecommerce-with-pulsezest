@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { CircularProgress } from "@mui/material";
 import SearchConsoleGraph from "./SearchConsoleGraph";
 import SearchConsoleSummary from "./SearchConsoleSummary";
@@ -15,6 +14,14 @@ interface SearchConsoleRow {
   impressions: number;
   ctr?: number;
   position: number;
+}
+
+// Define Type for Additional Data
+interface SearchConsoleData {
+  topQueries: { query: string; clicks: number }[];
+  topPages: { url: string; clicks: number }[];
+  countries: { country: string; clicks: number }[];
+  devices: { device: string; clicks: number }[];
 }
 
 const SearchConsole = () => {
@@ -32,9 +39,17 @@ const SearchConsole = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // New State for Additional Data
+  const [extraData, setExtraData] = useState<SearchConsoleData>({
+    topQueries: [],
+    topPages: [],
+    countries: [],
+    devices: [],
+  });
+
   useEffect(() => {
     if (!session) {
-      setLoading(false); // ✅ No session, so stop loading
+      setLoading(false); // ✅ No session, stop loading
       return;
     }
 
@@ -57,6 +72,7 @@ const SearchConsole = () => {
 
     setLoading(true);
 
+    // Fetch summary data
     fetch(`/api/search-console/summary?property=${encodeURIComponent(selectedProperty)}`)
       .then((res) => res.json())
       .then((data) => {
@@ -73,9 +89,22 @@ const SearchConsole = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching Search Console data:", err);
+        console.error("Error fetching summary data:", err);
         setLoading(false);
       });
+
+    // Fetch additional search console data
+    fetch(`/api/search-console/details?property=${encodeURIComponent(selectedProperty)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setExtraData({
+          topQueries: data.topQueries || [],
+          topPages: data.topPages || [],
+          countries: data.countries || [],
+          devices: data.devices || [],
+        });
+      })
+      .catch((err) => console.error("Error fetching additional Search Console data:", err));
   }, [selectedProperty, session]);
 
   return (
@@ -119,10 +148,53 @@ const SearchConsole = () => {
           </select>
 
           {/* Total Metrics */}
-         <SearchConsoleSummary summary={summary}/>
+          <SearchConsoleSummary summary={summary}/>
 
           {/* Graphs */}
-         <SearchConsoleGraph data={data} />
+          <SearchConsoleGraph data={data} />
+
+          {/* Additional Data: Top Queries, Pages, Countries, Devices */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Top Queries */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-bold mb-2">🔍 Top Queries</h3>
+              <ul>
+                {extraData.topQueries.map((query, index) => (
+                  <li key={index} className="text-sm">{query.query}: {query.clicks} clicks</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Top Pages */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-bold mb-2">📄 Top Pages</h3>
+              <ul>
+                {extraData.topPages.map((page, index) => (
+                  <li key={index} className="text-sm">{page.url}: {page.clicks} clicks</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Traffic by Country */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-bold mb-2">🌍 Traffic by Country</h3>
+              <ul>
+                {extraData.countries.map((country, index) => (
+                  <li key={index} className="text-sm">{country.country}: {country.clicks} clicks</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Traffic by Device */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <h3 className="text-lg font-bold mb-2">📱 Traffic by Device</h3>
+              <ul>
+                {extraData.devices.map((device, index) => (
+                  <li key={index} className="text-sm">{device.device}: {device.clicks} clicks</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </>
       )}
     </div>
