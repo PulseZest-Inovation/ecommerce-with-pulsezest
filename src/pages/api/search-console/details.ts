@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { google } from "googleapis";
 import { getSession } from "next-auth/react";
+import { GoogleSearchConfig } from "@/config/GoogleSearchConfig";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({ req });
@@ -18,8 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+        client_email: GoogleSearchConfig.GOOGLE_CLIENT_EMAIL,
+        private_key: GoogleSearchConfig.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
       },
       scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
     });
