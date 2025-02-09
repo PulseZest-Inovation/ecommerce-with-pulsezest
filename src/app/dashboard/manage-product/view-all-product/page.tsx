@@ -42,13 +42,8 @@ const ViewProduct: React.FC = () => {
   }, []);
 
   const fetchApplicationData = async () => {
-    const key = localStorage.getItem('securityKey');
     try {
-      if (!key) {
-        console.warn('Security key not found in localStorage.');
-        return null; // Return null if key is not available
-      }
-      const data = await getAppData<AppDataType>('app_name', key);
+      const data = await getAppData<AppDataType>();
       setAppData(data);
     } catch (error) {
       console.log(error);

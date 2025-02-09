@@ -24,7 +24,7 @@ const DashboardWrapper: React.FC = () => {
         }
 
         // Fetch app data using the security key
-        const data = await getAppData<AppDataType>('app_name', securityKey);
+        const data = await getAppData<AppDataType>();
 
         if (data) {
           setAppData(data); // Successfully retrieved app data

@@ -118,12 +118,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   useEffect(() => {
     const fetchAppData = async () => {
       try {
-        const appKey = localStorage.getItem("securityKey");
-        if (!appKey) {
-          console.error("No security key found in localStorage!");
-          return;
-        }
-        const appData = await getAppData<AppDataType>("app_name", appKey);
+        const appData = await getAppData<AppDataType>();
         setAppData(appData);
       } catch (error) {
         console.error("Error fetching app data:", error);

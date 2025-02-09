@@ -29,7 +29,7 @@ const Login: React.FC = () => {
         if (securityKey) {
           try {
             // Validate app data if user is authenticated
-            const fetchedData = await getAppData<AppDataType>('app_name', securityKey);
+            const fetchedData = await getAppData<AppDataType>();
             if (fetchedData) {
               setAppData(fetchedData);
               router.push('/dashboard'); // Redirect to dashboard if valid
@@ -54,13 +54,7 @@ const Login: React.FC = () => {
 
   const fetchAppData = async () => {
     try {
-      const securityKey = localStorage.getItem('securityKey');
-      if (!securityKey) {
-        message.error('Missing security key in localStorage.');
-        return;
-      }
-
-      const fetchedData = await getAppData<AppDataType>('app_name', securityKey);
+      const fetchedData = await getAppData<AppDataType>();
       if (fetchedData) {
         setAppData(fetchedData); // Store fetched app data in state
         console.log('Fetched App Data:', fetchedData);

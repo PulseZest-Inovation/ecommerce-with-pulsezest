@@ -43,9 +43,7 @@ export default function CartView() {
 
     const fetchAppData = async () => {
       try {
-        const key = localStorage.getItem("securityKey");
-        if (!key) throw new Error("No security key found in localStorage!");
-        const appData = await getAppData<AppDataType>("app_name", key);
+        const appData = await getAppData<AppDataType>();
         setAppData(appData);
       } catch (error) {
         console.error("Error fetching app data:", error);
