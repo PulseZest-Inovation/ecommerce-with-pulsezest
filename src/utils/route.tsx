@@ -42,7 +42,7 @@ import PulseZestSupport from '@/app/dashboard/support/page';
 import EmailSettings from '@/app/dashboard/setting/email/page';
 import ShipRocketPage from '@/app/dashboard/setting/shiprocket/page';
 import FacebookPixel from '@/app/dashboard/setting/facebook-pixel/page';
-
+import SearchConsole from '@/app/dashboard/setting/search-console/page';
 import InovicePage from '@/app/dashboard/setting/invoice/page';
 import MetaMarketing from '@/app/dashboard/setting/meta-marketing/page';
 import GuidePage from '@/app/dashboard/guide/page';
@@ -109,6 +109,8 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/setting/meta-marketing', component: MetaMarketing },
   { path: '/dashboard/setting/shiprocket', component: ShipRocketPage },
   { path: '/dashboard/setting/facebook-pixel', component: FacebookPixel },
+  { path: '/dashboard/setting/search-console', component: SearchConsole },
+
 
 
 ];

@@ -14,9 +14,25 @@ import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
 import CustomerInsights from "@/components/Analytics/CustomerInsights/page";
 import ProductPerformance from "@/components/Analytics/ProductPerformance/page";
 import MetaDashboard from "@/components/Analytics/MetaDashboard/page";
+import SearchConsole from "@/components/Analytics/GoogleSearchConsole/page";
+import { GoogleSearchConsole } from "@/components/Icons/page";
+import SessionProviderWrapper from "../setting/search-console/SessionProviderWrapper";
 
 const Analytics = () => {
   const items = [
+
+    {
+      key: "0",
+      label: (
+        <span className="flex">
+          <GoogleSearchConsole /> <p className="pl-2">Google Search Console</p>
+        </span>
+      ),
+      children: <SessionProviderWrapper>
+        <SearchConsole/>
+      </SessionProviderWrapper>,
+    },
+
     {
       key: "1",
       label: (
@@ -73,9 +89,10 @@ const Analytics = () => {
       ),
       children: <MetaDashboard />,
     },
+   
   ];
 
-  return <Tabs defaultActiveKey="1" items={items} />;
+  return <Tabs defaultActiveKey="0" items={items} />;
 };
 
 export default Analytics;

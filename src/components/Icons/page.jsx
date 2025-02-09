@@ -219,7 +219,21 @@ const VolumeIcon = () => {
   );
 };
 
-export { AddProuducts, AllProduct, ProductIcon, OrderIcon,UserGuide,
+
+const GoogleSearchConsole = () => {
+  return (
+    <Image
+      src="/images/google-search-console.svg" // Path relative to the `public` folder
+      alt='add'
+      width={25}
+      height={25}
+
+      priority // Optional: Ensures the image is optimized
+    />
+  );
+};
+
+export { AddProuducts, AllProduct, ProductIcon, OrderIcon,UserGuide, GoogleSearchConsole,
    CustomerIcon,
    ReturnAndExchangeIcon,
    ManageCategoriesIcon,

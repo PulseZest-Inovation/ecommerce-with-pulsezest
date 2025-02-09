@@ -44,6 +44,15 @@ export default function Setting() {
       action: <Switch defaultChecked />,
     },
     {
+      title: "Google Search Console",
+      description: "Connect your Google Search console and get update of Google Searches",
+      action: (
+        <Button type="primary" onClick={() => router.push("setting/search-console")}>
+          Setup
+        </Button>
+      ),
+    },
+    {
       title: "Facebook Pixel",
       description: "Provide the API key to connect with Meta's marketing tools.",
       action: (
