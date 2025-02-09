@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import { CircularProgress } from "@mui/material";
 
 // Define Type for Row Data
 interface SearchConsoleRow {
@@ -99,7 +100,7 @@ const SearchConsole = () => {
           </button>
         </div>
       ) : loading ? (
-        <p className="text-lg text-gray-600">Loading...</p>
+        <div className="flex justify-center items-center"> <CircularProgress/> </div>
       ) : (
         <>
           {/* Dropdown to select property */}
