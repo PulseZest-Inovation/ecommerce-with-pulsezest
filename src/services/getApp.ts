@@ -3,8 +3,6 @@ import { db } from "@/config/firbeaseConfig";
 
 
 export const getAppData = async <T>(
-    collectionName: string,
-    docName: string
   ): Promise<T | null> => {
     try {
 
@@ -21,7 +19,7 @@ export const getAppData = async <T>(
       }
   
       // Reference the document in Firestore
-      const docRef = doc(db, collectionName, docName);
+      const docRef = doc(db,  'app_name', appKey);
       const docSnap = await getDoc(docRef);
   
       // Check if the document exists

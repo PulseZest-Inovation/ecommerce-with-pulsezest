@@ -4,6 +4,8 @@ export interface AppDataType{
     callback_url: string;
     returnUrl: string;
     scope: string;
-    securityKey: string | null,   // Add the securityKey to the object
-
+    uid: string;
+    securityKey: string | null,  
+    client_phone: string; // Add the securityKey to the object
+    client_email: string;
 }

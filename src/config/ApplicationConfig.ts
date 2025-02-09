@@ -19,8 +19,7 @@ export let ApplicationConfig: AppDataType | null = null;
 // Fetch app data and assign it to ApplicationConfig
 const fetchAppData = async (key: string | null) => {
   if (key) {
-    const document = String(key);
-    const appData = await getAppData<AppDataType>('app_name', document);
+    const appData = await getAppData<AppDataType>();
 
     if (appData) {
       ApplicationConfig = {

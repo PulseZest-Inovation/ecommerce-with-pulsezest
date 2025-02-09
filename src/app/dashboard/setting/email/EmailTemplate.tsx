@@ -3,6 +3,7 @@ import { Typography, Select, Card, Button, message } from "antd";
 import { Editor } from "@tinymce/tinymce-react"; // Assuming TinyMCE is used for HTML editing
 import { updateDocWithCustomId } from "@/services/FirestoreData/updateFirestoreData";
 import { getDataByDocName } from "@/services/FirestoreData/getFirestoreData"; // Your Firestore data fetching function
+import { TinyMice } from "@/config/TinyMiceConfig";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -135,7 +136,7 @@ export default function EmailTemplate() {
           Currently editing the <strong>{selectedTemplate}</strong> template.
         </p>
         <Editor
-          apiKey="g43jhgrqm9nkxhhl6k0c617ht44aohpitdk5veyi6rf86i4u" // Replace with your TinyMCE API key
+          apiKey={TinyMice} // Replace with your TinyMCE API key
           initialValue="<p>Use placeholders like {{username}}, {{email}}, {{number}}, {{address}}, and {{orderDetails}}</p>"
           value={htmlContent}
           init={{
