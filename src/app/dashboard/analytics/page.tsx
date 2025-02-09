@@ -14,6 +14,7 @@ import SalesAnalytics from "@/components/Analytics/SalesAnalytics/page";
 import CustomerInsights from "@/components/Analytics/CustomerInsights/page";
 import ProductPerformance from "@/components/Analytics/ProductPerformance/page";
 import MetaDashboard from "@/components/Analytics/MetaDashboard/page";
+import SearchConsole from "@/components/Analytics/GoogleSearchConsole/page";
 
 const Analytics = () => {
   const items = [
@@ -72,6 +73,15 @@ const Analytics = () => {
         </span>
       ),
       children: <MetaDashboard />,
+    },
+    {
+      key: "7",
+      label: (
+        <span>
+          <GlobalOutlined /> Traffic
+        </span>
+      ),
+      children: <SearchConsole />,
     },
   ];
 
