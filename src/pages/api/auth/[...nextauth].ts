@@ -1,12 +1,11 @@
-import { GoogleSearchConfig } from "@/config/GoogleSearchConfig";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: GoogleSearchConfig.GOOGLE_CLIENT_ID!,
-      clientSecret: GoogleSearchConfig.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
           scope: "openid email profile https://www.googleapis.com/auth/webmasters.readonly",
