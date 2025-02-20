@@ -17,6 +17,7 @@ import ViewOrderPage from '@/app/dashboard/orders/order-details/[orderId]/page';
 import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
 import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
 import ReturnOrders from '@/app/dashboard/orders/return-order/page';
+import ReturnOrderView from '@/app/dashboard/orders/return-order/[orderId]/page';
 import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
 
 
@@ -81,6 +82,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
   { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
   { path: '/dashboard/orders/return-order', component: ReturnOrders },
+  { path: '/dashboard/orders/return-order/:orderId', component: ReturnOrderView, isDynamic: true },
   { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
 
 

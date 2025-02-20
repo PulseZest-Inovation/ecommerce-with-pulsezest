@@ -55,7 +55,7 @@ export default function ReturnRequestOrders() {
   };
 
   const handleViewOrder = (orderId: string) => {
-    router.push(`/orders/${orderId}`); // Navigate to the order detail page
+    router.push(`return-order/${orderId}`); // Navigate to the order detail page
   };
 
   const columns: ColumnsType<OrderType> = [
