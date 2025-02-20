@@ -25,8 +25,15 @@ export interface CartItem {
   quantity: number;
   image: string;
   isReadyToWear?: boolean;
+  readyData?: ReadyData[];
   readyToWearCharges?: number;
   isPrePlated?: boolean;
   prePlatedCharges?: number;
   [key: string]: any; // For additional details
+}
+
+export interface ReadyData {
+  hip: number;
+  length: number;
+  waist: number;
 }
