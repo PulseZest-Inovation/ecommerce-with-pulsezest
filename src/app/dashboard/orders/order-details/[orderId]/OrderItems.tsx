@@ -1,28 +1,21 @@
-import React, { useState } from "react";
-import { Card, Typography, Select, Button, message } from "antd";
+import React from "react";
+import { Card, Typography } from "antd";
 import { CartItem } from "@/types/orderType";
-import { updateDocWithCustomId } from "@/services/FirestoreData/updateFirestoreData";
 
 interface OrderItemsProps {
   orderDetails: CartItem[];
 }
 
-const { Option } = Select;
-
-const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails,  }) => {
-
-
-
-
+const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails }) => {
   return (
-    <div className="p-1">  
+    <div className="p-1">
       {orderDetails.map((item) => (
         <Card key={item.id} className="mb-4 shadow-lg">
           <div className="flex mb-4">
             {/* Item Image */}
             <img
               src={item.image}
-              alt={item.name}
+              alt={item.productTitle}
               className="max-w-[120px] rounded-md mr-4"
             />
             <div>
@@ -31,6 +24,35 @@ const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails,  }) => {
                 <strong>Item Name:</strong> {item.productTitle}
               </Typography.Text>
               <br />
+              <Typography.Text className="text-lg font-semibold">
+                <strong>Ready to Wear:</strong> {item.isReadyToWear ? "Yes" : "No"}
+              </Typography.Text>
+              <br />
+
+              {/* Ready Data (if available) */}
+              {item.isReadyToWear && item.readyData && item.readyData.length > 0 && (
+                <div className="mt-2">
+                  <Typography.Text className="text-md font-semibold">
+                    <strong>Ready Data:</strong>
+                  </Typography.Text>
+                  {item.readyData.map((readyData, index) => (
+                    <div key={index} className="ml-2">
+                      <Typography.Text>🟢 Hip: {readyData.hip} cm</Typography.Text>
+                      <br />
+                      <Typography.Text>🟢 Length: {readyData.length} cm</Typography.Text>
+                      <br />
+                      <Typography.Text>🟢 Waist: {readyData.waist} cm</Typography.Text>
+                      <br />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Typography.Text className="text-lg font-semibold">
+                <strong>Pre Plated:</strong> {item.isPrePlated ? "Yes" : "No"}
+              </Typography.Text>
+              <br />
+
               {/* Item Price */}
               <Typography.Text className="text-lg font-semibold">
                 <strong>Price:</strong> ₹{item.price}
@@ -49,8 +71,6 @@ const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails,  }) => {
           </div>
         </Card>
       ))}
-
-
     </div>
   );
 };

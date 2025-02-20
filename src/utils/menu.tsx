@@ -244,6 +244,11 @@ export const NAVIGATION = [
         icon: <DescriptionIcon />,
       },
       {
+        segment: 'contact-us',
+        title: 'Contact Us',
+        icon: <DescriptionIcon />,
+      },
+      {
         segment: 'about-us',
         title: 'About Us',
         icon: <DescriptionIcon />,

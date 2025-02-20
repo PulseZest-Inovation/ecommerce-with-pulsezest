@@ -17,6 +17,7 @@ import ViewOrderPage from '@/app/dashboard/orders/order-details/[orderId]/page';
 import PendingOrdersDetails from '@/app/dashboard/orders/pending-orders/page';
 import CompletedOrderPage from '@/app/dashboard/orders/completed-orders/page';
 import ReturnOrders from '@/app/dashboard/orders/return-order/page';
+import ReturnOrderView from '@/app/dashboard/orders/return-order/[orderId]/page';
 import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
 
 
@@ -35,6 +36,7 @@ import TermsCondition from '@/app/dashboard/pages/terms-condition/page';
 import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
+import ContactUsPage from '@/app/dashboard/pages/contact-us/page';
 
 import Setting from '@/app/dashboard/setting/page';
 import PaymentSetting from '@/app/dashboard/setting/payment/page';
@@ -81,6 +83,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
   { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
   { path: '/dashboard/orders/return-order', component: ReturnOrders },
+  { path: '/dashboard/orders/return-order/:orderId', component: ReturnOrderView, isDynamic: true },
   { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
 
 
@@ -94,12 +97,15 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/setting/payment', component: PaymentSetting },
   { path: '/dashboard/coupons', component: Coupons },
   { path: '/dashboard/theme', component: ThemePage },
+
+  //pages
   { path: '/dashboard/pages/faq', component: FAQ },
   { path: '/dashboard/pages/shipping-policy', component: ShippingPolicy },
   { path: '/dashboard/pages/terms-condition', component: TermsCondition },
   { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
   { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
   { path: '/dashboard/pages/about-us', component: AboutPage },
+  { path: '/dashboard/pages/contact-us', component: ContactUsPage },
   { path: '/dashboard/support', component: PulseZestSupport },
 
 
