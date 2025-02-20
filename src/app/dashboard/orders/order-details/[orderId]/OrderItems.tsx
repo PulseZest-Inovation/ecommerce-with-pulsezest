@@ -25,7 +25,7 @@ const OrderItems: React.FC<OrderItemsProps> = ({ orderDetails }) => {
               </Typography.Text>
               <br />
               <Typography.Text className="text-lg font-semibold">
-                <strong>Ready to Wear:</strong> ₹{item.isReadyToWear ? "Yes" : "No"}
+                <strong>Ready to Wear:</strong> {item.isReadyToWear ? "Yes" : "No"}
               </Typography.Text>
               <br />
 
