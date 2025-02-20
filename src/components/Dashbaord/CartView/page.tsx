@@ -54,7 +54,6 @@ export default function CartView() {
     fetchAppData();
   }, []);
 
-  const currentDate: string = new Date().toLocaleDateString();
 
   return (
     <div
@@ -98,7 +97,7 @@ export default function CartView() {
               title={customer.fullName || "Unknown User"}
               description={`Phone: ${
                 customer.phoneNumber || "N/A"
-              } | Last Update: ${currentDate}`}
+              } `}
             />
           </List.Item>
         )}

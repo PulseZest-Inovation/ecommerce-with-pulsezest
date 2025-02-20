@@ -1,3 +1,4 @@
+
 export interface CartType {
   id: string;
   productTitle: string;
