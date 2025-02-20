@@ -27,4 +27,3 @@ You are ready to use now!
 2. update
 3. Notificaion Updates
 4. Fully Manage shiprocket Intigration.
-5. 
