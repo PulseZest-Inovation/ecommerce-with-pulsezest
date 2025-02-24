@@ -15,7 +15,10 @@ interface TicketData {
   Subject: string,
   content: string,
   status: string,
+  clientEmail?: string,
+  appName?: string,
   createdAt: Timestamp
+  userId: string,
 }
 
 export default function OpenTicket() {
@@ -70,6 +73,9 @@ export default function OpenTicket() {
       const TicketData: TicketData = {
         Subject: values.subject,
         content: editorContent,
+        userId: securityKey,
+        clientEmail: appData?.client_email,
+        appName: appData?.app_name,
         status: 'open',
         createdAt: serverTimestamp() as Timestamp
       }
