@@ -68,6 +68,7 @@ export default function OpenTicket() {
         appName: appData?.app_name,
         content: editorContent,
         status: 'open',
+        createdAt: serverTimestamp() as Timestamp
       };
 
       const TicketData: TicketData = {

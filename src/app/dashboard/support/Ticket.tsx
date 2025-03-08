@@ -8,6 +8,8 @@ import { Ticket } from '@/types/TicketType';
 export default function TicketManager() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
+  // Ensure userId is a string (default to an empty string if null)
+  const key = localStorage.getItem('securityKey') || '';
 
   return (
     <div className="p-4">
@@ -21,7 +23,12 @@ export default function TicketManager() {
         {/* Open Ticket or Ticket Details Section */}
         <Col xs={24} md={16}>
           {selectedTicket ? (
-            <TicketDetails ticket={selectedTicket} onBack={() => setSelectedTicket(null)} />
+            <TicketDetails 
+              userId={key} 
+              senderType="client" 
+              ticket={selectedTicket} 
+              onBack={() => setSelectedTicket(null)} 
+            />
           ) : (
             <>
               <h2 className="text-center text-2xl font-bold py-2">Create a Ticket</h2>
