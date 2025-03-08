@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
+import { Ticket } from '@/types/TicketType';
 
-interface Ticket {
-  id: string;
-  Subject: string;
-  status: string;
-  createdAt: { seconds: number; nanoseconds: number };
-}
 
-export default function RecentTicket() {
+export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (ticket: Ticket) => void }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,10 +11,7 @@ export default function RecentTicket() {
     const fetchTickets = async () => {
       setLoading(true);
       const data = await getAllDocsFromCollection<Ticket>('ticket');
-      // Sort by latest date
-      const sortedTickets = data.sort(
-        (a, b) => b.createdAt.seconds - a.createdAt.seconds
-      );
+      const sortedTickets = data.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
       setTickets(sortedTickets);
       setLoading(false);
     };
@@ -36,11 +28,13 @@ export default function RecentTicket() {
       ) : (
         <div className="space-y-4">
           {tickets.map((ticket) => (
-            <div key={ticket.id} className="p-4 border rounded-lg shadow-sm">
+            <div
+              key={ticket.id}
+              className="p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
+              onClick={() => onTicketSelect(ticket)}
+            >
               <h3 className="text-lg font-medium">{ticket.Subject}</h3>
-              <p className="text-sm text-gray-500">
-                {new Date(ticket.createdAt.seconds * 1000).toLocaleString()}
-              </p>
+              <p className="text-sm text-gray-500">{new Date(ticket.createdAt.seconds * 1000).toLocaleString()}</p>
               <span
                 className={`inline-block px-3 py-1 mt-2 text-sm font-medium rounded-md ${
                   ticket.status === 'open' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
