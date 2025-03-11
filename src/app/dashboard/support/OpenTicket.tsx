@@ -68,6 +68,7 @@ export default function OpenTicket() {
         appName: appData?.app_name,
         content: editorContent,
         status: 'open',
+        createdAt: serverTimestamp() as Timestamp
       };
 
       const TicketData: TicketData = {
@@ -93,7 +94,7 @@ export default function OpenTicket() {
 
       const result = await response.json();
 
-      if (response.ok && status1 && status2) {
+      if (response.ok && status1 && status2 && response.ok) {
         form.resetFields(); // Reset form after success
         setEditorContent(''); // Reset TinyMCE content
       } else {
@@ -104,6 +105,9 @@ export default function OpenTicket() {
       message.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
+      setTimeout(() => {
+        window.location.reload(); // Force reload if reset doesn't work
+      }, 500);
       message.success('Ticket submitted successfully!, We will replay it soon..');
     }
   };
