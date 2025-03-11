@@ -84,6 +84,7 @@ export default function TicketDetails({
 
       {/* Ticket Information */}
       <p className="text-lg font-semibold">Subject: {ticket.Subject}</p>
+      <p className='font-mono bg-slate-400 font-bold'>{ticket.id}</p>
       <p className="text-xs text-gray-500">
         Created At:{' '}
         {ticket.createdAt?.seconds
@@ -119,7 +120,7 @@ export default function TicketDetails({
                 }`}
               >
                 <p className="text-sm font-semibold">
-                  {reply.senderType === 'client' ? 'Client' : 'Support'}:
+                  {reply.senderType === 'client' ? 'You' : 'Support Team'}:
                 </p>
                 <p>{reply.message}</p>
                 <p className="text-xs text-gray-500">

@@ -19,7 +19,7 @@ export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (tick
   }, []);
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
+    <div className="p-4 bg-white shadow-md rounded-lg sticky top-2">
       <h2 className="text-xl font-semibold mb-4">Recent Tickets</h2>
       {loading ? (
         <p className="text-center text-gray-500">Loading...</p>
@@ -33,6 +33,7 @@ export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (tick
               className="p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
               onClick={() => onTicketSelect(ticket)}
             >
+              <h1 className='font-bold bg-slate-400 font-mono'>{ticket.id}</h1>
               <h3 className="text-lg font-medium">{ticket.Subject}</h3>
               <p className="text-sm text-gray-500">{new Date(ticket.createdAt.seconds * 1000).toLocaleString()}</p>
               <span
