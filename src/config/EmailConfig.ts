@@ -9,5 +9,7 @@ export const EmailConfig = {
     SMTP_PORT: '465',
 
     // Dev email:
-    devEmail: 'dev@pulsezest.com'
+    devEmail: 'dev@pulsezest.com',
+
+    adminEmail: 'admin@pulsezest.com'
 }

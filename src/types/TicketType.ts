@@ -1,7 +1,7 @@
 
 export interface Ticket {
   id: string;
-  Subject: string;
+  subject: string;
   content: string;
   status: string;
   createdAt: { seconds: number; nanoseconds: number };
