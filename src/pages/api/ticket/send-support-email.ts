@@ -12,7 +12,7 @@ const ADMIN_EMAIL = EmailConfig.adminEmail;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   
   // ✅ Enable CORS
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 

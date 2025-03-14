@@ -1,16 +1,17 @@
+'use client'
 import React, { useEffect, useState } from 'react';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import { Ticket } from '@/types/TicketType';
+import { TicketType } from '@/types/TicketType';
 
 
-export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (ticket: Ticket) => void }) {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (ticket: TicketType) => void }) {
+  const [tickets, setTickets] = useState<TicketType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      const data = await getAllDocsFromCollection<Ticket>('ticket');
+      const data = await getAllDocsFromCollection<TicketType>('ticket');
       const sortedTickets = data.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
       setTickets(sortedTickets);
       setLoading(false);
