@@ -1,8 +1,13 @@
 import { EmailConfig } from "@/config/EmailConfig";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ticketCreatedTemplate, ticketClosedTemplate, ticketReplyTemplate, devNotificationTemplate } from "@/utils/Ticket/TicketEmailTemplate";
-
+import {
+  ticketCreatedTemplate,
+  ticketClosedTemplate,
+  ticketReplyTemplate,
+  devNotificationTemplate,
+} from "@/utils/Ticket/TicketEmailTemplate";
 import nodemailer from "nodemailer";
+import {  setCorsHeaders } from "@/config/corsConfig"; // ✅ Import CORS utility
 
 const SUPPORT_EMAIL = EmailConfig.supportEmail;
 const SUPPORT_PASSWORD = EmailConfig.supportPassword;
@@ -12,15 +17,12 @@ const DEV_EMAIL = EmailConfig.devEmail;
 const ADMIN_EMAIL = EmailConfig.adminEmail;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  
-  // ✅ Enable CORS
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  // ✅ Apply CORS settings
+  setCorsHeaders(req, res);
 
   // ✅ Handle Preflight Request (CORS)
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(204).end();
   }
 
   if (req.method !== "POST") {
@@ -45,17 +47,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         emailSubject = "Your Support Ticket is Open";
         emailBody = ticketCreatedTemplate(ticketId, subject, content);
         break;
-      
+
       case "ticket_closed":
         emailSubject = "Your Ticket is Closed";
         emailBody = ticketClosedTemplate(ticketId, subject);
         break;
-      
+
       case "ticket_reply":
         emailSubject = `PulseZest Replied to Your Support Ticket`;
         emailBody = ticketReplyTemplate(ticketId, subject, content, senderType);
         break;
-      
 
       default:
         return res.status(400).json({ success: false, message: "Invalid event type." });
@@ -69,8 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const devEmailBody = devNotificationTemplate(ticketId, subject, clientEmail);
       await sendEmail(DEV_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
       await sendEmail(ADMIN_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
-      
-
     }
 
     return res.status(200).json({ success: true, message: `Email sent for ${eventType}!` });
