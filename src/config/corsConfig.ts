@@ -3,6 +3,7 @@ export const allowedOrigins = [
     "https://apnimaativastram.com",
     "http://localhost:3000/",
     "http://localhost:3001/",
+    "http://localhost:7000/"
   ];
   
   export const setCorsHeaders = (req: any, res: any) => {

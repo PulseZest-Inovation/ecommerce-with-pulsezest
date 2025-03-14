@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import RecentTicket from './RecentTicket';
 import OpenTicket from './OpenTicket';
 import TicketDetails from './TicketDetails';
-import { Ticket } from '@/types/TicketType';
+import { TicketType } from '@/types/TicketType';
 
 export default function TicketManager() {
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
 
   // Ensure userId is a string (default to an empty string if null)
   const key = localStorage.getItem('securityKey') || '';
@@ -24,6 +24,7 @@ export default function TicketManager() {
         <Col xs={24} md={16}>
           {selectedTicket ? (
             <TicketDetails 
+              clientEmail=""
               userId={key} 
               senderType="client" 
               ticket={selectedTicket} 

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Row, Col, message } from 'antd';
@@ -12,13 +12,15 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 
 interface TicketData {
-  Subject: string,
-  content: string,
-  status: string,
-  clientEmail?: string,
-  appName?: string,
-  createdAt: Timestamp
-  userId: string,
+  ticketId: string;
+  subject: string;
+  content: string;
+  status: string;
+  clientEmail?: string;
+  eventType: 'ticket_created' | 'ticket_closed' | 'ticket_reply';
+  appName?: string;
+  createdAt: Timestamp;
+  userId: string;
 }
 
 export default function OpenTicket() {
@@ -26,7 +28,8 @@ export default function OpenTicket() {
   const [appData, setAppData] = useState<AppDataType | null>(null);
   const [loading, setLoading] = useState(false);
   const [editorContent, setEditorContent] = useState('');
-  const [securityKey, setSecurityKey]  = useState< string>(''); 
+  const [securityKey, setSecurityKey] = useState<string>('');
+
   useEffect(() => {
     const fetchAppData = async () => {
       try {
@@ -38,6 +41,7 @@ export default function OpenTicket() {
             appName: data.app_name,
             companyEmail: data.client_email,
             phoneNumber: data.client_phone,
+            subject: '',
           });
         }
       } catch (error) {
@@ -49,74 +53,65 @@ export default function OpenTicket() {
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
+    form.setFieldsValue({ description: content });
   };
 
-  const genrateTicketId = ()=>{
+  const generateTicketId = () => {
     return `T-${Date.now().toString().slice(-6)}`;
-  }
+  };
 
-  // ✅ Submit Handler
   const onFinish = async (values: any) => {
+    if (!values.subject) {
+      message.error('Please enter a subject.');
+      return;
+    }
+
+    if (!editorContent) {
+      message.error('Please enter a description.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const ticketId = genrateTicketId();
-
-      const payload = {
+      const ticketId = generateTicketId();
+      const ticketData: TicketData = {
+        ticketId: ticketId,
         subject: values.subject,
-        securityKey: securityKey, 
-        clientEmail: appData?.client_email,
-        appName: appData?.app_name,
-        content: editorContent,
-        status: 'open',
-        createdAt: serverTimestamp() as Timestamp
-      };
-
-      const TicketData: TicketData = {
-        Subject: values.subject,
         content: editorContent,
         userId: securityKey,
         clientEmail: appData?.client_email,
+        eventType: 'ticket_created',
         appName: appData?.app_name,
         status: 'open',
-        createdAt: serverTimestamp() as Timestamp
-      }
-
-      const status1 = await setDataWithDocName<TicketData>('ticket', ticketId, TicketData);
-      const status2 = await setDocWithCustomId<TicketData>('ticket', ticketId,TicketData );
-
-      const response = await fetch('/api/ticket/create-ticket', {
+        createdAt: serverTimestamp() as Timestamp,
+      };
+    
+      await setDataWithDocName<TicketData>('ticket', ticketId, ticketData);
+      await setDocWithCustomId<TicketData>('ticket', ticketId, ticketData);
+    
+      const response = await fetch('/api/ticket/send-support-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketData),
       });
-
+    
       const result = await response.json();
-
-      if (response.ok && status1 && status2 && response.ok) {
-        form.resetFields(); // Reset form after success
-        setEditorContent(''); // Reset TinyMCE content
-      } else {
-        console.error(result.message || 'Failed to submit ticket.');
-      }
+      if (!response.ok) throw new Error(result.message || 'Failed to send support email.');
+    
+      message.success('Ticket submitted successfully! We will reply soon.');
+      form.resetFields();
+      setEditorContent('');
     } catch (error) {
       console.error('Error submitting ticket:', error);
-      message.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
-      setTimeout(() => {
-        window.location.reload(); // Force reload if reset doesn't work
-      }, 500);
-      message.success('Ticket submitted successfully!, We will replay it soon..');
+      window.location.reload();
     }
   };
 
   return (
     <div style={{ padding: '16px', background: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        
-        {/* Row for Application Name, Email, and Phone Number */}
         <Row gutter={16}>
           <Col xs={24} sm={8}>
             <Form.Item label="Application Name" name="appName" rules={[{ required: true, message: 'Please enter application name' }]}>
@@ -137,13 +132,11 @@ export default function OpenTicket() {
           </Col>
         </Row>
 
-        {/* Subject */}
         <Form.Item label="Subject" name="subject" rules={[{ required: true, message: 'Please enter subject' }]}>
           <Input placeholder="Enter subject" />
         </Form.Item>
 
-        {/* TinyMCE Editor */}
-        <Form.Item label="Description" name="description">
+        <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please enter a description' }]}>
           <Editor
             apiKey={TinyMice}
             init={{
@@ -157,9 +150,10 @@ export default function OpenTicket() {
           />
         </Form.Item>
 
-        {/* Submit Button */}
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>Submit</Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Submit
+          </Button>
         </Form.Item>
       </Form>
     </div>

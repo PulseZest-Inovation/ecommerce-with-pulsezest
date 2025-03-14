@@ -1,16 +1,17 @@
+'use client'
 import React, { useEffect, useState } from 'react';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import { Ticket } from '@/types/TicketType';
+import { TicketType } from '@/types/TicketType';
 
 
-export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (ticket: Ticket) => void }) {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (ticket: TicketType) => void }) {
+  const [tickets, setTickets] = useState<TicketType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTickets = async () => {
       setLoading(true);
-      const data = await getAllDocsFromCollection<Ticket>('ticket');
+      const data = await getAllDocsFromCollection<TicketType>('ticket');
       const sortedTickets = data.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
       setTickets(sortedTickets);
       setLoading(false);
@@ -34,7 +35,7 @@ export default function RecentTicket({ onTicketSelect }: { onTicketSelect: (tick
               onClick={() => onTicketSelect(ticket)}
             >
               <h1 className='font-bold bg-slate-400 font-mono'>{ticket.id}</h1>
-              <h3 className="text-lg font-medium">{ticket.Subject}</h3>
+              <h3 className="text-lg font-medium">{ticket.subject}</h3>
               <p className="text-sm text-gray-500">{new Date(ticket.createdAt.seconds * 1000).toLocaleString()}</p>
               <span
                 className={`inline-block px-3 py-1 mt-2 text-sm font-medium rounded-md ${
