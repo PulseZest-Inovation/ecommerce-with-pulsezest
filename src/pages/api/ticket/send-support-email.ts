@@ -1,5 +1,7 @@
 import { EmailConfig } from "@/config/EmailConfig";
 import { NextApiRequest, NextApiResponse } from "next";
+import { ticketCreatedTemplate, ticketClosedTemplate, ticketReplyTemplate, devNotificationTemplate } from "@/utils/Ticket/TicketEmailTemplate";
+
 import nodemailer from "nodemailer";
 
 const SUPPORT_EMAIL = EmailConfig.supportEmail;
@@ -41,44 +43,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (eventType) {
       case "ticket_created":
         emailSubject = "Your Support Ticket is Open";
-        emailBody = `
-          <h3>Your support ticket has been created successfully.</h3>
-          <p><strong>Ticket ID:</strong> ${ticketId}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>Status:</strong> Open</p>
-          <hr>
-          <h4>Message:</h4>
-          ${content}
-          <hr>
-          <p>We will get back to you shortly.</p>
-        `;
+        emailBody = ticketCreatedTemplate(ticketId, subject, content);
         break;
-
+      
       case "ticket_closed":
         emailSubject = "Your Ticket is Closed";
-        emailBody = `
-          <h3>Your support ticket has been closed.</h3>
-          <p><strong>Ticket ID:</strong> ${ticketId}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>Status:</strong> Closed</p>
-          <hr>
-          <p>Thank you for reaching out to us. If you have further questions, feel free to open a new ticket.</p>
-        `;
+        emailBody = ticketClosedTemplate(ticketId, subject);
         break;
-
+      
       case "ticket_reply":
-        emailSubject = `PulseZest Replaied to Your Support Ticket`;
-        emailBody = `
-          <p><strong>Ticket ID:</strong> ${ticketId}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>From:</strong> ${senderType === "admin" ? "PulseZest Support Team" : "Client"}</p>
-          <hr>
-          <h4>Message:</h4>
-          ${content}
-          <hr>
-          <p>Please check your ticket for further details.</p>
-        `;
+        emailSubject = `PulseZest Replied to Your Support Ticket`;
+        emailBody = ticketReplyTemplate(ticketId, subject, content, senderType);
         break;
+      
 
       default:
         return res.status(400).json({ success: false, message: "Invalid event type." });
@@ -89,14 +66,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (eventType === "ticket_created") {
       // Notify Dev/Admin for new tickets only
-      const devEmailBody = `
-        <p>A new support ticket has been created.</p>
-        <strong>Ticket ID:</strong> ${ticketId}<br>
-        <strong>Subject:</strong> ${subject}<br>
-        <strong>Client:</strong> ${clientEmail}
-      `;
+      const devEmailBody = devNotificationTemplate(ticketId, subject, clientEmail);
       await sendEmail(DEV_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
       await sendEmail(ADMIN_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
+      
 
     }
 
