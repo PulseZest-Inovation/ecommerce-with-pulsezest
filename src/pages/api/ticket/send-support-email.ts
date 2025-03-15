@@ -7,7 +7,7 @@ import {
   devNotificationTemplate,
 } from "@/utils/Ticket/TicketEmailTemplate";
 import nodemailer from "nodemailer";
-import {  setCorsHeaders } from "@/config/corsConfig"; // ✅ Import CORS utility
+import { setCorsHeaders } from "@/config/corsConfig"; // ✅ Import CORS utility
 
 const SUPPORT_EMAIL = EmailConfig.supportEmail;
 const SUPPORT_PASSWORD = EmailConfig.supportPassword;
@@ -22,7 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // ✅ Handle Preflight Request (CORS)
   if (req.method === "OPTIONS") {
-    return res.status(204).end();
+    res.status(204).end(); // ✅ Send an empty response with a 204 status for preflight
+    return;
   }
 
   if (req.method !== "POST") {
@@ -32,41 +33,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { ticketId, subject, clientEmail, appName, content, eventType, senderType } = req.body;
 
-    // ✅ Validate Required Fields
     if (!eventType || !clientEmail || !content) {
       return res.status(400).json({ success: false, message: "Missing required fields." });
     }
 
-    // ✅ Define Email Variables
     let emailSubject = "";
     let emailBody = "";
 
-    // ✅ Handle Different Ticket Events
     switch (eventType) {
       case "ticket_created":
         emailSubject = "Your Support Ticket is Open";
         emailBody = ticketCreatedTemplate(ticketId, subject, content);
         break;
-
       case "ticket_closed":
         emailSubject = "Your Ticket is Closed";
         emailBody = ticketClosedTemplate(ticketId, subject);
         break;
-
       case "ticket_reply":
         emailSubject = `PulseZest Replied to Your Support Ticket`;
         emailBody = ticketReplyTemplate(ticketId, subject, content, senderType);
         break;
-
       default:
         return res.status(400).json({ success: false, message: "Invalid event type." });
     }
 
-    // ✅ Send Email Notifications
     await sendEmail(clientEmail, emailSubject, emailBody, true);
 
     if (eventType === "ticket_created") {
-      // Notify Dev/Admin for new tickets only
       const devEmailBody = devNotificationTemplate(ticketId, subject, clientEmail);
       await sendEmail(DEV_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
       await sendEmail(ADMIN_EMAIL, "New Support Ticket - PulseZest", devEmailBody, true);
@@ -79,7 +72,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// ✅ Reusable Email Sending Function
 async function sendEmail(to: string, subject: string, body: string, isHtml: boolean) {
   try {
     console.log(`📧 Sending email to: ${to}`);
