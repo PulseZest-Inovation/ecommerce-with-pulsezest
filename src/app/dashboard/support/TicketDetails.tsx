@@ -141,7 +141,7 @@ export default function TicketDetails({
       <p className="text-gray-500 text-sm">No replies yet.</p>
     )}
   </div>
-</div>;
+</div>
 
 
       <div className="mt-6">
