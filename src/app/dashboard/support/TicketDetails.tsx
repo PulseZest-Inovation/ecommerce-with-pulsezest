@@ -3,6 +3,8 @@ import { Button, Input, message } from 'antd';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/config/firbeaseConfig';
 import { TicketType } from '@/types/TicketType';
+import DOMPurify from "dompurify";
+
 
 interface Reply {
   id: string;
@@ -108,26 +110,39 @@ export default function TicketDetails({
         <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: ticket.content }} />
       </div>
 
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Replies:</h3>
-        <div className="space-y-3">
-          {replies.length > 0 ? (
-            replies.map((reply) => (
-              <div key={reply.id} className={`p-3 rounded-md ${reply.senderType === 'client' ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                <p className="text-sm font-semibold">
-                  {reply.senderType === 'client' ? 'You' : 'Support Team'}:
-                </p>
-                <p>{reply.message}</p>
-                <p className="text-xs text-gray-500">
-                  {reply.createdAt?.seconds ? new Date(reply.createdAt.seconds * 1000).toLocaleString() : 'Timestamp not available'}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm">No replies yet.</p>
-          )}
+
+<div className="mt-6">
+  <h3 className="text-lg font-semibold mb-2">Replies:</h3>
+  <div className="space-y-3">
+    {replies.length > 0 ? (
+      replies.map((reply) => (
+        <div
+          key={reply.id}
+          className={`p-3 rounded-md ${
+            reply.senderType === "client" ? "bg-blue-100" : "bg-gray-100"
+          }`}
+        >
+          <p className="text-sm font-semibold">
+            {reply.senderType === "client" ? "You" : "Support Team"}:
+          </p>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(reply.message),
+            }}
+          />
+          <p className="text-xs text-gray-500">
+            {reply.createdAt?.seconds
+              ? new Date(reply.createdAt.seconds * 1000).toLocaleString()
+              : "Timestamp not available"}
+          </p>
         </div>
-      </div>
+      ))
+    ) : (
+      <p className="text-gray-500 text-sm">No replies yet.</p>
+    )}
+  </div>
+</div>;
+
 
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Your Reply:</h3>
