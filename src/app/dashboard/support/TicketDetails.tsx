@@ -144,13 +144,22 @@ export default function TicketDetails({
 </div>
 
 
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Your Reply:</h3>
-        <Input.TextArea rows={4} value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} placeholder="Type your reply..." />
-        <Button type="primary" className="mt-2" onClick={sendReply}>
-          Send Reply
-        </Button>
-      </div>
+{ticket.status !== 'closed' && (
+  <div className="mt-6">
+    <h3 className="text-lg font-semibold mb-2">Your Reply:</h3>
+    <Input.TextArea
+      rows={4}
+      value={replyMessage}
+      onChange={(e) => setReplyMessage(e.target.value)}
+      placeholder="Type your reply..."
+    />
+    <Button type="primary" className="mt-2" onClick={sendReply}>
+      Send Reply
+    </Button>
+  </div>
+)}
+
+
     </div>
   );
 }
