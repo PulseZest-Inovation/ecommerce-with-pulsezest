@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { Box, Typography, Breadcrumbs, Link } from "@mui/material";
+import { Box, Typography, Breadcrumbs } from "@mui/material";
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, demoTheme, } from '../../../../utils/menu';
 import ROUTE_COMPONENTS from '@/utils/route';
@@ -10,7 +10,7 @@ import AccountSidebarInfo from '../../../../components/Drawer/AccountSidebarInfo
 import { useRouter } from 'next/navigation';
 import { Result } from 'antd';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/utils/firbeaseConfig'; // Firebase config
+import { auth } from '@/config/firbeaseConfig';  
 import Loader from '@/components/Loader';
 
 

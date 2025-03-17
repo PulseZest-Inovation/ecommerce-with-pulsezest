@@ -1,5 +1,5 @@
 'use cleint'
-import ProductWrapper from '@/components/Product/page'
+import ProductWrapper from '@/components/Product/ProductWrapper/page'
 import React from 'react'
 
 type Props = {}

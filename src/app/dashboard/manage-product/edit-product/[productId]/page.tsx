@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Product } from '@/types/Product';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
-import ProductWrapper from '@/components/Product/page';
+import ProductWrapper from '@/components/Product/ProductWrapper/page';
 import { useParams } from 'next/navigation';
 import { Spin, Alert } from 'antd';
 
