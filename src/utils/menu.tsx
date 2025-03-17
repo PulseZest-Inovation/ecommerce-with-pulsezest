@@ -1,5 +1,5 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon, ReturnAndExchangeIcon, UserGuide } from '../components/Icons/page'; // Ensure these icons are defined
+import { AddProuducts, ProductIcon, AllProduct, OrderIcon, CustomerIcon,  ReviewAndRatingIcon,PendingOrderIcon, OrderCompeltedIcon, DiscountIcon, ManageCategoriesIcon, TestimonialIcon, ReturnAndExchangeIcon, UserGuide, AttributeIcon  } from '../components/Icons/page'; // Ensure these icons are defined
 import DescriptionIcon from '@mui/icons-material/Description';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PaletteIcon from '@mui/icons-material/Palette';
@@ -7,13 +7,10 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import GroupsIcon from '@mui/icons-material/Groups';
 import TimerIcon from '@mui/icons-material/Timer';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import ReturnAndExchange from '@/components/Product/ProductOtherTab/ProductOtherTabComponents/ReturnAndExchange';
 
 export const NAVIGATION = [
   {
@@ -125,6 +122,11 @@ export const NAVIGATION = [
             title: 'Tags',
             icon: <LocalOfferIcon  />,
           },
+          {
+            segment: 'dashboard/attributes',
+            title: 'Attirubtes',
+            icon: <AttributeIcon  />,
+          },
         
 
           {
@@ -182,6 +184,7 @@ export const NAVIGATION = [
         title: 'Discounts & Coupons',
         icon: <DiscountIcon/>,
       },
+      
       // {
       //   segment: 'giftCard',
       //   title: 'Gift Card',
