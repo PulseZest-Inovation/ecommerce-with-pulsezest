@@ -7,26 +7,21 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
-
-interface AttributeValue {
-  id: string;
-  value: string;
-  createdAt: Date;
-}
+import { AttributeValueType } from '@/types/AttributeType/AttributeValueType';
 
 export default function ManageAttribute() {
   const router = useRouter();
   const params = useParams(); // Get all route parameters
   const attributeId = params?.attributeId as string; // Ensure `attributeId` is correctly extracted as a string
   const [form] = Form.useForm();
-  const [values, setValues] = useState<AttributeValue[]>([]);
+  const [values, setValues] = useState<AttributeValueType[]>([]);
 
   // Fetch existing attribute values on mount
   useEffect(() => {
     if (attributeId) {
       const fetchValues = async () => {
         try {
-          const fetchedValues = await getAllDocsFromCollection<AttributeValue>(
+          const fetchedValues = await getAllDocsFromCollection<AttributeValueType>(
             `attributes/${attributeId}/values`
           );
           setValues(fetchedValues);
@@ -45,7 +40,7 @@ export default function ManageAttribute() {
       return;
     }
 
-    const newValue: AttributeValue = {
+    const newValue: AttributeValueType = {
       id: Date.now().toString(),
       value: formValues.value,
       createdAt: new Date(),

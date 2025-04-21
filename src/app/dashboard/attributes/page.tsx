@@ -6,23 +6,17 @@ import { SettingOutlined, DeleteOutlined } from '@ant-design/icons';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
-
-interface Attribute {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: Date;
-}
+import { AttributeType } from '@/types/AttributeType/AttirbuteType';
 
 export default function Attributes() {
   const [form] = Form.useForm();
-  const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [attributes, setAttributes] = useState<AttributeType[]>([]);
   const router = useRouter(); 
 
   // Fetch attributes on component mount
   useEffect(() => {
     const fetchAttributes = async () => {
-      const fetchedAttributes = await getAllDocsFromCollection<Attribute>('attributes');
+      const fetchedAttributes = await getAllDocsFromCollection<AttributeType>('attributes');
       setAttributes(fetchedAttributes);
     };
     fetchAttributes();
@@ -36,7 +30,7 @@ export default function Attributes() {
   // Handle adding a new attribute
   const handleAddAttribute = async (values: { name: string }) => {
     const slug = generateSlug(values.name);
-    const newAttribute: Attribute = {
+    const newAttribute: AttributeType = {
       id: slug,
       name: values.name,
       slug,

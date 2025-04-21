@@ -1,12 +1,10 @@
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { message } from "antd";
 import { AppDataType } from "@/types/AppData";
 import { Product } from "@/types/Product";
 import { getAppData } from "@/services/getApp";
 import { useRouter } from "next/navigation"; // Corrected import
 import { generateSlug } from "./ProductForm";
-import { FormatIndentDecreaseSharp } from "@mui/icons-material";
 
 export const fetchApplicationData = async (
   setAppData: React.Dispatch<React.SetStateAction<AppDataType | null>>
