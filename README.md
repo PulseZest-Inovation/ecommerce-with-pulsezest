@@ -2,7 +2,7 @@
 
 Ecommerce Dashboard
 
-Step 1 - Enter the Security Key Given by the PulseZest.
+Step 1 - Enter the Security Key Given by the PulseZest. (Remove the security)
 step 2 - Enter the Email and Password of your Account.
 
 
