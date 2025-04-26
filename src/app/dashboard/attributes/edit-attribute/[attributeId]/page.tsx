@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Row, Col, Form, Input, Button, List, Space, Popconfirm, message } from 'antd';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation'; // keep this if you're using app directory
+import { Row, Col, Form, Input, Button, List, Popconfirm, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
@@ -11,12 +12,17 @@ import { AttributeValueType } from '@/types/AttributeType/AttributeValueType';
 
 export default function ManageAttribute() {
   const router = useRouter();
-  const params = useParams(); // Get all route parameters
-  const attributeId = params?.attributeId as string; // Ensure `attributeId` is correctly extracted as a string
+  const params = useParams();
+  const attributeId = params?.attributeId as string;
   const [form] = Form.useForm();
   const [values, setValues] = useState<AttributeValueType[]>([]);
 
-  // Fetch existing attribute values on mount
+  useEffect(() => {
+    if (attributeId && attributeId.toLowerCase() === 'color') {
+      router.push('/dashboard/attributes/color-attribute');
+    }
+  }, [attributeId, router]);
+
   useEffect(() => {
     if (attributeId) {
       const fetchValues = async () => {
@@ -33,7 +39,6 @@ export default function ManageAttribute() {
     }
   }, [attributeId]);
 
-  // Handle adding a new value
   const handleAddValue = async (formValues: { value: string }) => {
     if (!attributeId) {
       message.error('Attribute ID is missing!');
@@ -61,15 +66,14 @@ export default function ManageAttribute() {
         throw new Error('Failed to add value.');
       }
     } catch (error: unknown) {
-        if (error instanceof Error) {
-          message.error(error.message || 'Failed to add value. Please try again.');
-        } else {
-          message.error('An unexpected error occurred. Please try again.');
-        }
+      if (error instanceof Error) {
+        message.error(error.message || 'Failed to add value. Please try again.');
+      } else {
+        message.error('An unexpected error occurred. Please try again.');
       }
+    }
   };
 
-  // Handle deleting a value
   const handleDeleteValue = async (id: string) => {
     if (!attributeId) {
       message.error('Attribute ID is missing!');
@@ -89,26 +93,21 @@ export default function ManageAttribute() {
         throw new Error('Failed to delete value.');
       }
     } catch (error: unknown) {
-        if (error instanceof Error) {
-          message.error(error.message || 'Failed to add value. Please try again.');
-        } else {
-          message.error('An unexpected error occurred. Please try again.');
-        }
+      if (error instanceof Error) {
+        message.error(error.message || 'Failed to delete value. Please try again.');
+      } else {
+        message.error('An unexpected error occurred. Please try again.');
       }
+    }
   };
 
   return (
     <div>
       <h2>Manage Attribute: {attributeId || 'Loading...'}</h2>
       <Row gutter={24}>
-        {/* Left Column: Form */}
         <Col span={12}>
           <h3>Add New Value</h3>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleAddValue}
-          >
+          <Form form={form} layout="vertical" onFinish={handleAddValue}>
             <Form.Item
               name="value"
               label="Value"
@@ -122,7 +121,6 @@ export default function ManageAttribute() {
           </Form>
         </Col>
 
-        {/* Right Column: List of Values */}
         <Col span={12}>
           <h3>Existing Values</h3>
           <List

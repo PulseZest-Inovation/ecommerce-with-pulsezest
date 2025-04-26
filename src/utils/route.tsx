@@ -25,7 +25,9 @@ import RefundOrderPage from '@/app/dashboard/orders/refund-orders/page';
 import TestimonialsPage from '@/app/dashboard/testimonials/page';
 import Tags from '@/app/dashboard/tags/page';
 import Attributes from '@/app/dashboard/attributes/page';
-import ManageAttribute from '@/app/dashboard/attributes/[attributeId]/page';
+import ColorAttributes from '@/app/dashboard/attributes/color-attribute/page';
+
+import ManageAttribute from '@/app/dashboard/attributes/edit-attribute/[attributeId]/page';
 import AddNewCustomer from '@/app/dashboard/customers/add-new-customers/page';
 import ThemePage from '@/app/dashboard/theme/page';
 import RecentOrders from '@/app/dashboard/orders/return-order/page';
@@ -92,7 +94,8 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   // Coupons section
   { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true },
   { path: '/dashboard/attributes', component: Attributes },
-  { path: '/dashboard/attributes/:attributeId', component: ManageAttribute, isDynamic: true },
+  { path: '/dashboard/attributes/color-attribute', component: ColorAttributes },
+  { path: '/dashboard/attributes/edit-attribute/:attributeId', component: ManageAttribute, isDynamic: true },
   { path: '/dashboard/tags', component: Tags },
   { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
   { path: '/dashboard/customers/view-all-customers', component: CustomersTable },

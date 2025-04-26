@@ -7,6 +7,8 @@ import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
 import { AttributeType } from '@/types/AttributeType/AttirbuteType';
+import generateSlug from '@/utils/gernrateSlug';
+import { color } from 'framer-motion';
 
 export default function Attributes() {
   const [form] = Form.useForm();
@@ -22,14 +24,12 @@ export default function Attributes() {
     fetchAttributes();
   }, []);
 
-  // Generate slug from attribute name
-  const generateSlug = (name: string): string => {
-    return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  };
-
-  // Handle adding a new attribute
   const handleAddAttribute = async (values: { name: string }) => {
     const slug = generateSlug(values.name);
+    if(slug === 'color' || slug ==='Color' || slug === 'Colors' || slug === 'colors') {
+      message.error('Colors Attritube is already exist!');
+      return;
+    } 
     const newAttribute: AttributeType = {
       id: slug,
       name: values.name,
@@ -59,7 +59,10 @@ export default function Attributes() {
   };
 
   const handleNavigate = (slug: string) => {
-    router.push(`attributes/${slug}`); // Navigate to the slug-based route
+    if(slug === 'color' || slug === 'Color' || slug === 'Colors' || slug === 'colors') {
+      router.push(`attributes/color-attribute`);  
+    }
+    router.push(`attributes/edit-attribute/${slug}`);  
   };
 
   return (
