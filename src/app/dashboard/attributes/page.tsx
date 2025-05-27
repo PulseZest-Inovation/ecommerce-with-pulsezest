@@ -35,6 +35,7 @@ export default function Attributes() {
       name: values.name,
       slug,
       createdAt: new Date(),
+      values : [],
     };
 
     const isSuccess = await setDocWithCustomId('attributes', slug, newAttribute);
