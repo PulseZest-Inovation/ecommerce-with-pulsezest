@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
-import { Fab, Select, MenuItem } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { Modal, message } from "antd"; // ✅ Ant Design Modal
+import { Select } from "antd";
 import { Product } from "@/types/Product";
 import ProductTabs from "./ProductTabs";
+import VariableProductType from "../VariableProudctType/VariableProductType";
 import { handleSubmit } from "./ProductService";
-import { SelectChangeEvent } from "@mui/material";
+import { Fab, SelectChangeEvent } from "@mui/material";
 import { Attribute, fetchProductAttributes } from "./variationHelper";
 
 interface ProductWrapperProps {
@@ -17,8 +17,8 @@ interface ProductWrapperProps {
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { Option } = Select;
 
-  // ✅ State Management
   const [formData, setFormData] = useState<Product>({
     id: "",
     productTitle: "",
@@ -73,7 +73,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     galleryImages: [],
     videoUrl: "",
     variation: [],
-    attributes: [], // ✅ Attributes ke liye state
+    attributes: [],
     menuOrder: 0,
     metaData: [],
     description: [
@@ -86,10 +86,8 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     ],
   });
 
-  const [modalVisible, setModalVisible] = useState(false);
   const [attributeData, setAttributeData] = useState<Attribute[]>([]);
 
-  // ✅ Fetch Attributes from Firebase
   useEffect(() => {
     const loadAttributes = async () => {
       const fetchedAttributes = await fetchProductAttributes();
@@ -98,51 +96,11 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     loadAttributes();
   }, []);
 
-  // ✅ Generate Possible Variations
-  const generateVariations = () => {
-    if (formData.type === "variable" && formData.attributes.length > 0) {
-      const variations: { [key: string]: string }[] = [];
-      const attributeValues = formData.attributes.map((attr) => attr.values);
-
-      // Cartesian Product Logic
-      const generateCombinations = (arr: string[][], index = 0, current: string[] = []) => {
-        if (index === arr.length) {
-          variations.push(
-            current.reduce((acc, value, i) => {
-              acc[formData.attributes[i].name] = value;
-              return acc;
-            }, {} as { [key: string]: string })
-          );
-          return;
-        }
-        for (let value of arr[index]) {
-          generateCombinations(arr, index + 1, [...current, value]);
-        }
-      };
-
-      generateCombinations(attributeValues);
-      setFormData((prev) => ({ ...prev, variation: variations }));
-      setModalVisible(true); // ✅ Show Modal
-    }
-  };
-
-  // ✅ Handle Type Change
   const handleTypeChange = (event: SelectChangeEvent<string>) => {
     const newType = event.target.value as "simple" | "variable";
     setFormData((prev) => ({ ...prev, type: newType }));
-
-    if (newType === "variable") {
-      generateVariations();
-    }
   };
 
-  // ✅ Handle Modal OK
-  const handleModalOk = () => {
-    setModalVisible(false);
-    message.success(`Total ${formData.variation.length} variations added!`);
-  };
-
-  // ✅ Load Initial Data
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
@@ -156,34 +114,44 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   }, [initialData]);
 
   return (
-    <div>
-      {/* ✅ Product Type Selector */}
-      <div className="mb-4">
-        <label className="block font-medium">Product Type:</label>
-        <Select value={formData.type} onChange={handleTypeChange} fullWidth>
-          <MenuItem value="simple">Simple</MenuItem>
-          <MenuItem value="variable">Variable</MenuItem>
+    <div className="p-4">
+      {/* Product Type Selector */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium mb-2">Product Type:</label>
+        <Select
+          value={formData.type}
+          onChange={(value) => handleTypeChange({ target: { value } } as any)}
+          style={{ width: "100%" }}
+        >
+          <Option value="simple">Simple</Option>
+          <Option value="variable">Variable</Option>
         </Select>
       </div>
 
-      {/* ✅ Product Tabs */}
-      <ProductTabs
-        formData={formData}
-        onFormDataChange={(key, value) => setFormData((prev) => ({ ...prev, [key]: value }))}
-        loading={loading}
-        setLoading={setLoading}
-        handleSubmit={() => handleSubmit(formData, setLoading, router)}
-      />
-
-      {/* ✅ Ant Design Modal for Variations */}
-      <Modal title="Variations Added" visible={modalVisible} onOk={handleModalOk} onCancel={() => setModalVisible(false)}>
-        <p>Total {formData.variation.length} variations added!</p>
-      </Modal>
+      {/* Conditional Rendering */}
+      {formData.type === "simple" ? (
+        <ProductTabs
+          formData={formData}
+          onFormDataChange={(key, value) => setFormData((prev) => ({ ...prev, [key]: value }))}
+          loading={loading}
+          setLoading={setLoading}
+          handleSubmit={() => handleSubmit(formData, setLoading, router)}
+        />
+      ) : (
+        <VariableProductType
+          formData={formData}
+          setFormData={setFormData}
+          loading={loading}
+          setLoading={setLoading}
+          handleSubmit={() => handleSubmit(formData, setLoading, router)}
+          initialData={initialData}
+        />
+      )}
 
       {/* Floating Action Button for Mobile */}
       <div className="fixed bottom-4 right-4 sm:hidden">
-        <Fab className="bg-blue-500 text-white">
-          <span className="text-xl">+</span>
+        <Fab className="bg-blue-600 text-white">
+          <span className="text-2xl">+</span>
         </Fab>
       </div>
     </div>
