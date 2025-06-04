@@ -20,20 +20,23 @@ export const fetchApplicationData = async (
 export const handleSubmit = async (
   formData: Product,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  router: ReturnType<typeof useRouter> // Corrected type
+  router: ReturnType<typeof useRouter>
 ): Promise<void> => {
   if (!formData.productTitle) {
     message.error("Product Title is required!");
     return;
   }
 
-  console.log(formData);
-
   setLoading(true);
   try {
-    const slug = generateSlug(formData.productTitle);
+    // Use existing slug if present, otherwise generate a new one
+    const slug = formData.slug && formData.slug.trim() !== ""
+      ? formData.slug
+      : generateSlug(formData.productTitle);
+
     formData.slug = slug;
     formData.id = slug;
+
     await setDocWithCustomId("products", slug, formData);
     message.success("Product Saved Successfully!");
     router.push("/dashboard/manage-product/view-all-product");

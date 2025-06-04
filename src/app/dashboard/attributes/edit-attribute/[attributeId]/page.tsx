@@ -113,7 +113,7 @@ export default function ManageAttribute() {
               label="Value"
               rules={[{ required: true, message: 'Please enter a value!' }]}
             >
-              <Input placeholder="Enter value (e.g., Red, Blue, Orange)" />
+              <Input placeholder="Enter value (e.g., L, XL, XXL)" />
             </Form.Item>
             <Button type="primary" htmlType="submit">
               Add Value
