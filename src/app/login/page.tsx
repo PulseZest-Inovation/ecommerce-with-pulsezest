@@ -69,7 +69,7 @@ const Login: React.FC = () => {
       const isLoggedIn = await adminLogin(email, password);
       if (isLoggedIn) {
         success('Success', 'Login Successful!');
-        router.replace('/dashboard');
+        window.location.reload();
       } else {
         error('Error', 'Invalid Credentials!');
         message.error('Invalid credentials. Please try again.');
