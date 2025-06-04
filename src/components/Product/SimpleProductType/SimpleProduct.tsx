@@ -6,7 +6,7 @@ import ProductOtherTab from "../ProductOtherTab/page";
 import ProductGalleryTab from "../ProductGalleryTab/page";
 import { Product } from "@/types/Product";
 
-interface ProductTabsProps {
+interface SimpleProductProps {
   formData: Product;
   onFormDataChange: (key: keyof Product, value: any) => void;
   loading: boolean;
@@ -14,7 +14,7 @@ interface ProductTabsProps {
   handleSubmit: () => void;
 }
 
-const ProductTabs: React.FC<ProductTabsProps> = ({
+const SimpleProduct: React.FC<SimpleProductProps> = ({
   formData,
   onFormDataChange,
   loading,
@@ -71,4 +71,4 @@ const ProductTabs: React.FC<ProductTabsProps> = ({
   );
 };
 
-export default ProductTabs;
+export default SimpleProduct;
