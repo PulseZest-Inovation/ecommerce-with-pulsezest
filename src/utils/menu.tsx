@@ -11,7 +11,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-
+import Person3Icon from '@mui/icons-material/Person3';
 export const NAVIGATION = [
   {
     kind: 'header',
@@ -265,6 +265,16 @@ export const NAVIGATION = [
     segment: 'dashboard/setting',
     title: 'Setting',
     icon: <SettingsIcon/>,
+  },
+
+  {
+    kind: 'header',
+    title: 'users',
+  },
+   {
+    segment: 'dashboard/users',
+    title: 'Users',
+    icon: <Person3Icon/>,
   },
 
   {

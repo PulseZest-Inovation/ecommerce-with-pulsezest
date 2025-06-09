@@ -1,8 +1,9 @@
-export interface User {
-    id: string;
-    name: string;
-    age: number;
-    email: string;
-    appKey: string;
-}
-  
+export interface UserType {
+  id: string;
+  email: string;
+  phoneNumber: string;
+  fullName: string;
+  roleType: string;
+  createdAt?: any;
+};
+

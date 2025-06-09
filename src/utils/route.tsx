@@ -41,6 +41,7 @@ import PrivacyPolicy from '@/app/dashboard/pages/privacy-policy/page';
 import ReturnRefundPolicy from '@/app/dashboard/pages/return-refund-policy/page';
 import AboutPage from '@/app/dashboard/pages/about-us/page';
 import ContactUsPage from '@/app/dashboard/pages/contact-us/page';
+import UsersPage from '@/app/dashboard/users/page';
 
 import Setting from '@/app/dashboard/setting/page';
 import PaymentSetting from '@/app/dashboard/setting/payment/page';
@@ -104,6 +105,9 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/setting/payment', component: PaymentSetting },
   { path: '/dashboard/coupons', component: Coupons },
   { path: '/dashboard/theme', component: ThemePage },
+
+  //users
+  { path: '/dashboard/users', component:  UsersPage},
 
   //pages
   { path: '/dashboard/pages/faq', component: FAQ },
