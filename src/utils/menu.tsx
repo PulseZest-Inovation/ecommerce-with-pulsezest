@@ -11,7 +11,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-
+import Person3Icon from '@mui/icons-material/Person3';
 export const NAVIGATION = [
   {
     kind: 'header',
@@ -21,17 +21,21 @@ export const NAVIGATION = [
     segment: 'dashboard',
     title: 'Dashboard',
     icon: <DashboardIcon />,
+    roles: ['administrator', 'product-manager', 'analytics', 'order-manager', 'customer-support', 'marketing', 'viewer'],
   },
   {
     segment: 'dashboard/analytics',
     title: 'Analytics',
     icon: <AnalyticsIcon />,
+    roles: ['administrator', 'product-manager', 'analytics'],
+
   },
    //Mange Orders
    {
     segment: 'dashboard/orders',
     title: 'Orders',
     icon: <OrderIcon />,
+    roles: ['administrator', 'order-manager'],
     children: [
       {
         segment: '',
@@ -67,6 +71,7 @@ export const NAVIGATION = [
   {
     kind: 'header',
     title: 'Products Setting',
+    roles: ['administrator', 'product-manager'],
   },
    
     //Mange Proudct
@@ -74,6 +79,7 @@ export const NAVIGATION = [
           segment: 'dashboard/manage-product',
           title: 'Manage Proudct',
           icon: <ProductIcon />,
+          roles: ['administrator', 'product-manager'],
           children: [
             {
               segment: 'add-new-product',
@@ -97,6 +103,7 @@ export const NAVIGATION = [
             segment: 'dashboard/manage-category',
             title: 'Mangae Categories',
             icon: <CategoryIcon  />,
+            roles: ['administrator', 'product-manager'],
             children: [
               {
                 segment: 'categories',
@@ -114,18 +121,21 @@ export const NAVIGATION = [
           {
             segment: 'dashboard/guide',
             title: 'Guide',
+            roles: ['administrator', 'product-manager'],
             icon: <UserGuide  />,
           },
   
           {
             segment: 'dashboard/tags',
             title: 'Tags',
+            roles: ['administrator', 'product-manager'],
             icon: <LocalOfferIcon  />,
           },
           {
             segment: 'dashboard/attributes',
             title: 'Attirubtes',
             icon: <AttributeIcon  />,
+            roles: ['administrator', 'product-manager'],
           },
         
 
@@ -133,29 +143,36 @@ export const NAVIGATION = [
             segment: 'dashboard/product-reviews-and-raiting',
             title: 'Product Review and Raiting',
             icon: <ReviewAndRatingIcon />,
+            roles: ['administrator', 'product-manager'],
           },
   {
     kind: 'divider',
+    roles: ['administrator', 'product-manager'],
   },
          
   {
     kind: 'header',
     title: 'Manage Customers',
+    roles: ['administrator', 'product-manager', 'customer-support'],
   },
   {
     segment: 'dashboard/customers',
     title: 'customers',
     icon: <CustomerIcon />,
+    roles: ['administrator', 'product-manager', 'customer-support'],
     children: [
       {
         segment: 'view-all-customers',
         title: 'View All Customers',
         icon: <GroupsIcon />,
+        roles: ['administrator', 'product-manager', 'customer-support'],
+
       },
       {
         segment: 'add-new-customers',
         title: 'Add New Customer',
         icon: <PersonAddAltIcon  />,
+        roles: ['administrator', 'product-manager', 'customer-support'],
       },
      
     ],
@@ -170,19 +187,24 @@ export const NAVIGATION = [
         segment: 'dashboard/testimonials',
         title: 'Testimonials',
         icon: <TestimonialIcon />,
+        roles: ['administrator', 'product-manager'],
       },
       {
         kind: 'divider',
+        roles: ['administrator', 'product-manager'],
+
       },
      
        {
          kind: 'header',
          title: 'Sales',
+         roles: ['administrator', 'product-manager'],
        },
        {
         segment: 'dashboard/coupons',
         title: 'Discounts & Coupons',
         icon: <DiscountIcon/>,
+        roles: ['administrator', 'product-manager'],
       },
       
       // {
@@ -204,81 +226,119 @@ export const NAVIGATION = [
   // },
   {
     kind: 'divider',
+    roles: ['administrator', 'product-manager'],  
   },
   // Analytics
   {
     kind: 'header',
     title: 'Content',
+    roles: ['administrator', 'product-manager'],  
   },
   {
     segment: 'dashboard/theme',
     title: 'Appearance and Theme',
     icon: <PaletteIcon />,
+    roles: ['administrator', 'product-manager'],  
   },
  
   {
     segment: 'dashboard/pages',
     title: 'Pages',
     icon: <DescriptionIcon />,
+    roles: ['administrator', 'product-manager'],  
+
     children: [
       {
         segment: 'faq',
         title: 'FAQs',
         icon: <DescriptionIcon />,
+         roles: ['administrator', 'product-manager'],  
+        
       },
       {
         segment: 'terms-condition',
         title: 'Terms and Conditions',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+        
       },
       {
         segment: 'privacy-policy',
         title: 'Privacy Policy',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+        
       },
       {
         segment: 'return-refund-policy',
         title: 'Return And Refund Policy',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+        
       },
       {
         segment: 'shipping-policy',
         title: 'Shipping Policy',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+        
       },
       {
         segment: 'contact-us',
         title: 'Contact Us',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+        
       },
+
       {
         segment: 'about-us',
         title: 'About Us',
         icon: <DescriptionIcon />,
+        roles: ['administrator', 'product-manager'],  
+         
       },
     ],
   },
   {
     kind: 'divider',
+    roles: ['administrator', 'product-manager'],
+
   },
   {
     segment: 'dashboard/setting',
     title: 'Setting',
     icon: <SettingsIcon/>,
+    roles: ['administrator', 'product-manager'],
+  },
+
+  {
+    kind: 'header',
+    title: 'users',
+    roles: ['administrator'],
+  },
+   {
+    segment: 'dashboard/users',
+    title: 'Users',
+    icon: <Person3Icon/>,
+    roles: ['administrator'],  
   },
 
   {
     kind: 'divider',
+    roles: ['administrator', 'product-manager', 'customer-support'],
   },
   // Analytics
   {
     kind: 'header',
     title: 'Support',
+    roles: ['administrator', 'product-manager', 'customer-support'],
   },
   {
     segment: 'dashboard/support',
     title: 'Support',
     icon: <SupportAgentIcon />,
+    roles: ['administrator', 'product-manager', 'customer-support'], 
   },
  
  
