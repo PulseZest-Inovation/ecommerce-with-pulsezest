@@ -1,10 +1,11 @@
 'use client'
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, message, Table, Modal } from "antd";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, deleteUser, getAuth } from "firebase/auth";
 import { auth } from "@/config/firbeaseConfig";
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { deleteDocFromCollection } from "@/services/FirestoreData/deleteFirestoreData";
 import { UserType } from "@/types/User";
 const { Option } = Select;
 
@@ -39,6 +40,7 @@ export default function UsersPage() {
       fullName: user.fullName || "",
       roleType: user.roleType || "",
       createdAt: user.createdAt,
+      isDelete: true
     }));
     setUsers(users);
     setLoading(false);
@@ -82,6 +84,7 @@ export default function UsersPage() {
           roleType: values.roleType,
           createdAt: new Date(),
           applicationId: applicationId,
+          isDelete: true,
         };
         const isSuccess = await setDocWithCustomId("users", userId, userData);
         if (isSuccess) {
@@ -118,6 +121,35 @@ export default function UsersPage() {
     form.resetFields();
   };
 
+  const handleDelete = async (user: UserType) => {
+    if (user.isDelete === false) {
+      message.warning("You are not allowed to delete this user.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const isDeleted = await deleteDocFromCollection("users", user.id);
+      if (isDeleted) {
+        try {
+        if (auth.currentUser && auth.currentUser.uid === user.id) {
+          await deleteUser(auth.currentUser);
+        }
+        // If you want to delete other users, use Firebase Admin SDK on the server.
+      } catch (authErr) {
+        console.warn("Could not delete user from Firebase Auth. Use Admin SDK for full deletion.", authErr);
+      }
+        message.success("User deleted successfully!");
+        fetchUsers();
+      } else {
+        message.error("Failed to delete user.");
+      }
+    } catch (err) {
+      message.error("Error deleting user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -140,9 +172,25 @@ export default function UsersPage() {
             title: "Action",
             dataIndex: "action",
             render: (_: any, record: UserType) => (
-              <Button type="link" onClick={() => handleEdit(record)}>
-                Edit
-              </Button>
+              <>
+                <Button type="link" onClick={() => handleEdit(record)}>
+                  Edit
+                </Button>
+                {record.isDelete !== false && (
+                  <Button
+                    type="link"
+                    danger
+                    onClick={() => {
+                      Modal.confirm({
+                        title: "Are you sure you want to delete this user?",
+                        onOk: () => handleDelete(record),
+                      });
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </>
             ),
           },
         ]}

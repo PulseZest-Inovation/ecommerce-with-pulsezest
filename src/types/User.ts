@@ -5,6 +5,7 @@ export interface UserType {
   fullName: string;
   roleType: string;
   createdAt?: any;
+  isDelete: boolean; // Indicates if the user is deleted
   applicationId?: string; // Optional field for application ID
 };
 
