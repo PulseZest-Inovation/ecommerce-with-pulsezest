@@ -4,11 +4,11 @@ import { Timestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Select } from "antd";
 import { Product } from "@/types/Product";
-import ProductTabs from "./ProductTabs";
 import VariableProductType from "../VariableProudctType/VariableProductType";
 import { handleSubmit } from "./ProductService";
 import { Fab, SelectChangeEvent } from "@mui/material";
 import { Attribute, fetchProductAttributes } from "./variationHelper";
+import SimpleProduct from "../SimpleProductType/SimpleProduct";
 
 interface ProductWrapperProps {
   initialData?: Product;
@@ -130,7 +130,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
       {/* Conditional Rendering */}
       {formData.type === "simple" ? (
-        <ProductTabs
+        <SimpleProduct
           formData={formData}
           onFormDataChange={(key, value) => setFormData((prev) => ({ ...prev, [key]: value }))}
           loading={loading}

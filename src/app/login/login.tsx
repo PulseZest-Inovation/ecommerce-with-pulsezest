@@ -20,7 +20,7 @@ export default function LoginToEcommerce({
   setPassword,
 }: Props) {
   const onLoginClick = () => {
-    handleLogin(email, password); // Call handleLogin with the current email and password
+    handleLogin(email, password); 
   };
 
   return (
