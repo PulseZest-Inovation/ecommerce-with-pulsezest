@@ -10,12 +10,15 @@ import { useRouter } from 'next/navigation';
 const DashboardWrapper: React.FC = () => {
   const [appData, setAppData] = useState<AppDataType | null>(null);
   const [loading, setLoading] = useState(true); // Show loading until app data is validated
+  const [userRole, setUserRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchAppData = async () => {
       try {
         const securityKey = localStorage.getItem('securityKey');
+        const role = localStorage.getItem('userRole');
+        setUserRole(role);
 
         // If no security key exists, redirect to login
         if (!securityKey) {
@@ -53,7 +56,7 @@ const DashboardWrapper: React.FC = () => {
   }
 
   // Render the dashboard with fetched data
-  return <Dashboard appData={appData} />;
+  return <Dashboard appData={appData} userRole={userRole} />;
 };
 
 export default DashboardWrapper;

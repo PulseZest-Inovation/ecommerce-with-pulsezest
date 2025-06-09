@@ -73,6 +73,7 @@ export default function UsersPage() {
           values.email,
           values.password
         );
+        const applicationId = localStorage.getItem("securityKey") || "";
         const userId = userCredential.user.uid;
         const userData = {
           email: values.email,
@@ -80,6 +81,7 @@ export default function UsersPage() {
           fullName: values.fullName,
           roleType: values.roleType,
           createdAt: new Date(),
+          applicationId: applicationId,
         };
         const isSuccess = await setDocWithCustomId("users", userId, userData);
         if (isSuccess) {

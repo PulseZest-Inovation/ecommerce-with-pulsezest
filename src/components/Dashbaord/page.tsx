@@ -22,15 +22,26 @@ import { AppDataType } from '@/types/AppData';
 
 interface DashboardProps {
   appData: AppDataType;
+  userRole: string | null;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
+const filterMenuByRole = (menu: any[], userRole: string | null): any[] => {
+  return menu
+    .filter(item => !item.roles || (userRole && item.roles.includes(userRole)))
+    .map(item =>
+      item.children
+        ? { ...item, children: filterMenuByRole(item.children, userRole) }
+        : item
+    );
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ appData, userRole }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const [isNotificationBarOpen, setIsNotificationBarOpen] = useState(false);
-  const [badgeCount, setBadgeCount] = useState(0); // State to hold the badge count
+  const [badgeCount, setBadgeCount] = useState(0);
 
   const handleToggleNotificationBar = () => {
     setIsNotificationBarOpen((prev) => !prev);
@@ -49,12 +60,11 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     return () => unsubscribe();
   }, [router]);
 
-  // Fetch badge count from Firestore
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const notifications = await getAllDocsFromCollection('notifications'); // Replace 'notifications' with your collection name
-        setBadgeCount(notifications.length); // Set the count of documents
+        const notifications = await getAllDocsFromCollection('notifications');
+        setBadgeCount(notifications.length);
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
@@ -62,6 +72,18 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
 
     fetchNotifications();
   }, []);
+
+  // Filter menu and routes by userRole
+  const filteredMenu = useMemo(
+    () => filterMenuByRole(NAVIGATION, userRole),
+    [userRole]
+  );
+
+  // Optionally, filter your routes as well if you want to restrict route access
+  // const filteredRoutes = useMemo(
+  //   () => ROUTE_COMPONENTS.filter(route => !route.roles || (userRole && route.roles.includes(userRole))),
+  //   [userRole]
+  // );
 
   const routerContext = useMemo(
     () => ({
@@ -86,19 +108,19 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
     });
   }, [pathname]);
 
-  const renderContent = () => {
-    const Component = getRouteComponent(pathname ?? '');
-    if (Component) {
-      return <Component />;
-    }
-    return (
-      <Result
-        status="404"
-        title="Page Not Found"
-        subTitle="The page you are looking for does not exist."
-      />
-    );
-  };
+ const renderContent = () => {
+  const Component = getRouteComponent(pathname ?? '', userRole);  
+  if (Component) {
+    return <Component />;
+  }
+  return (
+    <Result
+      status="404"
+      title="Page Not Found"
+      subTitle="The page you are looking for does not exist or you do not have access."
+    />
+  );
+};
 
   if (loading) {
     return <Loader />;
@@ -110,7 +132,7 @@ const Dashboard: React.FC<DashboardProps> = ({ appData }) => {
 
   return (
     <AppProvider
-      navigation={NAVIGATION as any}
+      navigation={filteredMenu as any}
       router={routerContext as any}
       theme={demoTheme}
       window={window}

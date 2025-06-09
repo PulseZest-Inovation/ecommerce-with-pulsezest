@@ -5,5 +5,6 @@ export interface UserType {
   fullName: string;
   roleType: string;
   createdAt?: any;
+  applicationId?: string; // Optional field for application ID
 };
 

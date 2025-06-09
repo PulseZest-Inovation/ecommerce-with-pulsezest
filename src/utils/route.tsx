@@ -59,90 +59,96 @@ type RouteComponents = {
   path: string;
   component: React.ComponentType<any>;
   isDynamic?: boolean;
+  roles?: string[];
 };
 
 const ROUTE_COMPONENTS: RouteComponents[] = [
-  { path: '/dashboard', component: DashboardContent },
-  { path: '/dashboard/analytics', component: AnalyticsDashboard },
-  { path: '/dashboard/recent-order', component: RecentOrders },
+  { path: '/dashboard', component: DashboardContent, roles: ['administrator', 'product-manager', 'analytics', 'order-manager', 'customer-support', 'marketing', 'viewer'] },
+  { path: '/dashboard/analytics', component: AnalyticsDashboard , roles: ['administrator', 'product-manager', 'analytics'] },
+  { path: '/dashboard/recent-order', component: RecentOrders, roles: ['administrator', 'order-manager'] },
 
   // Categoires section
-  { path: '/dashboard/manage-category/categories', component: Categories },
-  { path: '/dashboard/manage-category/sub-categories', component: SubCategoires },
-  { path: '/dashboard/guide', component: GuidePage },
+  { path: '/dashboard/manage-category/categories', component: Categories, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/manage-category/sub-categories', component: SubCategoires, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/guide', component: GuidePage,  roles: ['administrator', 'product-manager'] },
 
 
 
 
   // product section
-  { path: '/dashboard/manage-product', component: ManageAllProduct },
-  { path: '/dashboard/manage-product/add-new-product', component: AddProduct },
-  { path: '/dashboard/manage-product/view-all-product', component: ViewProduct },
-  { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true },
+  { path: '/dashboard/manage-product', component: ManageAllProduct, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/manage-product/add-new-product', component: AddProduct, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/manage-product/view-all-product', component: ViewProduct,   roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/manage-product/edit-product/:productId', component: EditProduct, isDynamic: true,     roles: ['administrator', 'product-manager'] },
   
   
   // Orders Section
-  { path: '/dashboard/orders', component: OrderPage },
-  { path: '/dashboard/orders/order-details/:orderId', component: ViewOrderPage, isDynamic: true },
-  { path: '/dashboard/orders/view-all-orders', component: OrderPage },
-  { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails },
-  { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage },
-  { path: '/dashboard/orders/return-order', component: ReturnOrders },
-  { path: '/dashboard/orders/return-order/:orderId', component: ReturnOrderView, isDynamic: true },
-  { path: '/dashboard/orders/refund-orders', component: RefundOrderPage },
+  { path: '/dashboard/orders', component: OrderPage, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/order-details/:orderId', component: ViewOrderPage, isDynamic: true, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/view-all-orders', component: OrderPage, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/pending-orders', component: PendingOrdersDetails, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/completed-orders', component: CompletedOrderPage, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/return-order', component: ReturnOrders, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/return-order/:orderId', component: ReturnOrderView, isDynamic: true, roles: ['administrator', 'order-manager'] },
+  { path: '/dashboard/orders/refund-orders', component: RefundOrderPage,  roles: ['administrator', 'order-manager'] },
 
 
   // Coupons section
-  { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true },
-  { path: '/dashboard/attributes', component: Attributes },
-  { path: '/dashboard/attributes/color-attribute', component: ColorAttributes },
-  { path: '/dashboard/attributes/edit-attribute/:attributeId', component: ManageAttribute, isDynamic: true },
-  { path: '/dashboard/tags', component: Tags },
-  { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer },
-  { path: '/dashboard/customers/view-all-customers', component: CustomersTable },
-  { path: '/dashboard/testimonials', component: TestimonialsPage },
-  { path: '/dashboard/product-reviews-and-raiting', component: ProductReview },
-  { path: '/dashboard/setting/payment', component: PaymentSetting },
-  { path: '/dashboard/coupons', component: Coupons },
-  { path: '/dashboard/theme', component: ThemePage },
+  { path: '/dashboard/coupons/:couponId', component: EditViewCoupons, isDynamic: true, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/attributes', component: Attributes, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/attributes/color-attribute', component: ColorAttributes, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/attributes/edit-attribute/:attributeId', component: ManageAttribute, isDynamic: true, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/tags', component: Tags,   roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/customers/add-new-customers', component: AddNewCustomer,  roles: ['administrator', 'product-manager', 'customer-support'] },
+  { path: '/dashboard/customers/view-all-customers', component: CustomersTable,   roles: ['administrator', 'product-manager', 'customer-support'] },
+  { path: '/dashboard/testimonials', component: TestimonialsPage, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/product-reviews-and-raiting', component: ProductReview, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/payment', component: PaymentSetting, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/coupons', component: Coupons, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/theme', component: ThemePage, roles: ['administrator', 'product-manager'] },
 
   //users
-  { path: '/dashboard/users', component:  UsersPage},
+  { path: '/dashboard/users', component:  UsersPage, roles: ['administrator'] },
 
   //pages
-  { path: '/dashboard/pages/faq', component: FAQ },
-  { path: '/dashboard/pages/shipping-policy', component: ShippingPolicy },
-  { path: '/dashboard/pages/terms-condition', component: TermsCondition },
-  { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy },
-  { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy },
-  { path: '/dashboard/pages/about-us', component: AboutPage },
-  { path: '/dashboard/pages/contact-us', component: ContactUsPage },
-  { path: '/dashboard/support', component: PulseZestSupport },
+  { path: '/dashboard/pages/faq', component: FAQ, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/shipping-policy', component: ShippingPolicy, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/terms-condition', component: TermsCondition, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/privacy-policy', component: PrivacyPolicy, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/return-refund-policy', component: ReturnRefundPolicy, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/about-us', component: AboutPage, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/pages/contact-us', component: ContactUsPage, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/support', component: PulseZestSupport, roles: ['administrator', 'product-manager', 'customer-support'] },
 
 
-  { path: '/dashboard/setting', component: Setting },
-  { path: '/dashboard/setting/email', component: EmailSettings },
-  { path: '/dashboard/setting/invoice', component: InovicePage },
-  { path: '/dashboard/setting/meta-marketing', component: MetaMarketing },
-  { path: '/dashboard/setting/shiprocket', component: ShipRocketPage },
-  { path: '/dashboard/setting/facebook-pixel', component: FacebookPixel },
-  { path: '/dashboard/setting/search-console', component: SearchConsole },
+  { path: '/dashboard/setting', component: Setting, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/email', component: EmailSettings, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/invoice', component: InovicePage, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/meta-marketing', component: MetaMarketing, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/shiprocket', component: ShipRocketPage, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/facebook-pixel', component: FacebookPixel, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/setting/search-console', component: SearchConsole, roles: ['administrator', 'product-manager'] },
 
 
 
 ];
 
 // Function to find the matching component for a route
-export const getRouteComponent = (route: string): React.ComponentType | null => {
-  for (const { path, component, isDynamic } of ROUTE_COMPONENTS) {
+export const getRouteComponent = (
+  route: string,
+  userRole?: string | null // <-- Accept userRole
+): React.ComponentType | null => {
+  for (const { path, component, isDynamic, roles } of ROUTE_COMPONENTS) {
+    // Check if userRole is allowed for this route
+    if (roles && (!userRole || !roles.includes(userRole))) {
+      continue;
+    }
     if (isDynamic) {
-      // Match dynamic routes
       const regex = new RegExp(path.replace(/:\w+/g, '\\w+'));
       if (regex.test(route)) {
         return component;
       }
     } else if (path === route) {
-      // Match static routes
       return component;
     }
   }

@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { message, Watermark } from 'antd';
-import { adminLogin } from '@/services/login';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/config/firbeaseConfig';
@@ -10,6 +11,7 @@ import { useNotification } from '@/components/Provider/NotificationProvider';
 import LoginToEcommerce from './login';
 import { getAppData } from '@/services/getApp';
 import Loader from '@/components/Loader';
+import { UserType } from '@/types/User';
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -40,48 +42,59 @@ const Login: React.FC = () => {
     return () => unsubscribe();
   }, [router]);
 
-  const fetchAppData = async () => {
-    try {
-      const fetchedData = await getAppData<AppDataType>();
-      if (fetchedData) {
-        setAppData(fetchedData);
-        console.log('Fetched App Data:', fetchedData);
-      } else {
-        message.error('App data not found.');
-      }
-    } catch (err) {
-      console.error('Error fetching app data:', err);
-      message.error('Failed to fetch app data. Please try again later.');
-    }
-  };
+  // const fetchAppData = async () => {
+  //   try {
+  //     const fetchedData = await getAppData<AppDataType>();
+  //     if (fetchedData) {
+  //       setAppData(fetchedData);
+  //       console.log('Fetched App Data:', fetchedData);
+  //     } else {
+  //       message.error('App data not found.');
+  //     }
+  //   } catch (err) {
+  //     console.error('Error fetching app data:', err);
+  //     message.error('Failed to fetch app data. Please try again later.');
+  //   }
+  // };
 
-  const handleLogin = async () => {
-    if (loading) return;
+ const handleLogin = async () => {
+  if (loading) return;
 
-    if (!email || !password) {
-      message.error('Please enter both email and password.');
+  if (!email || !password) {
+    message.error('Please enter both email and password.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // 1. Login with Firebase Auth
+    const auth = getAuth();
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    const users = await getAllDocsFromCollection<UserType>("users");
+    const userData = users.find((u: any) => u.id === user.uid);
+
+    if (userData && userData.roleType && userData.applicationId) {
+      localStorage.setItem("userRole", userData.roleType);
+      localStorage.setItem("securityKey", userData.applicationId);
+    } else {
+      message.error("User role not found. Please contact admin.");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const isLoggedIn = await adminLogin(email, password);
-      if (isLoggedIn) {
-        success('Success', 'Login Successful!');
-        router.replace('/dashboard');
-      } else {
-        error('Error', 'Invalid Credentials!');
-        message.error('Invalid credentials. Please try again.');
-      }
-    } catch (err) {
-      console.error('Login error:', err);
-      error('Error', 'An error occurred during login. Please try again later.');
-      message.error('An error occurred. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    success('Success', 'Login Successful!');
+    router.replace('/dashboard');
+  } catch (err) {
+    console.error('Login error:', err);
+    error('Error', 'Invalid credentials or error occurred.');
+    message.error('Invalid credentials or error occurred.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return <Loader />;
