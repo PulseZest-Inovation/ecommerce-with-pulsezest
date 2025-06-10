@@ -19,11 +19,12 @@ You are ready to use now!
 4. Product SEO
 5. shipRocket intigratoin
 6. Facebook Pixel.
-7. Theme Managment
-8. Product Upload with Advance features
-9. Email System.
-10. Blogs
-11. Tickets system-> Open your ticket what ever your problem we will solve in 48 hours. you Recive every status update of the Ticket on your email.
+7. Role Based Login
+8. Theme Managment
+9. Product Upload with Advance features
+10. Email System.
+11. Blogs
+12. Tickets system-> Open your ticket what ever your problem we will solve in 48 hours. you Recive every status update of the Ticket on your email.
 
 # Comes with Pay as your Grow.
 1. Buy after 2 Product Sales.
