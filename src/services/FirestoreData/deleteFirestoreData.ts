@@ -28,3 +28,16 @@ export const deleteDocFromCollection = async (collectionName: string, docName: s
     return false;
   }
 };
+
+
+
+export const deleteUserFromCollection = async ( docName: string): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'users', docName);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    return false;
+  }
+};

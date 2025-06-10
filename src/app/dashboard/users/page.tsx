@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, message, Table, Modal } from "antd";
 import { createUserWithEmailAndPassword, deleteUser, getAuth } from "firebase/auth";
 import { auth } from "@/config/firbeaseConfig";
-import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
-import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
-import { deleteDocFromCollection } from "@/services/FirestoreData/deleteFirestoreData";
+import { setUserData } from "@/services/FirestoreData/postFirestoreData";
+import { getAllDocFromUsersCollection, getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { deleteUserFromCollection } from "@/services/FirestoreData/deleteFirestoreData";
 import { UserType } from "@/types/User";
 const { Option } = Select;
 
@@ -32,25 +32,27 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const data = await getAllDocsFromCollection("users");
-    const users: UserType[] = data.map((user: any) => ({
-      id: user.id,
-      email: user.email || "",
-      phoneNumber: user.phoneNumber || "",
-      fullName: user.fullName || "",
-      roleType: user.roleType || "",
-      createdAt: user.createdAt,
-      isDelete: true
-    }));
+    const securityKey = localStorage.getItem('securityKey');
+    const data = await getAllDocFromUsersCollection();
+    const users: UserType[] = data
+      .filter((user: any) => user.applicationId === securityKey)
+      .map((user: any) => ({
+        id: user.id,
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        fullName: user.fullName || "",
+        roleType: user.roleType || "",
+        createdAt: user.createdAt,
+       isDelete:  user.isDelete || true, 
+      }));
     setUsers(users);
     setLoading(false);
   };
-
+  
   const handleFinish = async (values: any) => {
     setLoading(true);
     try {
       if (editingUserId) {
-        // Edit mode: update user in Firestore
         const userData = {
           email: values.email,
           phoneNumber: values.phoneNumber,
@@ -58,7 +60,7 @@ export default function UsersPage() {
           roleType: values.roleType,
           createdAt: new Date(),
         };
-        const isSuccess = await setDocWithCustomId("users", editingUserId, userData);
+        const isSuccess = await setUserData(editingUserId, userData);
         if (isSuccess) {
           message.success("User updated successfully!");
           form.resetFields();
@@ -69,14 +71,21 @@ export default function UsersPage() {
           message.error("Failed to update user data.");
         }
       } else {
-        // Create mode: create user in Firebase Auth and Firestore
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          values.email,
-          values.password
-        );
+        // 1. Call your API to create the user in Firebase Auth
+        const response = await fetch("/api/firebase-service/create-new-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to create user account.");
+        }
+        const userId = result.uid;
         const applicationId = localStorage.getItem("securityKey") || "";
-        const userId = userCredential.user.uid;
         const userData = {
           email: values.email,
           phoneNumber: values.phoneNumber,
@@ -86,7 +95,8 @@ export default function UsersPage() {
           applicationId: applicationId,
           isDelete: true,
         };
-        const isSuccess = await setDocWithCustomId("users", userId, userData);
+        // 2. Save user data in Firestore using the returned uid
+        const isSuccess = await setUserData(userId, userData);
         if (isSuccess) {
           message.success("User created successfully!");
           form.resetFields();
@@ -111,7 +121,7 @@ export default function UsersPage() {
       email: user.email,
       phoneNumber: user.phoneNumber,
       roleType: user.roleType,
-      password: "", // password not editable
+      password: "",  
     });
   };
 
@@ -128,13 +138,12 @@ export default function UsersPage() {
     }
     setLoading(true);
     try {
-      const isDeleted = await deleteDocFromCollection("users", user.id);
+      const isDeleted = await deleteUserFromCollection(user.id);
       if (isDeleted) {
         try {
         if (auth.currentUser && auth.currentUser.uid === user.id) {
           await deleteUser(auth.currentUser);
         }
-        // If you want to delete other users, use Firebase Admin SDK on the server.
       } catch (authErr) {
         console.warn("Could not delete user from Firebase Auth. Use Admin SDK for full deletion.", authErr);
       }
@@ -180,6 +189,7 @@ export default function UsersPage() {
                   <Button
                     type="link"
                     danger
+                    disabled={!record.isDelete}
                     onClick={() => {
                       Modal.confirm({
                         title: "Are you sure you want to delete this user?",

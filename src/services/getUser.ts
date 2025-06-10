@@ -22,7 +22,7 @@ export const getUser = async () => {
     }
 
     // Reference to the user document using the current user's ID
-    const userDocRef = doc(db, 'app_name', appKey, 'users', currentUser.uid);
+    const userDocRef = doc(db, 'users', currentUser.uid);
     const userDoc = await getDoc(userDocRef);
 
     if (userDoc.exists()) {

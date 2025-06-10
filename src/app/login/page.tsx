@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { message, Watermark } from 'antd';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { getAllDocFromUsersCollection, getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/config/firbeaseConfig';
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    const users = await getAllDocsFromCollection<UserType>("users");
+    const users = await getAllDocFromUsersCollection<UserType>();
     const userData = users.find((u: any) => u.id === user.uid);
 
     if (userData && userData.roleType && userData.applicationId) {
@@ -86,7 +86,8 @@ const Login: React.FC = () => {
     }
 
     success('Success', 'Login Successful!');
-    router.replace('/dashboard');
+    // router.replace('/dashboard');
+    window.location.reload();
   } catch (err) {
     console.error('Login error:', err);
     error('Error', 'Invalid credentials or error occurred.');

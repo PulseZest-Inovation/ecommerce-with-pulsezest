@@ -101,6 +101,29 @@ export const getDataByDocName = async <T>(
 
 
 
+export const getAllDocFromUsersCollection = async <T>(
+): Promise<Array<T & { id: string }>> => {
+  try {
+   
+    // Build the collection reference path
+    const colRef = collection(db, 'users');
+
+    // Fetch all documents from the collection
+    const querySnapshot = await getDocs(colRef);
+
+    // Map through the documents and return them with their IDs
+    const data = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as T),
+    }));
+
+    return data;
+  } catch (error) {
+    console.error('Error getting documents: ', error);
+    return [];
+  }
+};
+
 
 // import { getAllDocsFromCollection } from "./getFirestoreData";
 // import { Product } from "./types"; // Import Product type

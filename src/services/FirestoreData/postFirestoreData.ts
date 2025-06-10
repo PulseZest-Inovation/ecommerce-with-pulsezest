@@ -96,3 +96,19 @@ export const updateDocFields = async (
     return false;
   }
 };
+
+
+
+export const setUserData = async <T>(
+  docName: string,
+  data: Record<string, any>
+): Promise<boolean> => {
+  try {
+    const docRef = doc(db, 'users', docName);
+    await setDoc(docRef, data, { merge: true }); // Use merge: true to avoid overwriting the document
+    return true;
+  } catch (error) {
+    console.error('Error setting document with custom ID:', error);
+    return false;
+  }
+};
