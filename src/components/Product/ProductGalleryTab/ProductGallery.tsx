@@ -1,9 +1,7 @@
 'use client'
 import React, { useState } from "react";
-import { storage } from "@/config/firbeaseConfig"; // Firebase config file
+import { storage } from "@/config/firbeaseConfig";  
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
-import { doc, getDoc, updateDoc } from "firebase/firestore"; // Firestore methods
-import { db } from "@/config/firbeaseConfig"; // Firestore config
 import { message, Progress, Button, Upload, Image } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -14,8 +12,8 @@ interface GalleryUploadProps {
 }
 
 const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGalleryChange, slug }) => {
-  const [uploadingFiles, setUploadingFiles] = useState<File[]>([]); // Track files being uploaded
-  const [progress, setProgress] = useState<{ [key: string]: number }>({}); // Store progress per file
+const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);  
+const [progress, setProgress] = useState<{ [key: string]: number }>({});    
 
   const uploadImageToFirebase = (file: File, path: string, onProgress: (fileName: string, percent: number) => void): Promise<string> => {
     return new Promise((resolve, reject) => {

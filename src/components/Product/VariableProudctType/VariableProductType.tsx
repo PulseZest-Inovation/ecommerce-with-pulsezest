@@ -1,9 +1,12 @@
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import React, { useEffect, useState } from 'react';
 import { AttributeType, ValueType } from '@/types/AttributeType/AttirbuteType';
-import { Collapse, Checkbox, Button } from 'antd';
+import { Collapse, Checkbox, Button, Tabs } from 'antd';
+import ProdutOtherTab from '../ProductOtherTab/page';
 import ProductDetailTab from '../ProductDetailTab/page';
-
+import ProductGalleryImage from '../ProductGalleryTab/ProductGallery';
+const { Panel } = Collapse;
+const { TabPane } = Tabs;
 type Props = {
   initialData?: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
@@ -12,8 +15,6 @@ type Props = {
   loading: boolean;
   handleSubmit: () => void;
 };
-
-const { Panel } = Collapse;
 
 const VariableProductType: React.FC<Props> = ({
   initialData,
@@ -32,10 +33,8 @@ const VariableProductType: React.FC<Props> = ({
       try {
         setLoading(true);
 
-        // 1. Fetch all attributes
         const attributes = await getAllDocsFromCollection<AttributeType>('attributes');
 
-        // 2. Fetch all values for each attribute
         const attributesWithValues = await Promise.all(
           attributes.map(async (attribute) => {
             const valuesPath = `attributes/${attribute.id}/values`;
@@ -50,7 +49,6 @@ const VariableProductType: React.FC<Props> = ({
 
         setAttributeData(attributesWithValues);
 
-        // 3. Generate all possible combinations
         const generatedCombinations = generateCombinations(attributesWithValues);
         setCombinations(generatedCombinations);
       } catch (error) {
@@ -61,21 +59,18 @@ const VariableProductType: React.FC<Props> = ({
     };
 
     loadAttributes();
-    // eslint-disable-next-line
   }, []);
 
   const generateCombinations = (attributes: AttributeType[]): Record<string, string>[] => {
     if (attributes.length === 0) return [];
 
-    const cartesian = (arrays: ValueType[][]): ValueType[][] => {
-      return arrays.reduce<ValueType[][]>(
+    const cartesian = (arrays: ValueType[][]): ValueType[][] =>
+      arrays.reduce<ValueType[][]>(
         (acc, curr) => acc.flatMap((a) => curr.map((b) => [...a, b])),
         [[]]
       );
-    };
 
     const allValues = attributes.map((attr) => attr.values || []);
-
     const product = cartesian(allValues);
 
     const formatted = product.map((combination) => {
@@ -89,18 +84,22 @@ const VariableProductType: React.FC<Props> = ({
     return formatted;
   };
 
-  // Handle checkbox selection
   const handleCheckboxChange = (idx: number, checked: boolean) => {
     setSelectedIndexes((prev) =>
       checked ? [...prev, idx] : prev.filter((i) => i !== idx)
     );
   };
 
+  const handleVariationChange = (idx: number, key: string, value: any) => {
+    const updated = [...(formData.variations || [])];
+    updated[idx] = { ...updated[idx], ...combinations[idx], [key]: value };
+    setFormData((prev: any) => ({ ...prev, variations: updated }));
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Variable Product Configuration</h2>
 
-      {/* Step 1: Show all combinations with checkboxes */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">
           1. Select Variations ({combinations.length} combinations found)
@@ -136,7 +135,6 @@ const VariableProductType: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Step 2: Show collapses for selected combinations */}
       {selectedIndexes.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">
@@ -148,20 +146,37 @@ const VariableProductType: React.FC<Props> = ({
                 header={attributeData.map(attr => `${attr.name}: ${combinations[idx][attr.name]}`).join(', ')}
                 key={idx}
               >
-                <ProductDetailTab
-                  formData={{
-                    ...combinations[idx],
-                    ...(formData.variations?.[idx] || {}),
-                    description: Array.isArray(formData.variations?.[idx]?.description)
-                      ? formData.variations[idx].description
-                      : [],
-                  }}
-                  onFormDataChange={(key, value) => {
-                    const updated = [...(formData.variations || [])];
-                    updated[idx] = { ...updated[idx], ...combinations[idx], [key]: value };
-                    setFormData((prev: any) => ({ ...prev, variations: updated }));
-                  }}
-                />
+                <Tabs defaultActiveKey="details">
+                  <TabPane tab="Details" key="details">
+                    <ProductDetailTab
+                      formData={{
+                        ...combinations[idx],
+                        ...(formData.variations?.[idx] || {}),
+                        description: Array.isArray(formData.variations?.[idx]?.description)
+                          ? formData.variations[idx].description
+                          : [],
+                      }}
+                      onFormDataChange={(key, value) => handleVariationChange(idx, key, value)}
+                    />
+                  </TabPane>
+
+                  <TabPane tab="Other Details" key="other-details">
+                    <ProdutOtherTab
+                      formData={formData.variations?.[idx] || {}}
+                      onFormDataChange={(key, value) => handleVariationChange(idx, key, value)}
+                    />
+                  </TabPane>
+
+                  <TabPane tab="Product Gallery" key="images">
+                    <ProductGalleryImage
+                      galleryImages={formData.variations?.[idx]?.images || []}
+                      onGalleryChange={(newGalleryImages) => {
+                        handleVariationChange(idx, "images", newGalleryImages);
+                      }}
+                      slug={"product-slug"}
+                    />
+                  </TabPane>
+                </Tabs>
               </Panel>
             ))}
           </Collapse>
