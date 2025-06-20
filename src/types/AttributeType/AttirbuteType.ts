@@ -9,5 +9,5 @@ export interface AttributeType {
   name: string;
   slug: string;
   createdAt: Date;
-  values: ValueType[]; // ✅ Add this
+  values: ValueType[];  
 }

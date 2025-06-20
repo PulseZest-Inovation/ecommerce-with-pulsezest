@@ -3,7 +3,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Collapse } from 'antd';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 
 // Dynamically import ReactQuill with SSR disabled
 const ReactQuill = dynamic(() => import('react-quill'), {
@@ -13,8 +13,8 @@ const ReactQuill = dynamic(() => import('react-quill'), {
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 
 interface CollapseExpandDescriptionProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function CollapseExpandDescription({

@@ -1,7 +1,7 @@
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { message } from "antd";
 import { AppDataType } from "@/types/AppData";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 import { getAppData } from "@/services/getApp";
 import { useRouter } from "next/navigation"; // Corrected import
 import { generateSlug } from "./ProductForm";
@@ -18,7 +18,7 @@ export const fetchApplicationData = async (
 };
 
 export const handleSubmit = async (
-  formData: Product,
+  formData: ProductType,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   router: ReturnType<typeof useRouter>
 ): Promise<void> => {
@@ -29,7 +29,6 @@ export const handleSubmit = async (
 
   setLoading(true);
   try {
-    // Use existing slug if present, otherwise generate a new one
     const slug = formData.slug && formData.slug.trim() !== ""
       ? formData.slug
       : generateSlug(formData.productTitle);

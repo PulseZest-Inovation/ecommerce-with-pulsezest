@@ -1,13 +1,13 @@
 import React from 'react';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 import ProductFeatureImage from './ProductFeatureImage';
 import ProductGalleryImage from './ProductGallery';
 import ProductVideo from './ProductVideo';
 import { Col, Row, Card } from 'antd';
 
 interface ProductGalleryType {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
   slug: string;
 }
 

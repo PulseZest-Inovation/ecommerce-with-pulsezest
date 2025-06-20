@@ -1,10 +1,10 @@
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 
 export const handleInputChange = (
-  key: keyof Product,
+  key: keyof ProductType,
   value: any,
-  formData: Product,
-  setFormData: React.Dispatch<React.SetStateAction<Product>>
+  formData: ProductType,
+  setFormData: React.Dispatch<React.SetStateAction<ProductType>>
 ) => {
   if (key === "productTitle" && !formData.id) {
     const slug = generateSlug(value);

@@ -4,11 +4,11 @@ import { LinkOutlined } from "@ant-design/icons";
 import ProductDetailTab from "../ProductDetailTab/page";
 import ProductOtherTab from "../ProductOtherTab/page";
 import ProductGalleryTab from "../ProductGalleryTab/page";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 
 interface SimpleProductProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   handleSubmit: () => void;

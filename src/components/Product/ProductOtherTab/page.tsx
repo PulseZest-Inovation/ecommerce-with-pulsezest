@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { Menu, Drawer, Button } from 'antd';
 import { ProductOtherTabMenu } from './ProductOtherTabMeu';
 import ProductOtherTabComponents from './ProductOtherTabCompeont';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 import { MenuOutlined } from '@ant-design/icons';
 
 interface ProductOtherTabProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function ProdutOtherTab({ formData, onFormDataChange }: ProductOtherTabProp) {

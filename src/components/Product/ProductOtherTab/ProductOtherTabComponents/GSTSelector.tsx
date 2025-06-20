@@ -1,10 +1,10 @@
 import React from 'react';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 import { Select } from 'antd';
 
 interface GSTSelectorProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function GSTSelector({ formData, onFormDataChange }: GSTSelectorProp) {

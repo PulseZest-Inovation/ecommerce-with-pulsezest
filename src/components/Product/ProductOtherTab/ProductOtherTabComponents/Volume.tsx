@@ -1,10 +1,10 @@
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 import { Input } from 'antd';
 import React from 'react';
 
 interface VolumeProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function Volume({ formData, onFormDataChange }: VolumeProp) {

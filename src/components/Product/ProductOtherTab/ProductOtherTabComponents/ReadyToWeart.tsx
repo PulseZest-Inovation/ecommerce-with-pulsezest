@@ -1,10 +1,10 @@
 import React from "react";
 import { Switch, Input, Tabs } from "antd";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 
 interface ReadyToWearProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 const ReadyToWear: React.FC<ReadyToWearProp> = ({
@@ -12,7 +12,7 @@ const ReadyToWear: React.FC<ReadyToWearProp> = ({
   onFormDataChange,
 }) => {
   const handleChargesChange = (
-    key: keyof Product,
+    key: keyof ProductType,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;

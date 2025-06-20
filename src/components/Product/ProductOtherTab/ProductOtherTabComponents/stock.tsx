@@ -1,11 +1,11 @@
 'use client';
 import React from "react";
 import { Input } from "antd";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 
 interface ProductStockProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 const ProductStock: React.FC<ProductStockProps> = ({ formData, onFormDataChange }) => {

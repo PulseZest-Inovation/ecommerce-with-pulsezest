@@ -7,6 +7,7 @@ import ProductDetailTab from '../ProductDetailTab/page';
 import ProductGalleryImage from '../ProductGalleryTab/ProductGallery';
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
+
 type Props = {
   initialData?: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
@@ -59,6 +60,7 @@ const VariableProductType: React.FC<Props> = ({
     };
 
     loadAttributes();
+    // eslint-disable-next-line
   }, []);
 
   const generateCombinations = (attributes: AttributeType[]): Record<string, string>[] => {
@@ -76,7 +78,7 @@ const VariableProductType: React.FC<Props> = ({
     const formatted = product.map((combination) => {
       const combo: Record<string, string> = {};
       combination.forEach((value, idx) => {
-        combo[attributes[idx].name] = value.value;
+        combo[String(attributes[idx].name)] = value.value;
       });
       return combo;
     });
@@ -90,7 +92,7 @@ const VariableProductType: React.FC<Props> = ({
     );
   };
 
-  const handleVariationChange = (idx: number, key: string, value: any) => {
+  const handleVariationChange = (idx: number, key: any, value: any) => {
     const updated = [...(formData.variations || [])];
     updated[idx] = { ...updated[idx], ...combinations[idx], [key]: value };
     setFormData((prev: any) => ({ ...prev, variations: updated }));
@@ -125,7 +127,7 @@ const VariableProductType: React.FC<Props> = ({
                   </td>
                   {attributeData.map(attr => (
                     <td key={attr.id} className="border px-2 py-1">
-                      {combo[attr.name]}
+                      {combo[String(attr.name)]}
                     </td>
                   ))}
                 </tr>
@@ -143,7 +145,7 @@ const VariableProductType: React.FC<Props> = ({
           <Collapse>
             {selectedIndexes.map((idx) => (
               <Panel
-                header={attributeData.map(attr => `${attr.name}: ${combinations[idx][attr.name]}`).join(', ')}
+                header={attributeData.map(attr => `${attr.name}: ${combinations[idx][String(attr.name)]}`).join(', ')}
                 key={idx}
               >
                 <Tabs defaultActiveKey="details">
@@ -163,7 +165,7 @@ const VariableProductType: React.FC<Props> = ({
                   <TabPane tab="Other Details" key="other-details">
                     <ProdutOtherTab
                       formData={formData.variations?.[idx] || {}}
-                      onFormDataChange={(key, value) => handleVariationChange(idx, key, value)}
+                      onFormDataChange={( key, value) => handleVariationChange(idx, key, value)}
                     />
                   </TabPane>
 

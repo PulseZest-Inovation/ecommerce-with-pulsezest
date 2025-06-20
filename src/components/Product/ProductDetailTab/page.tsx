@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Input, Collapse } from "antd";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 import CategorySelector from "./CategorySelector";
 import ProductTagSelector from "./TagsSelector";
 import CollapseExpandDescription from "./CollapseExpandDescription";
 import ProductShortDescription from "./ProductShortDescription";
 
 interface ProductDetailsProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function ProductDetailTab({

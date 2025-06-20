@@ -1,11 +1,11 @@
 'use client';
 import React, { useEffect } from 'react';
 import { Input, Checkbox, Card, Row, Col } from 'antd';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 
 interface PriceProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
@@ -16,7 +16,7 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
     }
   };
 
-  const handlePriceChange = (key: keyof Product, value: string) => {
+  const handlePriceChange = (key: keyof ProductType, value: string) => {
     onFormDataChange(key, value);
     if (key === 'salePrice') {
       onFormDataChange('price', value);

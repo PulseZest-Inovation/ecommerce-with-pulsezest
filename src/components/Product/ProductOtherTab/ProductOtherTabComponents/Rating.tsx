@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/Product';
 import { Input, Rate, message } from 'antd';
 
 interface RatingProp {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function Rating({ formData, onFormDataChange }: RatingProp) {

@@ -1,10 +1,10 @@
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 import React from "react";
 import { Input, Switch, Divider } from "antd";
 
 interface ReturnAndExchangeProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function ReturnAndExchange({

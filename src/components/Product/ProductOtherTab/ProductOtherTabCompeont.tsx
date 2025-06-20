@@ -1,7 +1,7 @@
 import React from "react";
 import Price from "./ProductOtherTabComponents/Price";
 import Shipping from "./ProductOtherTabComponents/Shipping";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 import ProductStock from "./ProductOtherTabComponents/stock";
 import GSTSelector from "./ProductOtherTabComponents/GSTSelector";
 import HSN from "./ProductOtherTabComponents/HSN";
@@ -14,8 +14,8 @@ import ProductGuide from "./ProductOtherTabComponents/ProductGuide";
 
 interface ProductContentRendererProps {
   selectedKey: string;
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 const ProductOtherTabComponents: React.FC<ProductContentRendererProps> = ({

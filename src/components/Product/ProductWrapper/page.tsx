@@ -2,16 +2,17 @@
 import React, { useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Select } from "antd";
-import { Product } from "@/types/Product";
+import { Select, Modal } from "antd";
+import { ProductType } from "@/types/Product";
 import VariableProductType from "../VariableProudctType/VariableProductType";
 import { handleSubmit } from "./ProductService";
 import { Fab, SelectChangeEvent } from "@mui/material";
 import { Attribute, fetchProductAttributes } from "./variationHelper";
 import SimpleProduct from "../SimpleProductType/SimpleProduct";
+import defaultProductData from "./defaultProduct";
 
 interface ProductWrapperProps {
-  initialData?: Product;
+  initialData?: ProductType;
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
@@ -19,7 +20,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
   const router = useRouter();
   const { Option } = Select;
 
-  const [formData, setFormData] = useState<Product>({
+  const [formData, setFormData] = useState<ProductType>({
     id: "",
     productTitle: "",
     productSubtitle: "",
@@ -96,9 +97,24 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     loadAttributes();
   }, []);
 
-  const handleTypeChange = (event: SelectChangeEvent<string>) => {
+  const handleTypeChange = (event: SelectChangeEvent<string> | { target: { value: string } }) => {
     const newType = event.target.value as "simple" | "variable";
-    setFormData((prev) => ({ ...prev, type: newType }));
+    // Check if productTitle and id are not empty and type is changing
+    if (formData.productTitle && formData.id && formData.type !== newType) {
+      Modal.confirm({
+        title: "Switch Product Type?",
+        content:
+          "If you switch the product type, after saving the product your simple product type data will be lost. Do you want to continue?",
+        okText: "Yes, Switch",
+        cancelText: "Cancel",
+        onOk: () => {
+        setFormData({ ...defaultProductData, type: newType });
+          console.log(formData);
+        },
+      });
+    } else {
+      setFormData((prev) => ({ ...prev, type: newType }));
+    }
   };
 
   useEffect(() => {
@@ -120,7 +136,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         <label className="block text-sm font-medium mb-2">Product Type:</label>
         <Select
           value={formData.type}
-          onChange={(value) => handleTypeChange({ target: { value } } as any)}
+          onChange={(value) => handleTypeChange({ target: { value } })}
           style={{ width: "100%" }}
         >
           <Option value="simple">Simple</Option>

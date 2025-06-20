@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Switch, List, Spin, message } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
-import { Product } from "@/types/Product";
+import { ProductType } from "@/types/Product";
 
 interface Guide {
   id: string;
@@ -9,8 +9,8 @@ interface Guide {
 }
 
 interface ProductGuideProps {
-  formData: Product;
-  onFormDataChange: (key: keyof Product, value: any) => void;
+  formData: ProductType;
+  onFormDataChange: (key: keyof ProductType, value: any) => void;
 }
 
 export default function ProductGuide({ formData, onFormDataChange }: ProductGuideProps) {
