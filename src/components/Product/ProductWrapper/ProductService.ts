@@ -1,7 +1,7 @@
 import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import { message } from "antd";
 import { AppDataType } from "@/types/AppData";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import { getAppData } from "@/services/getApp";
 import { useRouter } from "next/navigation"; // Corrected import
 import { generateSlug } from "./ProductForm";
@@ -22,6 +22,7 @@ export const handleSubmit = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   router: ReturnType<typeof useRouter>
 ): Promise<void> => {
+  console.log(formData);
   if (!formData.productTitle) {
     message.error("Product Title is required!");
     return;

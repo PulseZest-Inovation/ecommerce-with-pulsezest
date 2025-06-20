@@ -1,7 +1,7 @@
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Timestamp } from "firebase/firestore";
 import { OrderType } from "@/types/orderType";
-import { Product } from "@/types/Product";
+import { Product } from "@/types/ProductType";
 
 // Fetch Products from the collection
 const fetchProducts = async () => {

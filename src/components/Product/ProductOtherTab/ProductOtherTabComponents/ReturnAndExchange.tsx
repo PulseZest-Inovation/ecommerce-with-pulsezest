@@ -1,4 +1,4 @@
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import React from "react";
 import { Input, Switch, Divider } from "antd";
 

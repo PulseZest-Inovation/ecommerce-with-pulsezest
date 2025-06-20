@@ -1,10 +1,10 @@
 import React from "react";
 import { Tabs, Button, Tooltip } from "antd";
 import { LinkOutlined } from "@ant-design/icons";
-import ProductDetailTab from "../ProductDetailTab/page";
+import ProductDetailTab from "../SimpleProductDetailTab/page";
 import ProductOtherTab from "../ProductOtherTab/page";
 import ProductGalleryTab from "../ProductGalleryTab/page";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 
 interface SimpleProductProps {
   formData: ProductType;

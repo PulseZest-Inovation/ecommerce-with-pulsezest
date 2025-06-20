@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, Input, Tabs } from "antd";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 
 interface ReadyToWearProp {
   formData: ProductType;

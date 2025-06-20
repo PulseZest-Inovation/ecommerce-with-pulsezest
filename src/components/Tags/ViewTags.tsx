@@ -20,7 +20,6 @@ const ViewTags: React.FC = () => {
   const [updatedTagName, setUpdatedTagName] = useState('');
   const [updatedTagDescription, setUpdatedTagDescription] = useState('');
 
-  // Fetching data from Firestore
   const fetchTags = async () => {
     try {
       const data = await getAllDocsFromCollection<Tags>('tags');
@@ -32,19 +31,16 @@ const ViewTags: React.FC = () => {
     }
   };
 
-  // Automatically fetch new tags every 10 seconds
   useEffect(() => {
-    fetchTags(); // Initial fetch
+    fetchTags(); 
 
     const intervalId = setInterval(() => {
       fetchTags();
-    }, 10000); // Fetch every 10 seconds
+    }, 10000);  
 
-    // Clean up the interval on unmount
     return () => clearInterval(intervalId);
   }, []);
 
-  // Handle delete button click
   const showDeleteConfirm = (tag: Tags) => {
     setTagToDelete(tag);
     setIsModalVisible(true);
@@ -52,10 +48,10 @@ const ViewTags: React.FC = () => {
 
   const handleDelete = async () => {
     if (tagToDelete) {
-      const success = await deleteDocFromCollection('tags', tagToDelete.slug); // Use the delete function
+      const success = await deleteDocFromCollection('tags', tagToDelete.slug);  
       if (success) {
-        setTagsData((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug)); // Update local state
-        setFilteredTags((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug)); // Update filtered tags
+        setTagsData((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug));  
+        setFilteredTags((prev) => prev.filter(tag => tag.slug !== tagToDelete.slug));  
         message.success('Tag deleted successfully');
       } else {
         message.error('Failed to delete tag');
@@ -74,10 +70,10 @@ const ViewTags: React.FC = () => {
   const handleUpdate = async () => {
     if (tagToEdit) {
       const updatedTag = { ...tagToEdit, name: updatedTagName, description: updatedTagDescription };
-      const success = await setDocWithCustomId('tags', tagToEdit.slug, updatedTag); // Use the new function to update
+      const success = await setDocWithCustomId('tags', tagToEdit.slug, updatedTag);  
       if (success) {
-        setTagsData((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t))); // Update local state
-        setFilteredTags((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t))); // Update filtered tags
+        setTagsData((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t)));  
+        setFilteredTags((prev) => prev.map(t => (t.slug === tagToEdit.slug ? updatedTag : t)));  
         message.success('Tag updated successfully');
       } else {
         message.error('Failed to update tag');
@@ -88,13 +84,13 @@ const ViewTags: React.FC = () => {
     }
   };
 
-  // Toggle the visibility of a tag
+ 
   const handleToggleVisibility = async (tag: Tags) => {
-    const updatedTag = { ...tag, isVisible: !tag.isVisible }; // Toggle the isVisible state
-    const success = await updateDocFields('tags', tag.slug, { isVisible: updatedTag.isVisible }); // Update the visibility
+    const updatedTag = { ...tag, isVisible: !tag.isVisible };  
+    const success = await updateDocFields('tags', tag.slug, { isVisible: updatedTag.isVisible });  
     if (success) {
-      setTagsData((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t))); // Update local state
-      setFilteredTags((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t))); // Update filtered tags
+      setTagsData((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t)));  
+      setFilteredTags((prev) => prev.map(t => (t.slug === tag.slug ? updatedTag : t)));  
       message.success('Tag visibility updated successfully');
     } else {
       message.error('Failed to update tag visibility');
@@ -115,18 +111,17 @@ const ViewTags: React.FC = () => {
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-semibold mb-4">Tags List</h2>
 
-      {/* Search Bar */}
       <Search
         placeholder="Search tags"
         onSearch={handleSearch}
-        onChange={(e) => handleSearch(e.target.value)} // Update filtering on change
+        onChange={(e) => handleSearch(e.target.value)}  
         className="mb-4"
       />
 
       <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <List
           grid={{ gutter: 16, column: 2 }}
-          dataSource={filteredTags} // Use filtered tags
+          dataSource={filteredTags}  
           renderItem={(item) => (
             <List.Item key={item.slug}>
               <Card className="shadow-md p-4">
@@ -167,7 +162,6 @@ const ViewTags: React.FC = () => {
         />
       </div>
 
-      {/* Delete Confirmation Modal */}
       <Modal
         title="Confirm Deletion"
         visible={isModalVisible}
@@ -177,7 +171,6 @@ const ViewTags: React.FC = () => {
         <p>Are you sure you want to delete this tag?</p>
       </Modal>
 
-      {/* Edit Tag Modal */}
       <Modal
         title="Edit Tag"
         visible={!!tagToEdit}

@@ -1,4 +1,4 @@
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 
 export const handleInputChange = (
   key: keyof ProductType,

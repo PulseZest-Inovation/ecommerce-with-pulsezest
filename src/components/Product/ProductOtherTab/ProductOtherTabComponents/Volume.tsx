@@ -1,4 +1,4 @@
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 import { Input } from 'antd';
 import React from 'react';
 

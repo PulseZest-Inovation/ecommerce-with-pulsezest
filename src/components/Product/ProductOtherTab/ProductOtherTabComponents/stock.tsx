@@ -1,7 +1,7 @@
 'use client';
 import React from "react";
 import { Input } from "antd";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 
 interface ProductStockProps {
   formData: ProductType;

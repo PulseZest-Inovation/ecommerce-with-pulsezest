@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { AttributeType, ValueType } from '@/types/AttributeType/AttirbuteType';
 import { Collapse, Checkbox, Button, Tabs } from 'antd';
 import ProdutOtherTab from '../ProductOtherTab/page';
-import ProductDetailTab from '../ProductDetailTab/page';
 import ProductGalleryImage from '../ProductGalleryTab/ProductGallery';
+import VariableProductDetailTab from '../VariableProductDetailTab/page';
+import ParticularVariationDetailTab from '../VariableProductDetailTab/ParticularVariationDetailTab';
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
 
@@ -18,7 +19,6 @@ type Props = {
 };
 
 const VariableProductType: React.FC<Props> = ({
-  initialData,
   setFormData,
   formData,
   setLoading,
@@ -30,6 +30,7 @@ const VariableProductType: React.FC<Props> = ({
   const [selectedIndexes, setSelectedIndexes] = useState<number[]>([]);
 
   useEffect(() => {
+    // console.log(`formData from VariableProductType`, formData);
     const loadAttributes = async () => {
       try {
         setLoading(true);
@@ -60,7 +61,6 @@ const VariableProductType: React.FC<Props> = ({
     };
 
     loadAttributes();
-    // eslint-disable-next-line
   }, []);
 
   const generateCombinations = (attributes: AttributeType[]): Record<string, string>[] => {
@@ -101,10 +101,13 @@ const VariableProductType: React.FC<Props> = ({
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Variable Product Configuration</h2>
-
+      <VariableProductDetailTab 
+      formData={formData} 
+          onFormDataChange={(key, value) => setFormData((prev: any) => ({ ...prev, [key]: value }))}
+      />
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">
-          1. Select Variations ({combinations.length} combinations found)
+          {combinations.length} Variations combinations found
         </h3>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm border">
@@ -140,7 +143,7 @@ const VariableProductType: React.FC<Props> = ({
       {selectedIndexes.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">
-            2. Enter Details for Selected Variations
+            Enter Details for Selected Variations
           </h3>
           <Collapse>
             {selectedIndexes.map((idx) => (
@@ -150,13 +153,20 @@ const VariableProductType: React.FC<Props> = ({
               >
                 <Tabs defaultActiveKey="details">
                   <TabPane tab="Details" key="details">
-                    <ProductDetailTab
+                    <ParticularVariationDetailTab
                       formData={{
                         ...combinations[idx],
                         ...(formData.variations?.[idx] || {}),
-                        description: Array.isArray(formData.variations?.[idx]?.description)
-                          ? formData.variations[idx].description
-                          : [],
+                          description: Array.isArray(formData.variations?.[idx]?.description)
+                        ? formData.variations[idx].description
+                        : [
+                            { heading: "Details", content: "" },
+                            { heading: "Description", content: "" },
+                            { heading: "Shipping", content: "" },
+                            { heading: "Return & Exchange", content: "" },
+                            { heading: "Manufacturing Information", content: "" },
+                            { heading: "Support", content: "" },
+                          ],
                       }}
                       onFormDataChange={(key, value) => handleVariationChange(idx, key, value)}
                     />

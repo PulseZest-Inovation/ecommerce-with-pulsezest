@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Spin } from 'antd';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 
 interface SkuProps {
   formData: ProductType;

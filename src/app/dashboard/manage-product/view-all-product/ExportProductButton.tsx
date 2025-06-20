@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Tooltip } from 'antd';
 import { FileExcelOutlined } from '@ant-design/icons';
 import * as XLSX from 'xlsx';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 
 interface ExportProductsButtonProps {
   products: Product[];

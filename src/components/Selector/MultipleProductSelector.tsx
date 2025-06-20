@@ -1,25 +1,25 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Product } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 import { Select, Spin } from 'antd';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData'; // Adjust the path accordingly
 
 const { Option } = Select;
 
 interface MultipleProductSelectorProps {
-  value?: Product[]; // Accepts an array of full Product objects
-  onChange?: (value: Product[]) => void;
+  value?: ProductType[]; // Accepts an array of full Product objects
+  onChange?: (value: ProductType[]) => void;
 }
 
 const MultipleProductSelector: React.FC<MultipleProductSelectorProps> = ({ value = [], onChange }) => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         // Fetch products from Firestore
-        const fetchedProducts = await getAllDocsFromCollection<Product>('products');
+        const fetchedProducts = await getAllDocsFromCollection<ProductType>('products');
         setProducts(fetchedProducts);
       } catch (error) {
         console.error('Error fetching products: ', error);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 import { Select } from 'antd';
 
 interface GSTSelectorProp {

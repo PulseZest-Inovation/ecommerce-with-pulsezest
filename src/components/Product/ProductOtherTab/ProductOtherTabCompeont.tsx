@@ -1,7 +1,7 @@
 import React from "react";
 import Price from "./ProductOtherTabComponents/Price";
 import Shipping from "./ProductOtherTabComponents/Shipping";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import ProductStock from "./ProductOtherTabComponents/stock";
 import GSTSelector from "./ProductOtherTabComponents/GSTSelector";
 import HSN from "./ProductOtherTabComponents/HSN";

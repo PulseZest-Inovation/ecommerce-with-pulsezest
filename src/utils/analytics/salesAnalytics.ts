@@ -1,7 +1,7 @@
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { OrderType } from "@/types/orderType";
 import { startOfDay, endOfDay, subDays, subMonths } from "date-fns"; // Add date-fns for date manipulation
-import { Product } from "@/types/Product";
+import { Product } from "@/types/ProductType";
 import { Timestamp } from "firebase/firestore";
 
 // Fetch all products

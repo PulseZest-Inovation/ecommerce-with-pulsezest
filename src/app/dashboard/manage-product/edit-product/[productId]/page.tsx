@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import ProductWrapper from '@/components/Product/ProductWrapper/page';
 import { useParams } from 'next/navigation';

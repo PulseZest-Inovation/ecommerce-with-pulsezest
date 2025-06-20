@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Image, Tag, Rate, Card, Dropdown, Menu } from 'antd';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { EditOutlined, DeleteOutlined, LinkOutlined, CopyOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { Link } from '@mui/material';
 import moment from 'moment';

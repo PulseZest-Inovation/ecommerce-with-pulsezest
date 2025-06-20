@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 import { Input, Rate, message } from 'antd';
 
 interface RatingProp {

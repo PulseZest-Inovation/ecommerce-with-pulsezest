@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Input, } from 'antd';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { getAppData } from '@/services/getApp';
 import { AppDataType } from '@/types/AppData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';

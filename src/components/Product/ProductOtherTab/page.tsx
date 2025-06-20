@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Menu, Drawer, Button } from 'antd';
 import { ProductOtherTabMenu } from './ProductOtherTabMeu';
 import ProductOtherTabComponents from './ProductOtherTabCompeont';
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 import { MenuOutlined } from '@ant-design/icons';
 
 interface ProductOtherTabProp {

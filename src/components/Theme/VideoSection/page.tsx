@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import MultipleProductSelector from '@/components/Selector/MultipleProductSelector';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { Switch, message, Button, Spin } from 'antd';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';

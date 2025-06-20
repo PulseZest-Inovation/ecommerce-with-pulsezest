@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Timestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Select, Modal } from "antd";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import VariableProductType from "../VariableProudctType/VariableProductType";
 import { handleSubmit } from "./ProductService";
 import { Fab, SelectChangeEvent } from "@mui/material";

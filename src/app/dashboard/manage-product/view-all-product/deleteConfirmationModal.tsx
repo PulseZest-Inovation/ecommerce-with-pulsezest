@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button, Image, message } from 'antd';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { deleteDocFromCollection } from '@/services/FirestoreData/deleteFirestoreData';
 
 interface DeleteConfirmationModalProps {

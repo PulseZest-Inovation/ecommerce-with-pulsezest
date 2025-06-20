@@ -1,4 +1,4 @@
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import { Timestamp } from "firebase/firestore";
 
 const defaultProductData: ProductType = {

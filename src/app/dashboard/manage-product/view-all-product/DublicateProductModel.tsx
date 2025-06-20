@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Input, Button, message } from 'antd';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/ProductType';
 import { setDocWithCustomId } from '@/services/FirestoreData/postFirestoreData';
 import slugify from 'slugify';
 import { Timestamp } from 'firebase/firestore';

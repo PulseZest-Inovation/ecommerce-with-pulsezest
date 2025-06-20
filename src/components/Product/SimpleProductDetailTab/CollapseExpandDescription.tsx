@@ -3,7 +3,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Collapse } from 'antd';
-import { ProductType } from '@/types/Product';
+import { ProductType } from '@/types/ProductType';
 
 // Dynamically import ReactQuill with SSR disabled
 const ReactQuill = dynamic(() => import('react-quill'), {

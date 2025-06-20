@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Input, Collapse } from "antd";
-import { ProductType } from "@/types/Product";
+import { ProductType } from "@/types/ProductType";
 import CategorySelector from "./CategorySelector";
 import ProductTagSelector from "./TagsSelector";
 import CollapseExpandDescription from "./CollapseExpandDescription";
