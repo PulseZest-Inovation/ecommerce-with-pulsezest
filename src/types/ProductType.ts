@@ -78,7 +78,7 @@ export interface ProductType {
   galleryImages: string[];
 
   // Variations and Attributes
-  variation: any[];
+  variations: any[];
   attributes: any[];
 
   // Other Metadata

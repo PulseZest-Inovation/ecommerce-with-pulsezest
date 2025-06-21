@@ -53,7 +53,6 @@ const VariableProductDetailTab: React.FC<VariableProductDetailsProp> = ({
         productId={formData.slug}
       />
         
-      {/* Add more fields as needed for your variation */}
     </div>
   );
 };

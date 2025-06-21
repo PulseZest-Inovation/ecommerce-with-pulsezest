@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Image, Tag, Rate, Card, Dropdown, Menu } from 'antd';
-import { Product } from '@/types/ProductType';
+import { ProductType } from '@/types/ProductType';
 import { EditOutlined, DeleteOutlined, LinkOutlined, CopyOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { Link } from '@mui/material';
 import moment from 'moment';
@@ -8,12 +8,12 @@ import moment from 'moment';
 interface ProductListProps {
   searchTerm: string;
   selectedCategories: string[];
-  onDeleteProduct: (product: Product) => void;
+  onDeleteProduct: (product: ProductType) => void;
   onEditProduct: (id: string) => void;
   onViewProduct: (id: string, category: string) => void;
-  onDuplicateProduct: (product: Product) => void; // Function to handle duplication
+  onDuplicateProduct: (product: ProductType) => void; // Function to handle duplication
   applicationUrl: string;
-  products: Product[];
+  products: ProductType[];
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -26,7 +26,7 @@ const ProductList: React.FC<ProductListProps> = ({
   applicationUrl,
   products,
 }) => {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ProductType[]>([]);
 
   useEffect(() => {
     let filtered = products;
@@ -50,7 +50,7 @@ const ProductList: React.FC<ProductListProps> = ({
     setFilteredProducts(filtered);
   }, [searchTerm, selectedCategories, products]);
 
-  const handleShareOnWhatsApp = (product: Product) => {
+  const handleShareOnWhatsApp = (product: ProductType) => {
     const message = `Check out this product: ${product.productTitle}\n${applicationUrl}/collection/${product.categories[0]}/product/${product.slug}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -60,7 +60,7 @@ const ProductList: React.FC<ProductListProps> = ({
     {
       title: 'Product Details',
       key: 'productDetails',
-      render: (_: any, record: Product) => (
+      render: (_: any, record: ProductType) => (
         <Space direction="horizontal">
           <Image src={record.featuredImage} alt="Featured Image" width={50} height={50} style={{ objectFit: 'cover' }} />
           <div>
@@ -76,7 +76,7 @@ const ProductList: React.FC<ProductListProps> = ({
       key: 'categories',
       render: (categories: string[]) => (
         <Space wrap>
-          {categories.map((category, index) => (
+          {(categories || []).map((category: string, index: number) => (
             <Tag color="blue" key={index}>
               {category}
             </Tag>
@@ -94,7 +94,10 @@ const ProductList: React.FC<ProductListProps> = ({
       title: 'Created At',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (createdAt: any) => moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss'),
+      render: (createdAt: any) =>
+        createdAt && typeof createdAt.toDate === "function"
+          ? moment(createdAt.toDate()).format('YYYY-MM-DD HH:mm:ss')
+          : "-",
     },
     {
       title: 'Average Rating',
@@ -108,7 +111,7 @@ const ProductList: React.FC<ProductListProps> = ({
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, record: Product) => {
+      render: (_: any, record: ProductType) => {
         const menu = (
           <Menu>
             <Menu.Item key="share" onClick={() => handleShareOnWhatsApp(record)}>
@@ -156,7 +159,7 @@ const ProductList: React.FC<ProductListProps> = ({
 
         <div className="flex items-center space-x-3">
           {selectedCategories.length > 0 ? (
-            selectedCategories.map((category, index) => (
+            selectedCategories.map((category: string, index: number) => (
               <div key={index} className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm shadow-md hover:bg-blue-600 transition-all">
                 {category}
               </div>

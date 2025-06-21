@@ -1,3 +1,5 @@
+import { useRouter } from "next/navigation";
+import { handleVariableProductSave } from "../ProductWrapper/ProductService";
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import React, { useEffect, useState } from 'react';
 import { AttributeType, ValueType } from '@/types/AttributeType/AttirbuteType';
@@ -15,7 +17,13 @@ type Props = {
   formData: any;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
-  handleSubmit: () => void;
+  handleVariableProductSave: (
+    formData: any,
+    selectedIndexes: number[],
+    combinations: Record<string, string>[],
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    router: any
+  ) => void;
 };
 
 const VariableProductType: React.FC<Props> = ({
@@ -23,14 +31,24 @@ const VariableProductType: React.FC<Props> = ({
   formData,
   setLoading,
   loading,
-  handleSubmit,
+  handleVariableProductSave,
 }) => {
   const [attributeData, setAttributeData] = useState<AttributeType[]>([]);
   const [combinations, setCombinations] = useState<Record<string, string>[]>([]);
   const [selectedIndexes, setSelectedIndexes] = useState<number[]>([]);
+  const router = useRouter();
+
+  const handleSave = () => {
+    handleVariableProductSave(
+      formData,
+      selectedIndexes,
+      combinations,
+      setLoading,
+      router
+    );
+  };
 
   useEffect(() => {
-    // console.log(`formData from VariableProductType`, formData);
     const loadAttributes = async () => {
       try {
         setLoading(true);
@@ -63,6 +81,26 @@ const VariableProductType: React.FC<Props> = ({
     loadAttributes();
   }, []);
 
+useEffect(() => {
+  if (
+    formData.attributes &&
+    Array.isArray(formData.attributes) &&
+    combinations.length > 0
+  ) {
+    const indexes = formData.attributes.map((attrObj: any) => {
+      return combinations.findIndex(combo =>
+        Object.keys(combo).every(key => {
+          const attrKey = Object.keys(attrObj).find(
+            k => k.toLowerCase() === key.toLowerCase()
+          );
+          return attrKey && combo[key] === attrObj[attrKey];
+        })
+      );
+    }).filter((idx: number) => idx !== -1);
+
+    setSelectedIndexes(indexes);
+  }
+}, [formData.attributes, combinations]);
   const generateCombinations = (attributes: AttributeType[]): Record<string, string>[] => {
     if (attributes.length === 0) return [];
 
@@ -92,18 +130,21 @@ const VariableProductType: React.FC<Props> = ({
     );
   };
 
-  const handleVariationChange = (idx: number, key: any, value: any) => {
-    const updated = [...(formData.variations || [])];
+ const handleVariationChange = (idx: number, key: any, value: any) => {
+  const updated = [...(formData.variations || [])];
+  if (typeof key === "object" && key !== null) {
+    updated[idx] = { ...updated[idx], ...combinations[idx], ...key };
+  } else {
     updated[idx] = { ...updated[idx], ...combinations[idx], [key]: value };
-    setFormData((prev: any) => ({ ...prev, variations: updated }));
-  };
-
+  }
+  setFormData((prev: any) => ({ ...prev, variations: updated }));
+};
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Variable Product Configuration</h2>
       <VariableProductDetailTab 
-      formData={formData} 
-          onFormDataChange={(key, value) => setFormData((prev: any) => ({ ...prev, [key]: value }))}
+        formData={formData} 
+        onFormDataChange={(key, value) => setFormData((prev: any) => ({ ...prev, [key]: value }))}
       />
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">
@@ -140,6 +181,15 @@ const VariableProductType: React.FC<Props> = ({
         </div>
       </div>
 
+      <div className="mt-6 flex justify-end">
+      <Button
+        type="primary"
+        onClick={handleSave}
+        disabled={loading || selectedIndexes.length === 0}
+      >
+        Save Variations
+      </Button>
+    </div>
       {selectedIndexes.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-2">
@@ -157,16 +207,16 @@ const VariableProductType: React.FC<Props> = ({
                       formData={{
                         ...combinations[idx],
                         ...(formData.variations?.[idx] || {}),
-                          description: Array.isArray(formData.variations?.[idx]?.description)
-                        ? formData.variations[idx].description
-                        : [
-                            { heading: "Details", content: "" },
-                            { heading: "Description", content: "" },
-                            { heading: "Shipping", content: "" },
-                            { heading: "Return & Exchange", content: "" },
-                            { heading: "Manufacturing Information", content: "" },
-                            { heading: "Support", content: "" },
-                          ],
+                        description: Array.isArray(formData.variations?.[idx]?.description)
+                          ? formData.variations[idx].description
+                          : [
+                              { heading: "Details", content: "" },
+                              { heading: "Description", content: "" },
+                              { heading: "Shipping", content: "" },
+                              { heading: "Return & Exchange", content: "" },
+                              { heading: "Manufacturing Information", content: "" },
+                              { heading: "Support", content: "" },
+                            ],
                       }}
                       onFormDataChange={(key, value) => handleVariationChange(idx, key, value)}
                     />
@@ -195,15 +245,7 @@ const VariableProductType: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="mt-6">
-        <Button
-          type="primary"
-          onClick={handleSubmit}
-          disabled={loading || selectedIndexes.length === 0}
-        >
-          Save Variations
-        </Button>
-      </div>
+    
     </div>
   );
 };

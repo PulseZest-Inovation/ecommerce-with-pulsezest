@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Select, Modal } from "antd";
 import { ProductType } from "@/types/ProductType";
 import VariableProductType from "../VariableProudctType/VariableProductType";
-import { handleSubmit } from "./ProductService";
+import { handleSubmit, handleVariableProductSave } from "./ProductService";
 import { Fab, SelectChangeEvent } from "@mui/material";
 import { Attribute, fetchProductAttributes } from "./variationHelper";
 import SimpleProduct from "../SimpleProductType/SimpleProduct";
@@ -73,7 +73,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     featuredImage: "",
     galleryImages: [],
     videoUrl: "",
-    variation: [],
+    variations: [],
     attributes: [],
     menuOrder: 0,
     metaData: [],
@@ -155,13 +155,13 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
         />
       ) : (
         <VariableProductType
-          formData={formData}
-          setFormData={setFormData}
-          loading={loading}
-          setLoading={setLoading}
-          handleSubmit={() => handleSubmit(formData, setLoading, router)}
-          initialData={initialData}
-        />
+        formData={formData}
+        setFormData={setFormData}
+        loading={loading}
+        setLoading={setLoading}
+        handleVariableProductSave={handleVariableProductSave}  
+        initialData={initialData}
+      />
       )}
 
       {/* Floating Action Button for Mobile */}

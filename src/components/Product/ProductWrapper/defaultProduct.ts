@@ -54,7 +54,7 @@ const defaultProductData: ProductType = {
   featuredImage: "",
   galleryImages: [],
   videoUrl: "",
-  variation: [],
+  variationProduct: [],
   attributes: [],
   menuOrder: 0,
   metaData: [],
