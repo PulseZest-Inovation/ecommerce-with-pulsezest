@@ -53,7 +53,8 @@ export default function CompletedOrderPage() {
   };
 
   const handleViewOrder = (orderId: string) => {
-    router.push(`/orders/${orderId}`); // Navigate to the order detail page
+   
+    router.push(`/dashboard/orders/order-details/${orderId}`)
   };
 
   const columns: ColumnsType<OrderType> = [
