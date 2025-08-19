@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '@/types/Product';
 import { Form, Row, Col, Input, Button, Select, message, InputNumber, Popover } from 'antd';
 import { CouponsType } from '@/types/CouponType';
-import CategorySelector from '../Product/ProductDetailTab/CategorySelector';
+import MultipleCategoriesSelector from '@/components/Selector/MultipleCategorySelector';
 import MultipleProductSelector from '@/components/Selector/MultipleProductSelector';
 
 const { Option } = Select;
@@ -12,10 +12,15 @@ type CouponFormProps = {
   handleInputChange: (field: keyof CouponsType, value: any) => void;
   handleSave: () => void;
 };
+type CategoryFilterProps = {
+  selectedCategories: string[];
+  onChange: (categories: string[]) => void;
+};
 
+ 
 const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, handleSave }) => {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-
+const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const handleProductChange = (products: Product[]) => {
     if (products.length > 15) {
       message.warning('You can select up to 15 products only!');
@@ -28,6 +33,8 @@ const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, hand
   const handleCategoryChange = (categories: string[]) => {
     
   };
+
+
 
   return (
     <Form layout="vertical">
@@ -114,7 +121,7 @@ const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, hand
       <Row gutter={16}>
         <Col span={24}>
           <Form.Item label="">
-            <CategorySelector/>
+           <MultipleCategoriesSelector value={selectedCategories} onChange={setSelectedCategories} />
           </Form.Item>
         </Col>
       </Row>
