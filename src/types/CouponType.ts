@@ -21,5 +21,7 @@ export interface CouponsType {
   excludeSaleItems: boolean;
   minimumAmount: number; // Changed to `number`
   usedBy: string[]; 
-  metaData: { key: string; value: any }[]; // Better defined structure
+  metaData: { key: string; value: any }[];
+   applicableProducts?: string[];    // store product IDs
+  applicableCategories?: string[];  // Better defined structure
 }

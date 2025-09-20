@@ -12,29 +12,29 @@ type CouponFormProps = {
   handleInputChange: (field: keyof CouponsType, value: any) => void;
   handleSave: () => void;
 };
-type CategoryFilterProps = {
-  selectedCategories: string[];
-  onChange: (categories: string[]) => void;
-};
 
- 
 const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, handleSave }) => {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  // ✅ Product change handler
   const handleProductChange = (products: Product[]) => {
     if (products.length > 15) {
       message.warning('You can select up to 15 products only!');
       products = products.slice(0, 15);
     }
     setSelectedProducts(products);
-     // ✅ save to coupon object too
+
+    // Save product IDs in coupon
+    const productIds = products.map((p) => p.id);
+    handleInputChange('applicableProducts', productIds);
   };
 
+  // ✅ Category change handler
   const handleCategoryChange = (categories: string[]) => {
-    
+    setSelectedCategories(categories);
+    handleInputChange('applicableCategories', categories);
   };
-
-
 
   return (
     <Form layout="vertical">
@@ -80,10 +80,7 @@ const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item label="Discount Type">
-            <Popover
-              content="Choose between 'Fixed' or 'Percentage' discount type."
-              title="Discount Type"
-            >
+            <Popover content="Choose between 'Fixed' or 'Percentage' discount type." title="Discount Type">
               <Select
                 value={coupon.discountType}
                 onChange={(value) => handleInputChange('discountType', value)}
@@ -120,8 +117,8 @@ const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
       {/* ✅ Category Selector */}
       <Row gutter={16}>
         <Col span={24}>
-          <Form.Item label="">
-           <MultipleCategoriesSelector value={selectedCategories} onChange={setSelectedCategories} />
+          <Form.Item label="Select Categories">
+            <MultipleCategoriesSelector value={selectedCategories} onChange={handleCategoryChange} />
           </Form.Item>
         </Col>
       </Row>
