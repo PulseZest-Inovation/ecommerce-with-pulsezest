@@ -4,6 +4,7 @@ import { Table, Button, Space, Avatar, Input } from 'antd';
 import { CustomerType } from '@/types/Customer';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import CustomerDetails from '../CustomerDetails/page';
+import { OrderType } from '@/types/orderType';
 const { Search } = Input;
 
 const CustomersTable: React.FC = () => {
@@ -13,13 +14,33 @@ const CustomersTable: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
 
+  const getCreatedAtNumber = (order: OrderType): number => {
+  if (!order.createdAt) return 0;
+  if (typeof order.createdAt === 'number') return order.createdAt;
+  if ((order.createdAt)) return (order.createdAt).toMillis();
+  return 0;
+};
+
   // Fetch dynamic data from Firestore
   useEffect(() => {
     const fetchCustomers = async () => {
       setLoading(true);
       const data = await getAllDocsFromCollection<CustomerType>('customers');
-      setCustomers(data);
-      setFilteredCustomers(data);
+      const orderData = await getAllDocsFromCollection<OrderType>('orders') //add
+      const allCustomersWithEmail: CustomerType[] = data.map(customer => {
+        // Find latest order for this customer
+        const ordersForCustomer = orderData
+          .filter(o => o.customerId === customer.id)
+          .sort((a, b) => getCreatedAtNumber(b) - getCreatedAtNumber(a));
+        const latestOrder = ordersForCustomer[0];
+
+        return {
+          ...customer,
+          email: customer.email || latestOrder?.email || 'Not Provided', 
+        };
+      });
+       setCustomers(allCustomersWithEmail);
+      setFilteredCustomers(allCustomersWithEmail);
       setLoading(false);
     };
 
@@ -75,7 +96,8 @@ const CustomersTable: React.FC = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (_: any, record: CustomerType) => (
+      // render: (_: any, record: CustomerType) => (
+      render: (record: CustomerType) => (
         <Space size="middle">
           <Button type="primary" onClick={() => handleViewDetails(record)}>
             View Details
