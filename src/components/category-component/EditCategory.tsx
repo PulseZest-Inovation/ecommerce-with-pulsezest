@@ -1,5 +1,5 @@
 import { ApplicationConfig } from "@/config/ApplicationConfig";
-import { Button, Input, message, Upload } from "antd";
+import { Button, Input, InputNumber, message, Upload } from "antd";
 import { useState } from "react";
 import { Categories } from '@/types/categories';
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
@@ -17,6 +17,7 @@ type EditFormProps = {
     const [description, setDescription] = useState<string>(category.description || '');
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [position , setPosition] = useState<number>(category.isPosition || 1 );
   
     const handleImageUpload = async () => {
       const key = ApplicationConfig?.securityKey;
@@ -42,9 +43,10 @@ type EditFormProps = {
       setLoading(true); // Start loading
       try {
         const imageUrl = await handleImageUpload();
-        onSubmit({ name, description, image: imageUrl }, category.cid);
+        onSubmit({ name, description, image: imageUrl , isPosition: position}, category.cid);
       } catch (error) {
         message.error('Failed to upload image.');
+        console.error(error)
       } finally {
         setLoading(false);
       }
@@ -69,10 +71,17 @@ type EditFormProps = {
           onChange={(e) => setDescription(e.target.value)}
           style={{ marginBottom: '8px' }}
         />
+        <InputNumber
+          min={1}
+          value={position}
+          onChange={(value) => setPosition(value || 1)}
+          style={{ marginBottom: "8px", width: "100%" }}
+          placeholder="Position"
+        />
         <Upload
           beforeUpload={handleBeforeUpload}
           multiple={false} // Ensure only one file can be selected
-          fileList={image ? [image as any] : []} // Display the selected image in the upload list
+          fileList={image ? [image as any ] : []} // Display the selected image in the upload list
           onRemove={() => setImage(null)} // Clear the image on removal
         >
           <Button icon={<UploadOutlined />}>Change Image</Button>
