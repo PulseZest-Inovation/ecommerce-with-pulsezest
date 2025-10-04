@@ -1,8 +1,8 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { db } from "@/config/firbeaseConfig";
-import { collection, getDocs } from "firebase/firestore";
-import { Button, Modal, Spin, Image, message } from "antd";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { Button, Modal, Spin, Image, message, Popconfirm } from "antd";
 
 interface GalleryImage {
   id?: string;
@@ -58,6 +58,32 @@ const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGa
     }
   };
 
+  // 🔹 Delete image from selected gallery
+  const handleDeleteSelected = (image: GalleryImage) => {
+    const updated = galleryImages.filter((img) => img.id !== image.id);
+    onGalleryChange(updated);
+    setSelectedImages(selectedImages.filter((img) => img.id !== image.id));
+    message.success("Image removed");
+  };
+
+  // 🔹 Delete image from Firestore gallery
+  const handleDeleteFromFirestore = async (image: GalleryImage) => {
+    try {
+      const appKey = localStorage.getItem("securityKey");
+      if (!appKey) throw new Error("No security key found!");
+
+      if (!image.id) throw new Error("Image ID not found!");
+      await deleteDoc(doc(db, "app_name", appKey, `/gallery`, image.id));
+
+      setAvailableGallery(availableGallery.filter((img) => img.id !== image.id));
+      setSelectedImages(selectedImages.filter((img) => img.id !== image.id));
+      message.success("Image deleted from gallery");
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to delete image");
+    }
+  };
+
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <div className="flex justify-between items-center mb-4">
@@ -83,6 +109,21 @@ const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGa
                 <div className="absolute bottom-2 left-2 bg-white text-xs px-2 py-1 rounded shadow">
                   {image.name}
                 </div>
+                <Popconfirm
+                  title="Are you sure to remove this image?"
+                  onConfirm={() => handleDeleteSelected(image)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    type="primary"
+                    danger
+                    size="small"
+                    className="absolute top-2 right-2"
+                  >
+                    Delete
+                  </Button>
+                </Popconfirm>
               </div>
             ))}
           </div>
@@ -124,11 +165,31 @@ const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGa
                   <div className="absolute bottom-2 left-2 bg-white text-xs px-2 py-1 rounded shadow">
                     {image.name}
                   </div>
+
+                  {/* Selected overlay */}
                   {isSelected && (
                     <div className="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center text-white font-bold">
                       Selected
                     </div>
                   )}
+
+                  {/* Delete from Firestore */}
+                  <Popconfirm
+                    title="Delete this image from gallery?"
+                    onConfirm={() => handleDeleteFromFirestore(image)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button
+                      type="primary"
+                      danger
+                      size="small"
+                      className="absolute top-2 right-2"
+                      onClick={(e) => e.stopPropagation()} // prevent toggleSelect
+                    >
+                      Delete
+                    </Button>
+                  </Popconfirm>
                 </div>
               );
             })}

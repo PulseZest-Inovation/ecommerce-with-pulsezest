@@ -1,13 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { storage } from '@/config/firbeaseConfig'; // adjust path
-import { createDocWithAutoId } from '@/services/FirestoreData/postFirestoreData'; // adjust path
-import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData'; // adjust path
-import { X } from 'lucide-react'; // icon for cross
-import { Add } from '@mui/icons-material';; // icon for plus
+import { storage } from '@/config/firbeaseConfig';
+import { createDocWithAutoId, deleteDocById } from '@/services/FirestoreData/postFirestoreData'; // add deleteDocById function
+import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
+import { X } from 'lucide-react';
+import { Add } from '@mui/icons-material';
+import { Popconfirm, message } from 'antd';
 
 type GalleryDoc = {
+  id?: string; // Firestore document ID
   imageUrl: string;
   name: string;
   size: number; // in bytes
@@ -55,22 +57,33 @@ export default function Page() {
         await createDocWithAutoId('gallery', {
           imageUrl: downloadURL,
           name: file.name,
-          size: file.size, // in bytes
+          size: file.size,
           createdAt: new Date(),
         });
       }
-      alert('✅ Images uploaded successfully!');
+      message.success('✅ Images uploaded successfully!');
       setSelectedImages([]);
       fetchGallery();
     } catch (error) {
       console.error('Error uploading images:', error);
-      alert('❌ Upload failed');
+      message.error('❌ Upload failed');
     } finally {
       setUploading(false);
     }
   };
 
-  // Format file size (KB / MB)
+  const handleDeleteGalleryImage = async (img: GalleryDoc) => {
+    try {
+      if (!img.id) throw new Error('No document ID found for this image');
+      await deleteDocById('gallery', img.id);
+      setGalleryImages((prev) => prev.filter((i) => i.id !== img.id));
+      message.success('Image deleted successfully');
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      message.error('Failed to delete image');
+    }
+  };
+
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -79,15 +92,14 @@ export default function Page() {
 
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {/* Upload Section (Left Side) */}
+      {/* Upload Section */}
       <div>
-       <label
-  htmlFor="imageUpload"
-  className="flex items-center gap-2 cursor-pointer w-52 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
->
-  <Add className="w-4 h-4" /> {/* Plus icon */}
-  Select Images
-</label>
+        <label
+          htmlFor="imageUpload"
+          className="flex items-center gap-2 cursor-pointer w-52 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          <Add className="w-4 h-4" /> Select Images
+        </label>
         <input
           type="file"
           id="imageUpload"
@@ -112,7 +124,6 @@ export default function Page() {
                     alt={`preview-${index}`}
                     className="w-full h-28 object-cover"
                   />
-                  {/* Cross button */}
                   <button
                     onClick={() => handleRemoveSelected(index)}
                     className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
@@ -136,7 +147,7 @@ export default function Page() {
         )}
       </div>
 
-      {/* Gallery Section (Right Side) */}
+      {/* Gallery Section */}
       <div>
         <h2 className="text-lg font-semibold">Gallery</h2>
         {galleryImages.length === 0 ? (
@@ -146,17 +157,30 @@ export default function Page() {
             {galleryImages.map((img, index) => (
               <div
                 key={index}
-                className="w-full border rounded overflow-hidden shadow cursor-pointer"
-                onClick={() => setPreviewImage(img.imageUrl)}
+                className="relative w-full border rounded overflow-hidden shadow cursor-pointer"
               >
                 <img
                   src={img.imageUrl}
                   alt={`gallery-${index}`}
                   className="w-full h-28 object-cover hover:scale-105 transition"
+                  onClick={() => setPreviewImage(img.imageUrl)}
                 />
-                <div className="p-2 text-xs text-gray-600">
-                  {img.name}  
-                </div>
+                <div className="p-2 text-xs text-gray-600">{img.name}</div>
+
+                {/* Delete button */}
+                <Popconfirm
+                  title="Are you sure to delete this image?"
+                  onConfirm={() => handleDeleteGalleryImage(img)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <button
+                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <X size={14} />
+                  </button>
+                </Popconfirm>
               </div>
             ))}
           </div>
