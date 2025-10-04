@@ -75,8 +75,7 @@ tagForImage: string;
 
   // Media
   featuredImage: string;
-  galleryImages: string[];
-
+  galleryImages: [];
   // Variations and Attributes
   variation: any[];
   attributes: any[];

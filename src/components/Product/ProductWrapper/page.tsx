@@ -71,6 +71,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
     tags: [],
     featuredImage: "",
     galleryImages: [],
+     tagForImage: '',
     videoUrl: "",
     variation: [],
     attributes: [],

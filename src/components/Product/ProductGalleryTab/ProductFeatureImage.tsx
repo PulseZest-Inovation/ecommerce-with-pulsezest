@@ -1,9 +1,14 @@
 'use client';
 import React, { useState } from "react";
-import { Upload, Button, message, Progress, Image } from "antd";
+import { Button, Image, message, Modal, Spin } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { storage } from "@/config/firbeaseConfig"; // Assuming Firebase configuration is already set
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData"; // adjust path
+
+type GalleryDoc = {
+  id: string;
+  imageUrl: string;
+  createdAt: any;
+};
 
 interface FeaturedImageUploadProps {
   featuredImage: string;
@@ -14,85 +19,30 @@ interface FeaturedImageUploadProps {
 const ProductFeatureImage: React.FC<FeaturedImageUploadProps> = ({
   featuredImage,
   onFeaturedImageChange,
-  slug,
 }) => {
-  const [uploading, setUploading] = useState(false);
-  const [uploadPercent, setUploadPercent] = useState(0);
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<GalleryDoc[]>([]);
+  const [loadingGallery, setLoadingGallery] = useState(false);
 
-  const handleFeaturedUpload = async ({ file }: any) => {
+  const openGallery = async () => {
+    setGalleryVisible(true);
+    setLoadingGallery(true);
+
     try {
-      setUploading(true);
-      setUploadPercent(0);
-
-      const key = localStorage.getItem("securityKey");
-
-      if (!key) {
-        message.error("Security key is missing. Please log in again.");
-        throw new Error("Missing security key");
-      }
-
-      const uploadedUrl = await uploadImageToFirebase(
-        file,
-        `${key}/products/`,
-        (percent: number) => {
-          setUploadPercent(percent);
-        }
-      );
-
-      if (uploadedUrl) {
-        onFeaturedImageChange(uploadedUrl);
-        message.success("Featured image uploaded successfully!");
-      }
+      const data = await getAllDocsFromCollection<GalleryDoc>("gallery");
+      setGalleryImages(data);
     } catch (error) {
-      console.error("Upload error:", error);
-      message.error("Error uploading featured image.");
+      console.error("Error fetching gallery:", error);
+      message.error("Failed to load gallery");
     } finally {
-      setUploading(false);
+      setLoadingGallery(false);
     }
   };
 
-  const uploadImageToFirebase = async (
-    file: File,
-    filePath: string,
-    onProgress: (percent: number) => void
-  ): Promise<string | null> => {
-    return new Promise((resolve, reject) => {
-      const uniqueFileName = `${filePath}${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}-${file.name}`;
-
-      const storageRef = ref(storage, uniqueFileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          onProgress(progress);
-        },
-        (error) => {
-          console.error("Upload error:", error);
-          reject("Error uploading image.");
-        },
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            resolve(downloadURL);
-          } catch (error) {
-            console.error("Error retrieving download URL:", error);
-            reject("Error retrieving download URL.");
-          }
-        }
-      );
-    });
-  };
-
-  const validateFile = (file: File) => {
-    const isImage = file.type.startsWith("image/");
-    if (!isImage) {
-      message.error("Only image files are allowed!");
-    }
-    return isImage;
+  const handleSelectImage = (url: string) => {
+    onFeaturedImageChange(url);
+    setGalleryVisible(false);
+    message.success("✅ Featured image updated!");
   };
 
   return (
@@ -101,7 +51,8 @@ const ProductFeatureImage: React.FC<FeaturedImageUploadProps> = ({
         Feature Image
       </h3>
 
-      {featuredImage && !uploading ? (
+      {/* Featured Image Display */}
+      {featuredImage ? (
         <div className="mb-4">
           <Image
             src={featuredImage}
@@ -115,34 +66,49 @@ const ProductFeatureImage: React.FC<FeaturedImageUploadProps> = ({
         </div>
       )}
 
-      <Upload
-        showUploadList={false}
-        beforeUpload={(file) => validateFile(file) && false}
-        onChange={handleFeaturedUpload}
-        className="w-full"
+      {/* Add / Change Button */}
+      <Button
+        icon={<PlusOutlined />}
+        type="primary"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg py-2"
+        onClick={openGallery}
       >
-        <Button
-          icon={<PlusOutlined />}
-          loading={uploading}
-          type="primary"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg py-2"
-        >
-          {featuredImage ? "Change Featured Image" : "Upload Featured Image"}
-        </Button>
-      </Upload>
+        {featuredImage ? "Change Featured Image" : "Add Featured Image"}
+      </Button>
 
-      {uploading && (
-        <div className="mt-6">
-          <Progress
-            percent={uploadPercent}
-            showInfo
-            strokeColor={{
-              "0%": "#1890ff",
-              "100%": "#87d068",
-            }}
-          />
-        </div>
-      )}
+      {/* Gallery Modal */}
+      <Modal
+        title="Select from Gallery"
+        open={galleryVisible}
+        onCancel={() => setGalleryVisible(false)}
+        footer={null}
+        width={800}
+      >
+        {loadingGallery ? (
+          <div className="flex justify-center items-center h-60">
+            <Spin size="large" />
+          </div>
+        ) : galleryImages.length === 0 ? (
+          <p className="text-gray-500 text-center">No images found in gallery.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {galleryImages.map((img) => (
+              <div
+                key={img.id}
+                onClick={() => handleSelectImage(img.imageUrl)}
+                className="cursor-pointer border rounded-lg overflow-hidden hover:shadow-lg transition"
+              >
+                <Image
+                  src={img.imageUrl}
+                  alt="gallery-img"
+                  preview={false}
+                  className="w-full h-32 object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
