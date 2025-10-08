@@ -52,6 +52,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
             }
           }}
           style={{width: 70}}
+          onKeyDown={(e) => e.preventDefault()}
         />
         <Button size="small" onClick={() => setEditModal({ visible: true, category })}>
           Edit
