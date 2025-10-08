@@ -1,6 +1,6 @@
 import { ApplicationConfig } from "@/config/ApplicationConfig";
 import { Button, Input, InputNumber, message, Upload } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Categories } from '@/types/categories';
 import { UploadImageToFirebase } from '@/services/FirebaseStorage/UploadImageToFirebase';
 import { deleteImageFromFirebase } from "@/services/FirebaseStorage/deleteImageToFirebase";
@@ -18,6 +18,13 @@ type EditFormProps = {
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [position , setPosition] = useState<number>(category.isPosition || 1 );
+
+    useEffect(() => {
+      setName(category.name || '');
+      setDescription(category.description || '');
+      setPosition(category.isPosition || 1);
+      setImage(null);
+    },[category]);
   
     const handleImageUpload = async () => {
       const key = ApplicationConfig?.securityKey;
