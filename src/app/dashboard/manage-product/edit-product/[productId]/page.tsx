@@ -82,6 +82,7 @@ const EditProduct = () => {
     <div className="container mx-auto">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Edit Product</h2>
+         <h5 className="text-xl bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent font-bold">{product.productTitle}</h5>
         <p className="font-mono text-sm text-gray-500">/{productId}</p>
       </div>
       <div className="mt-4 items-center">
