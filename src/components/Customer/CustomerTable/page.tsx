@@ -4,7 +4,7 @@ import { Table, Button, Space, Avatar, Input } from 'antd';
 import { CustomerType } from '@/types/Customer';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
 import CustomerDetails from '../CustomerDetails/page';
-import { OrderType } from '@/types/orderType';
+// import { OrderType } from '@/types/orderType';
 const { Search } = Input;
 
 const CustomersTable: React.FC = () => {
@@ -14,38 +14,58 @@ const CustomersTable: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(null);
 
-  const getCreatedAtNumber = (order: OrderType): number => {
-  if (!order.createdAt) return 0;
-  if (typeof order.createdAt === 'number') return order.createdAt;
-  if ((order.createdAt)) return (order.createdAt).toMillis();
-  return 0;
-};
+//   const getCreatedAtNumber = (order: OrderType): number => {
+//   if (!order.createdAt) return 0;
+//   if (typeof order.createdAt === 'number') return order.createdAt;
+//   if ((order.createdAt)) return (order.createdAt).toMillis();
+//   return 0;
+// };
 
-  // Fetch dynamic data from Firestore
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      setLoading(true);
-      const data = await getAllDocsFromCollection<CustomerType>('customers');
-      const orderData = await getAllDocsFromCollection<OrderType>('orders') //add
-      const allCustomersWithEmail: CustomerType[] = data.map(customer => {
-        // Find latest order for this customer
-        const ordersForCustomer = orderData
-          .filter(o => o.customerId === customer.id)
-          .sort((a, b) => getCreatedAtNumber(b) - getCreatedAtNumber(a));
-        const latestOrder = ordersForCustomer[0];
+useEffect(() => {
+  const fetchCustomers = async () => {
+    setLoading(true);
+    const data = await getAllDocsFromCollection<CustomerType>('customers');
+    // const orderData = await getAllDocsFromCollection<OrderType>('orders'); // not needed
 
-        return {
-          ...customer,
-          email: customer.email || latestOrder?.email || 'Not Provided', 
-        };
-      });
-       setCustomers(allCustomersWithEmail);
-      setFilteredCustomers(allCustomersWithEmail);
-      setLoading(false);
-    };
+    const allCustomers: CustomerType[] = data.map(customer => ({
+      ...customer,
+      email: customer.email || 'Not Provided', // only use profile email
+    }));
 
-    fetchCustomers();
-  }, []);
+    setCustomers(allCustomers);
+    setFilteredCustomers(allCustomers);
+    setLoading(false);
+  };
+
+  fetchCustomers();
+}, []);
+
+
+  // // Fetch dynamic data from Firestore
+  // useEffect(() => {
+  //   const fetchCustomers = async () => {
+  //     setLoading(true);
+  //     const data = await getAllDocsFromCollection<CustomerType>('customers');
+  //     const orderData = await getAllDocsFromCollection<OrderType>('orders') //add
+  //     const allCustomersWithEmail: CustomerType[] = data.map(customer => {
+  //       // Find latest order for this customer
+  //       const ordersForCustomer = orderData
+  //         .filter(o => o.customerId === customer.id)
+  //         .sort((a, b) => getCreatedAtNumber(b) - getCreatedAtNumber(a));
+  //       const latestOrder = ordersForCustomer[0];
+
+  //       return {
+  //         ...customer,
+  //         email: customer.email || latestOrder?.email || 'Not Provided', 
+  //       };
+  //     });
+  //      setCustomers(allCustomersWithEmail);
+  //     setFilteredCustomers(allCustomersWithEmail);
+  //     setLoading(false);
+  //   };
+
+  //   fetchCustomers();
+  // }, []);
 
   // Handle the "View Details" button click
   const handleViewDetails = (customer: CustomerType) => {
