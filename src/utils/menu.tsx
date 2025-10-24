@@ -12,6 +12,8 @@ import { extendTheme } from '@mui/material/styles';
 import CategoryIcon from '@mui/icons-material/Category';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import Person3Icon from '@mui/icons-material/Person3';
+import PermMediaIcon from '@mui/icons-material/PermMedia';
+
 export const NAVIGATION = [
   {
     kind: 'header',
@@ -206,6 +208,14 @@ export const NAVIGATION = [
         icon: <DiscountIcon/>,
         roles: ['administrator', 'product-manager'],
       },
+       
+ {
+        segment: 'dashboard/gallery',
+        title: 'Gallery',
+        icon: <PermMediaIcon />,
+        roles: ['administrator', 'product-manager'],
+      },
+       
       
       // {
       //   segment: 'giftCard',
