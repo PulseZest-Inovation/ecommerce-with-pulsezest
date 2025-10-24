@@ -139,8 +139,11 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
               className="w-full"
             />
           </div>
+        </div>
+      )}
 
-<div>
+      {/* ✅ Image Tag Input */}
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
        Tag for Image
         </label>
@@ -151,9 +154,6 @@ const Price: React.FC<PriceProps> = ({ formData, onFormDataChange }) => {
           className="w-full"
         />
       </div>
-
-        </div>
-      )}
     </div>
   );
 };
