@@ -47,7 +47,7 @@ export interface Product {
   onSale: boolean;
   purchaseSale: boolean;
   totalSales: number;
-
+tagForImage: string;
   // Return and Shipping Details
   isReturn: boolean;
   returnPeriod: string;
