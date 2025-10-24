@@ -33,6 +33,7 @@ import ThemePage from '@/app/dashboard/theme/page';
 import RecentOrders from '@/app/dashboard/orders/return-order/page';
 import CustomersTable from '@/components/Customer/CustomerTable/page';
 import Coupons from '@/app/dashboard/coupons/page';
+import Gallery from '@/app/dashboard/gallery/page';
 import EditViewCoupons from '@/app/dashboard/coupons/[couponCode]/page';
 import FAQ from '@/app/dashboard/pages/faq/page';
 import ShippingPolicy from '@/app/dashboard/pages/shipping-policy/page';
@@ -105,6 +106,7 @@ const ROUTE_COMPONENTS: RouteComponents[] = [
   { path: '/dashboard/product-reviews-and-raiting', component: ProductReview, roles: ['administrator', 'product-manager'] },
   { path: '/dashboard/setting/payment', component: PaymentSetting, roles: ['administrator', 'product-manager'] },
   { path: '/dashboard/coupons', component: Coupons, roles: ['administrator', 'product-manager'] },
+  { path: '/dashboard/gallery', component: Gallery, roles: ['administrator', 'product-manager'] },
   { path: '/dashboard/theme', component: ThemePage, roles: ['administrator', 'product-manager'] },
 
   //users

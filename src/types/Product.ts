@@ -8,7 +8,7 @@ export interface Product {
   permalink: string;
   createdAt: Timestamp;
   ModifiedAt: Timestamp;
-
+tagForImage: string;
   // Dimensions and Weight
   height: number; // Product height in cm
   length: number; // Product length in cm
@@ -75,8 +75,7 @@ export interface Product {
 
   // Media
   featuredImage: string;
-  galleryImages: string[];
-
+  galleryImages: [];
   // Variations and Attributes
   variation: any[];
   attributes: any[];

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Product } from '@/types/Product';
 import { getDataByDocName } from '@/services/FirestoreData/getFirestoreData';
 import ProductWrapper from '@/components/Product/ProductWrapper/page';
@@ -8,39 +8,39 @@ import { Spin, Alert } from 'antd';
 
 const EditProduct = () => {
   const params = useParams();
-  const productId = params?.productId;
+  const productId = params?.productId as string | undefined;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (productId) {
-      fetchProduct();
-    } else {
-      setLoading(false);
+  const fetchProduct = useCallback(async () => {
+    if (!productId) {
       setError('Product ID is missing.');
+      setLoading(false);
+      return;
     }
-  }, [productId]);
 
-  const fetchProduct = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const productDoc = productId?.toString() || '';
-      const fetchedProduct = await getDataByDocName<Product>('products', productDoc);
+      const fetchedProduct = await getDataByDocName<Product>('products', productId);
       if (fetchedProduct) {
         setProduct(fetchedProduct);
       } else {
-        setError('Product not found.');
+        setError(`Product not found for ID: ${productId}`);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Error fetching product:', err);
       setError('Error fetching product. Please try again later.');
-      console.error(error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   if (loading) {
     return (

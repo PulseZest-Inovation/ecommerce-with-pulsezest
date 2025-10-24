@@ -76,7 +76,7 @@ const Login: React.FC = () => {
     const users = await getAllDocFromUsersCollection<UserType>();
     const userData = users.find((u: any) => u.id === user.uid);
 
-    if (userData && userData.roleType && userData.applicationId) {
+    if (userData   && userData.applicationId) {
       localStorage.setItem("userRole", userData.roleType);
       localStorage.setItem("securityKey", userData.applicationId);
     } else {
