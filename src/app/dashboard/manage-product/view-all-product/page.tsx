@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Button, Input, } from 'antd';
+import { Button, Input, Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types/Product';
 import { getAppData } from '@/services/getApp';
@@ -23,23 +23,21 @@ const ViewProduct: React.FC = () => {
   const [appData, setAppData] = useState<null | AppDataType>(null);
   const [isDuplicateModalVisible, setIsDuplicateModalVisible] = useState<boolean>(false);
   const [productToDuplicate, setProductToDuplicate] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  // Optimized Fetch Logic
   const fetchProducts = async () => {
     try {
+      setIsLoading(true);
       const products = await getAllDocsFromCollection<Product>('products');
       setProducts(products);
       setFilteredProducts(products);
     } catch (error) {
       console.error('Failed to fetch products:', error);
-    }  
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  useEffect(() => {
-    fetchProducts();
-    fetchApplicationData();
-  }, []);
 
   const fetchApplicationData = async () => {
     try {
@@ -50,7 +48,10 @@ const ViewProduct: React.FC = () => {
     }
   };
 
-  // Filtering Logic
+  useEffect(() => {
+    Promise.all([fetchProducts(), fetchApplicationData()]);
+  }, []);
+
   useEffect(() => {
     let filtered = products;
 
@@ -74,7 +75,7 @@ const ViewProduct: React.FC = () => {
   }, [searchTerm, selectedCategories, products]);
 
   const handleDeleteSuccess = () => {
-    fetchProducts(); // Live update after deletion
+    fetchProducts();
   };
 
   const cancelDelete = () => {
@@ -95,10 +96,19 @@ const ViewProduct: React.FC = () => {
     setProductToDuplicate(product);
     setIsDuplicateModalVisible(true);
   };
-  
+
   const handleDuplicateSuccess = () => {
-    fetchProducts(); // Refresh product list after duplication
+    fetchProducts();
   };
+
+  // ⬇ Loader until data comes
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -130,22 +140,22 @@ const ViewProduct: React.FC = () => {
       </div>
 
       <ProductList
-      onDuplicateProduct={handleDuplicateProduct}
+        onDuplicateProduct={handleDuplicateProduct}
         applicationUrl={appData?.callback_url || ''}
         searchTerm={searchTerm}
         selectedCategories={selectedCategories}
         onDeleteProduct={handleDeleteProduct}
         onEditProduct={handleEditProduct}
         onViewProduct={(id, category) => window.open(`view-product/${id}`, '_blank')}
-        products={filteredProducts} 
+        products={filteredProducts}
       />
-     <DeleteConfirmationModal
+
+      <DeleteConfirmationModal
         visible={isModalVisible}
         product={productToDelete}
         onDeleteSuccess={handleDeleteSuccess}
         onCancel={cancelDelete}
       />
-
 
       <DuplicateProductModal
         visible={isDuplicateModalVisible}
@@ -153,7 +163,6 @@ const ViewProduct: React.FC = () => {
         onDuplicateSuccess={handleDuplicateSuccess}
         onCancel={() => setIsDuplicateModalVisible(false)}
       />
-
     </div>
   );
 };
