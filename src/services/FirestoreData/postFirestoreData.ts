@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, updateDoc,deleteDoc } from 'firebase/firestore';
 import { db } from '@/config/firbeaseConfig';
 const appKey = typeof window !== "undefined" ? localStorage.getItem("securityKey") : null;
 /**
@@ -35,6 +35,32 @@ export const createDocWithAutoId = async (
     }
   };
 
+  /**
+ * Delete a document by its ID from a Firestore collection.
+ * @param collectionName - Name of the Firestore collection
+ * @param docId - ID of the document to delete
+ * @returns true if deleted successfully, false otherwise
+ */
+export const deleteDocById = async (
+  collectionName: string,
+  docId: string
+): Promise<boolean> => {
+  try {
+    const appKey = localStorage.getItem("securityKey");
+    if (!appKey) throw new Error("No security key found in localStorage!");
+
+    // Reference to the document
+    const docRef = doc(db, "app_name", appKey, collectionName, docId);
+
+    // Delete the document
+    await deleteDoc(docRef);
+    console.log(`Document with ID ${docId} deleted successfully`);
+    return true;
+  } catch (error) {
+    console.error("Error deleting document:", error);
+    return false;
+  }
+};
 
 /**
  * Sets data to a document with a custom ID in the specified collection.
