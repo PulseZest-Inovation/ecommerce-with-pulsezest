@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from "react";
-import { Select, Spin } from "antd";
+import { Select } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData"; // Adjust the path accordingly
 
 const { Option } = Select;
@@ -42,10 +42,7 @@ const MultipleCategoriesSelector: React.FC<MultipleCategoriesSelectorProps> = ({
     fetchCategories(); // Call the function to fetch categories when the component mounts
   }, []); // Empty dependency array means this runs only once, when the component is mounted
 
-  if (loading) {
-    return <Spin size="small" />; // Show loading spinner while data is being fetched
-  }
-
+ 
   return (
     <Select
       mode="multiple"
