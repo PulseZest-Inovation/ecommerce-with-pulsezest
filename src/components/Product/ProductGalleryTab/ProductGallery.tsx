@@ -6,7 +6,7 @@ import { Button, Modal, Spin, Image, message, Popconfirm } from "antd";
 
 interface GalleryImage {
   id?: string;
-  url: string;
+  imageUrl: string;
   name: string;
   size: number;
   createdAt: any;
@@ -101,7 +101,7 @@ const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGa
             {galleryImages.map((image) => (
               <div key={image.id} className="relative">
                 <Image
-                  src={image.url}
+                  src={image.imageUrl}
                   alt={image.name}
                   style={{ width: "100%", height: "120px" }}
                   className="rounded-md object-cover"
@@ -157,7 +157,7 @@ const ProductGalleryImage: React.FC<GalleryUploadProps> = ({ galleryImages, onGa
                   onClick={() => toggleSelectImage(image)}
                 >
                   <Image
-                    src={image.url}
+                    src={image.imageUrl}
                     alt={image.name}
                     style={{ width: "100%", height: "120px" }}
                     className="rounded-md object-cover"
