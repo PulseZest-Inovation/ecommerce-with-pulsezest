@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Select, Input } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
+import { Product } from "@/types/Product";
 
 const { Option } = Select;
 
@@ -11,10 +12,6 @@ interface Variation {
   size: string[];
   image: string | null;
   [key: string]: any;
-}
-
-interface Product {
-  variations?: Variation[];
 }
 
 interface ProductVariationTabProps {
@@ -37,7 +34,8 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
   onFormDataChange,
 }) => {
   const [variations, setVariations] = useState<Variation[]>(
-    formData.variations || [{ color: "", size: [], image: null }]
+    // main Product type uses `variation` (singular) — use that field
+    (formData as any).variation || [{ color: "", size: [], image: null }]
   );
 
   const [colorOptions, setColorOptions] = useState<ColorAttributeValue[]>([]);
@@ -89,20 +87,21 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
     });
     const updated = [...variations, newVariation];
     setVariations(updated);
-    onFormDataChange("variations", updated);
+    // update top-level product `variation` field
+    onFormDataChange("variation" as keyof Product, updated);
   };
 
   const handleRemoveVariation = (index: number) => {
     const updated = variations.filter((_, i) => i !== index);
     setVariations(updated);
-    onFormDataChange("variations", updated);
+    onFormDataChange("variation" as keyof Product, updated);
   };
 
   const handleVariationChange = (index: number, field: string, value: any) => {
     const updated = [...variations];
     updated[index][field] = value;
     setVariations(updated);
-    onFormDataChange("variations", updated);
+    onFormDataChange("variation" as keyof Product, updated);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
