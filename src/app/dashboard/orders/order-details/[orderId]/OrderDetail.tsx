@@ -223,6 +223,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
             <strong>Email:</strong> {order.email}
           </Text>
         )}
+        {order.address && (
+          <Text className="block mb-2">
+            <strong>Address:</strong> {order.address}
+          </Text>
+        )}
         {order.phoneNumber && (
           <Text className="block mb-2">
             <strong>Phone Number:</strong> {order.phoneNumber}
