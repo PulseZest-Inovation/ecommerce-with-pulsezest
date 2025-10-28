@@ -1,16 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Select, Input } from "antd";
+import { PlusOutlined, DeleteOutlined, PictureOutlined } from "@ant-design/icons";
+import { Select, Input, Button, message, Modal, Spin, Popconfirm } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Product } from "@/types/Product";
+import { db } from "@/config/firbeaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 const { Option } = Select;
 
 interface Variation {
   color: string;
   size: string[];
-  image: string | null;
+  images: GalleryImage[];
   [key: string]: any;
 }
 
@@ -24,9 +26,16 @@ interface ColorAttributeValue {
   value: string;
   colorCode: string;
 }
+
 interface SizeAttributeValue {
   id: string;
   value: string;
+}
+
+interface GalleryImage {
+  id: string;
+  url: string;
+  name?: string;
 }
 
 const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
@@ -34,13 +43,19 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
   onFormDataChange,
 }) => {
   const [variations, setVariations] = useState<Variation[]>(
-    // main Product type uses `variation` (singular) — use that field
-    (formData as any).variation || [{ color: "", size: [], image: null }]
+    (formData as any).variation || [{ color: "", size: [], images: [] }]
   );
 
   const [colorOptions, setColorOptions] = useState<ColorAttributeValue[]>([]);
   const [sizeOptions, setSizeOptions] = useState<SizeAttributeValue[]>([]);
   const [loadingAttributes, setLoadingAttributes] = useState(true);
+
+  // Gallery States
+  const [availableGallery, setAvailableGallery] = useState<GalleryImage[]>([]);
+  const [loadingGallery, setLoadingGallery] = useState(false);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [selectedVariationIndex, setSelectedVariationIndex] = useState<number | null>(null);
+  const [selectedGalleryImages, setSelectedGalleryImages] = useState<GalleryImage[]>([]);
 
   const attributeList = [
     "Price",
@@ -59,6 +74,7 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
 
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
 
+  // ✅ Fetch color and size attributes
   useEffect(() => {
     const fetchAttributes = async () => {
       try {
@@ -80,23 +96,25 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
     fetchAttributes();
   }, []);
 
+  // ✅ Add a new variation
   const handleAddVariation = () => {
-    const newVariation: Variation = { color: "", size: [], image: null };
+    const newVariation: Variation = { color: "", size: [], images: [] };
     selectedAttributes.forEach((attr) => {
       newVariation[attr.toLowerCase().replace(/ & | /g, "_")] = "";
     });
     const updated = [...variations, newVariation];
     setVariations(updated);
-    // update top-level product `variation` field
     onFormDataChange("variation" as keyof Product, updated);
   };
 
+  // ✅ Remove a variation
   const handleRemoveVariation = (index: number) => {
     const updated = variations.filter((_, i) => i !== index);
     setVariations(updated);
     onFormDataChange("variation" as keyof Product, updated);
   };
 
+  // ✅ Update variation field
   const handleVariationChange = (index: number, field: string, value: any) => {
     const updated = [...variations];
     updated[index][field] = value;
@@ -104,15 +122,62 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
     onFormDataChange("variation" as keyof Product, updated);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        handleVariationChange(index, "image", event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+  // ✅ Fetch gallery images
+  const fetchGalleryImages = async (index: number) => {
+    setSelectedVariationIndex(index);
+    setLoadingGallery(true);
+    try {
+      const appKey = localStorage.getItem("securityKey");
+      if (!appKey) throw new Error("No security key found in localStorage!");
+
+      const colRef = collection(db, "app_name", appKey, "gallery");
+      const querySnapshot = await getDocs(colRef);
+
+      const images: GalleryImage[] = querySnapshot.docs.map((doc) => ({
+        ...(doc.data() as GalleryImage),
+        id: doc.id,
+      }));
+
+      setAvailableGallery(images);
+      setShowGalleryModal(true);
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to fetch gallery images");
+    } finally {
+      setLoadingGallery(false);
     }
+  };
+
+  // ✅ Toggle gallery selection
+  const toggleSelectGalleryImage = (image: GalleryImage) => {
+    if (selectedGalleryImages.find((img) => img.id === image.id)) {
+      setSelectedGalleryImages(selectedGalleryImages.filter((img) => img.id !== image.id));
+    } else {
+      setSelectedGalleryImages([...selectedGalleryImages, image]);
+    }
+  };
+
+  // ✅ Apply selected images to variation
+  const applySelectedImages = () => {
+    if (selectedVariationIndex !== null) {
+      const updated = [...variations];
+      const existingImages = updated[selectedVariationIndex].images || [];
+      updated[selectedVariationIndex].images = [...existingImages, ...selectedGalleryImages];
+      setVariations(updated);
+      onFormDataChange("variation" as keyof Product, updated);
+    }
+    setSelectedGalleryImages([]);
+    setShowGalleryModal(false);
+  };
+
+  // ✅ Remove an image from variation
+  const handleRemoveSelectedImage = (variationIndex: number, imageId: string) => {
+    const updated = [...variations];
+    updated[variationIndex].images = updated[variationIndex].images.filter(
+      (img) => img.id !== imageId
+    );
+    setVariations(updated);
+    onFormDataChange("variation" as keyof Product, updated);
   };
 
   return (
@@ -167,13 +232,22 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
               <select
                 className="w-full p-3 rounded-lg bg-white border border-gray-300 focus:ring focus:ring-green-200 focus:border-green-400 transition"
                 value={variation.color}
-                onChange={(e) => handleVariationChange(index, "color", e.target.value)}
+              onChange={(e) => {
+  const selected = JSON.parse(e.target.value);
+  handleVariationChange(index, "color", selected.value);
+  handleVariationChange(index, "colorCode", selected.code); // ✅ store color code separately
+}}
+
               >
                 <option value="">Select Color</option>
                 {colorOptions.map((color) => (
-                  <option key={color.id} value={color.value}>
-                    {color.value}
-                  </option>
+                 <option
+  key={color.id}
+  value={JSON.stringify({ value: color.value, code: color.colorCode })}
+>
+  {color.value}
+</option>
+
                 ))}
               </select>
             </div>
@@ -213,32 +287,50 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
                     onChange={(e) =>
                       handleVariationChange(index, fieldKey, e.target.value)
                     }
-                    className="bg-white border-gray-300 text-gray-800 focus:border-green-400 focus:ring focus:ring-green-100 transition"
                   />
                 </div>
               );
             })}
 
-            {/* Image Upload */}
+            {/* Gallery Image Section */}
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-700">
-                Upload Image
+                Variation Images
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, index)}
-                className="w-full text-gray-600 file:mr-3 file:py-2 file:px-4 
-                  file:rounded-lg file:border-0 file:bg-green-600 file:text-white 
-                  hover:file:bg-green-700 cursor-pointer transition"
-              />
-              {variation.image && (
-                <div className="mt-3">
-                  <img
-                    src={variation.image}
-                    alt="Variation Preview"
-                    className="w-24 h-24 object-cover rounded-lg border border-gray-300"
-                  />
+              <Button
+                icon={<PictureOutlined />}
+                onClick={() => fetchGalleryImages(index)}
+                type="default"
+              >
+                Select from Gallery
+              </Button>
+
+              {/* Show selected images */}
+              {variation.images?.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
+                  {variation.images.map((img) => (
+                    <div key={img.id} className="relative">
+                      <img
+                        src={img.url}
+                        alt={img.name || "variation"}
+                        className="w-full h-24 object-cover rounded-md border border-gray-300"
+                      />
+                      <Popconfirm
+                        title="Remove this image?"
+                        onConfirm={() => handleRemoveSelectedImage(index, img.id)}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button
+                          size="small"
+                          danger
+                          className="absolute top-1 right-1"
+                        >
+                          Delete
+                        </Button>
+                      </Popconfirm>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -255,6 +347,52 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
           <PlusOutlined /> Add Variation
         </button>
       </div>
+
+      {/* Gallery Modal */}
+      <Modal
+        title="Select Images from Gallery"
+        open={showGalleryModal}
+        onCancel={() => setShowGalleryModal(false)}
+        onOk={applySelectedImages}
+        okText="Add Selected"
+        width={750}
+      >
+        {loadingGallery ? (
+          <div className="flex justify-center items-center py-10">
+            <Spin size="large" />
+          </div>
+        ) : availableGallery.length === 0 ? (
+          <p className="text-gray-500 text-center py-6">
+            No images found in gallery.
+          </p>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+            {availableGallery.map((image) => {
+              const isSelected = selectedGalleryImages.find((img) => img.id === image.id);
+              return (
+                <div
+                  key={image.id}
+                  className={`relative cursor-pointer border ${
+                    isSelected ? "border-green-500" : "border-transparent"
+                  } rounded-md`}
+                  onClick={() => toggleSelectGalleryImage(image)}
+                >
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    className="w-full h-24 object-cover rounded-md"
+                  />
+                  {isSelected && (
+                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center text-white font-semibold">
+                      Selected
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
