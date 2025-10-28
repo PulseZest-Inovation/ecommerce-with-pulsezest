@@ -11,7 +11,12 @@ import { setDocWithCustomId } from "@/services/FirestoreData/postFirestoreData";
 import CategoriesSelector from "../Selector/create-selector";
 import { Categories } from "@/types/categories";
 
-const CreateCategory = () => {
+// ✅ NEW PROP TYPE
+interface CreateCategoryProps {
+  onCategoryCreated?: (newCategory: Categories) => void;
+}
+
+const CreateCategory : React.FC<CreateCategoryProps> = ({ onCategoryCreated }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -134,6 +139,8 @@ const CreateCategory = () => {
       message.success("Category created successfully!");
       form.resetFields();
       fetchNextPosition(); // Recalculate the next position
+        // ✅ CALLBACK to parent for instant UI update
+      if (onCategoryCreated) onCategoryCreated(formData);
     } catch (error) {
       if (error instanceof Error) {
         message.error(error.message || "Failed to create category!");
