@@ -52,17 +52,40 @@ const CustomersTable: React.FC = () => {
     setSelectedCustomer(customer);
     setDrawerVisible(true);
   };
+
+  // Fixed proper search filtered
+  const handleFilter = (value : string) =>{
+    const searchTerm = value.trim().toLowerCase();
+
+    if(searchTerm  === ''){
+      setFilteredCustomers(customers);
+      return;
+    }
+
+    const matched  = customers.filter((customer) => {
+      const name = customer.fullName?.toLowerCase() || '';
+      const email = customer.email?.toLowerCase() || '';
+      const phone = customer.phoneNumber?.toLowerCase() || '';
+      return(
+        name.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm)
+      );
+    });
+
+    matched.sort((a,b) => a.fullName.localeCompare(b.fullName));
+    setFilteredCustomers(matched);
+  }
+
   // Handle filtering the data
-  const handleFilter = (value: string) => {
-    const lowerCaseValue = value.toLowerCase();
-    const filtered = customers.filter(
-      (customer) =>
-        customer.fullName.toLowerCase().includes(lowerCaseValue) ||
-        customer.email.toLowerCase().includes(lowerCaseValue) ||
-        customer.phoneNumber.toLowerCase().includes(lowerCaseValue)
-    );
-    setFilteredCustomers(filtered);
-  };
+  // const handleFilter = (value: string) => {
+  //   const lowerCaseValue = value.toLowerCase();
+  //   const filtered = customers.filter(
+  //     (customer) =>
+  //       customer.fullName.toLowerCase().includes(lowerCaseValue) ||
+  //       customer.email.toLowerCase().includes(lowerCaseValue) ||
+  //       customer.phoneNumber.toLowerCase().includes(lowerCaseValue)
+  //   );
+  //   setFilteredCustomers(filtered);
+  // };
   // Define columns for the Ant Design table
   const columns = [
     {
@@ -112,6 +135,7 @@ const CustomersTable: React.FC = () => {
         <Search
           placeholder="Search by name, email, or phone"
           onSearch={handleFilter}
+          onChange={(e) => handleFilter(e.target.value)}
           enterButton
           allowClear
         />

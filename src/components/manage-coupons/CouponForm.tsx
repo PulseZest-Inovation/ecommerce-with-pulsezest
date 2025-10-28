@@ -8,9 +8,11 @@ type CouponFormProps = {
   coupon: CouponsType;
   handleInputChange: (field: keyof CouponsType, value: any) => void;
   handleSave: () => void;
+  products: { id: string; name: string }[];   
+  categories: { id: string; name: string }[];
 };
 
-const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, handleSave }) => {
+const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, handleSave, products, categories }) => {
   return (
     <Form layout="vertical">
       <Row gutter={16}>
@@ -64,6 +66,37 @@ const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, hand
           </Form.Item> */}
         </Col>
       </Row>
+      {/* Products and Categories field */}
+      <Row gutter={16}>
+        <Col span={12}>
+        <Form.Item label="Apply to Products">
+            <Select mode='multiple' allowClear value={coupon.productsId || []} onChange={(value) => handleInputChange('productsId', value)} placeholder="Select Products">
+             {products.map((product: { id: string; name: string }) => (
+              <Option key={product.id} value={product.id}>
+              {product.name || product.id}
+              </Option>
+            ))}
+            </Select>
+        </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label="Apply To Categories">
+            <Select
+              mode="multiple"
+              allowClear
+              value={coupon.productCategories || []}
+              onChange={(value) => handleInputChange('productCategories', value)}
+              placeholder="Select Categories"
+            >
+              {categories.map((category: {id:string, name: string}) => (
+                <Option key={category.id} value={category.id}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
 
       <Row gutter={16}>
         {/* <Col span={12}>
@@ -91,12 +124,12 @@ const CouponForm: React.FC<CouponFormProps> = ({ coupon, handleInputChange, hand
         </Col>
       </Row> */}
 
-      <Form.Item>
+       <Form.Item>
         <Button type="primary" onClick={handleSave} style={{ width: '100%' }}>
           Save Coupon
         </Button>
       </Form.Item>
-    </Form>
+     </Form> 
   );
 };
 

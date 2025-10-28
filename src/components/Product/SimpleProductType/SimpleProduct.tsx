@@ -4,6 +4,7 @@ import { LinkOutlined } from "@ant-design/icons";
 import ProductDetailTab from "../ProductDetailTab/page";
 import ProductOtherTab from "../ProductOtherTab/page";
 import ProductGalleryTab from "../ProductGalleryTab/page";
+import ProductVariationTab from "../ProductVariationTab/page";
 import { Product } from "@/types/Product";
 
 interface SimpleProductProps {
@@ -25,14 +26,20 @@ const SimpleProduct: React.FC<SimpleProductProps> = ({
       label: "Product Details",
       key: "1",
       children: (
-        <ProductDetailTab formData={formData} onFormDataChange={onFormDataChange} />
+        <ProductDetailTab
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+        />
       ),
     },
     {
       label: "Other Fields",
       key: "2",
       children: (
-        <ProductOtherTab formData={formData} onFormDataChange={onFormDataChange} />
+        <ProductOtherTab
+          formData={formData}
+          onFormDataChange={onFormDataChange}
+        />
       ),
     },
     {
@@ -46,11 +53,29 @@ const SimpleProduct: React.FC<SimpleProductProps> = ({
         />
       ),
     },
+  {
+    label: "Product Variation", // ✅ Fixed and type-safe
+    key: "4",
+    children: (
+      <ProductVariationTab
+        formData={formData as any}
+        onFormDataChange={onFormDataChange as (
+          key: keyof Product,
+          value: any
+        ) => void}
+      />
+    ),
+  },
   ];
 
   const operations = (
     <Tooltip title={!formData.productTitle ? "Please enter Product Title" : ""}>
-      <Button type="primary" onClick={handleSubmit} disabled={loading || !formData.productTitle} loading={loading}>
+      <Button
+        type="primary"
+        onClick={handleSubmit}
+        disabled={loading || !formData.productTitle}
+        loading={loading}
+      >
         Submit
       </Button>
     </Tooltip>
@@ -61,7 +86,9 @@ const SimpleProduct: React.FC<SimpleProductProps> = ({
       centered
       tabBarExtraContent={{
         left: operations,
-        right: <LinkOutlined className="cursor-pointer text-blue-500 text-lg" />,
+        right: (
+          <LinkOutlined className="cursor-pointer text-blue-500 text-lg" />
+        ),
       }}
       items={items}
       type="card"
