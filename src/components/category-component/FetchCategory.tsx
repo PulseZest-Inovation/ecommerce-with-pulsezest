@@ -10,7 +10,12 @@ import { Categories } from '@/types/categories';
 import CategoryList from './CategoryList';
 import CategoryEditModal from './CategoryEditWithModel';
 
-const FetchCategory = () => {
+// ✅ ADDED: Accept externalCategories from parent
+interface FetchCategoryProps {
+  externalCategories?: Categories[];
+}
+
+const FetchCategory: React.FC<FetchCategoryProps> = ({ externalCategories = [] }) => {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Categories[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -54,6 +59,25 @@ const FetchCategory = () => {
     fetchCategories();
   }, []);
 
+  // ✅ ADDED: Update state instantly when a new category is created
+  useEffect(() => {
+    if (externalCategories.length > 0) {
+      setCategories((prev) => {
+        const newOnes = externalCategories.filter(
+          (ext) => !prev.some((cat) => cat.cid === ext.cid)
+        );
+        return [...newOnes, ...prev];
+      });
+
+      setFilteredCategories((prev) => {
+        const newOnes = externalCategories.filter(
+          (ext) => !prev.some((cat) => cat.cid === ext.cid)
+        );
+        return [...newOnes, ...prev];
+      });
+    }
+  }, [externalCategories]);
+
   // Filter categories based on search term
   useEffect(() => {
     const filtered = categories.filter((category) =>
@@ -78,6 +102,7 @@ const FetchCategory = () => {
         )
       );
     } catch (error) {
+        console.error('Error update visibility categories:', error);
       message.error('Failed to update visibility.');
     }
   };
@@ -98,6 +123,7 @@ const FetchCategory = () => {
         )
       );
     } catch (error) {
+      console.error('Error header visibility categories:', error);
       message.error('Failed to update header visibility.');
     }
   };
@@ -129,6 +155,7 @@ const FetchCategory = () => {
       );
       setEditModal({ visible: false, category: null });
     } catch (error) {
+        console.error('Error update categories:', error);
       message.error('Failed to update category.');
     }
   };
