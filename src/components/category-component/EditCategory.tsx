@@ -15,6 +15,7 @@ type EditFormProps = {
   const EditCategoryForm: React.FC<EditFormProps> = ({ category, onSubmit }) => {
     const [name, setName] = useState<string>(category.name || '');
     const [description, setDescription] = useState<string>(category.description || '');
+    const [isPosition, setPosition] = useState<string>(String(category.isPosition || ''));
     const [image, setImage] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
   
@@ -42,8 +43,9 @@ type EditFormProps = {
       setLoading(true); // Start loading
       try {
         const imageUrl = await handleImageUpload();
-        onSubmit({ name, description, image: imageUrl }, category.cid);
+        onSubmit({ name, description,isPosition: Number(isPosition),  image: imageUrl }, category.cid);
       } catch (error) {
+        console.error('Failed upload imgae', error)
         message.error('Failed to upload image.');
       } finally {
         setLoading(false);
@@ -67,6 +69,13 @@ type EditFormProps = {
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          style={{ marginBottom: '8px' }}
+        />
+        <Input
+          placeholder="Position"
+          type="number"
+          value={isPosition}
+          onChange={(e) => setPosition(e.target.value)}
           style={{ marginBottom: '8px' }}
         />
         <Upload

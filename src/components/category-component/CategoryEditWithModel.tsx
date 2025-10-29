@@ -8,6 +8,7 @@ const CategoryEditModal = ({ visible, category, onClose, onSubmit }: any) => (
     visible={visible}
     onCancel={onClose}
     footer={null}
+    destroyOnClose
   >
     {category && (
       <EditCategoryForm

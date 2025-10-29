@@ -36,6 +36,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
           checkedChildren="Header Visible"
           unCheckedChildren="Header Hidden"
         />
+        <div>{category.isPosition}</div>
         <Button size="small" onClick={() => setEditModal({ visible: true, category })}>
           Edit
         </Button>
