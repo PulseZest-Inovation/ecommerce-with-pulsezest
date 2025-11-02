@@ -116,19 +116,7 @@ const ProductWrapper: React.FC<ProductWrapperProps> = ({ initialData }) => {
 
   return (
     <div className="p-4">
-      {/* Product Type Selector */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium mb-2">Product Type:</label>
-        <Select
-          value={formData.type}
-          onChange={(value) => handleTypeChange({ target: { value } } as any)}
-          style={{ width: "100%" }}
-        >
-          <Option value="simple">Simple</Option>
-          <Option value="variable">Variable</Option>
-        </Select>
-      </div>
-
+  
       {/* Conditional Rendering */}
       {formData.type === "simple" ? (
         <SimpleProduct
