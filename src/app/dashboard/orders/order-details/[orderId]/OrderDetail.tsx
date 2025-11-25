@@ -225,7 +225,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
         )}
         {order.address && (
           <Text className="block mb-2">
-            <strong>Address:</strong> {order.address}
+            <strong>Address:</strong> {order.address}, {order.pinCode}
           </Text>
         )}
         {order.phoneNumber && (
