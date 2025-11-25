@@ -76,7 +76,7 @@ const OrderTable = () => {
       title: "Address",
       key: "address",
       render: (_, record) =>
-        `${record.houseNumber}, ${record.apartment}, ${record.address}, ${record.city}, ${record.state}, ${record.country}`,
+        `${record.pinCode}, ${record.apartment}, ${record.address}, ${record.city}, ${record.state}`,
     },
     {
       title: "Order Date",
