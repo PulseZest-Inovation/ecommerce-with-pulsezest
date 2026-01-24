@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { PlusOutlined, DeleteOutlined, PictureOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined, PictureOutlined, CloseOutlined } from "@ant-design/icons";
 import { Select, Input, Button, message, Modal, Spin, Popconfirm } from "antd";
 import { getAllDocsFromCollection } from "@/services/FirestoreData/getFirestoreData";
 import { Product } from "@/types/Product";
@@ -11,6 +11,7 @@ const { Option } = Select;
 
 interface Variation {
   color: string;
+  colorCode: string;
   size: string[];
   images: GalleryImage[];
   [key: string]: any;
@@ -34,8 +35,10 @@ interface SizeAttributeValue {
 
 interface GalleryImage {
   id: string;
-  url: string;
+  imageUrl: string;
   name?: string;
+  size?: number;
+  createdAt?: any;
 }
 
 const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
@@ -43,7 +46,7 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
   onFormDataChange,
 }) => {
   const [variations, setVariations] = useState<Variation[]>(
-    (formData as any).variation || [{ color: "", size: [], images: [] }]
+    (formData as any).variation || [{ color: "", colorCode: "", size: [], images: [] }]
   );
 
   const [colorOptions, setColorOptions] = useState<ColorAttributeValue[]>([]);
@@ -96,9 +99,17 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
     fetchAttributes();
   }, []);
 
+  // ✅ Format file size (same as gallery component)
+  const formatFileSize = (bytes?: number): string => {
+    if (!bytes) return "N/A";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   // ✅ Add a new variation
   const handleAddVariation = () => {
-    const newVariation: Variation = { color: "", size: [], images: [] };
+    const newVariation: Variation = { color: "", colorCode: "", size: [], images: [] };
     selectedAttributes.forEach((attr) => {
       newVariation[attr.toLowerCase().replace(/ & | /g, "_")] = "";
     });
@@ -224,32 +235,49 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
               </button>
             )}
 
-            {/* Color Selection */}
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">
+            {/* ✅ Color Selection */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
                 Select Color
               </label>
               <select
-                className="w-full p-3 rounded-lg bg-white border border-gray-300 focus:ring focus:ring-green-200 focus:border-green-400 transition"
-                value={variation.color}
-              onChange={(e) => {
-  const selected = JSON.parse(e.target.value);
-  handleVariationChange(index, "color", selected.value);
-  handleVariationChange(index, "colorCode", selected.code); // ✅ store color code separately
-}}
-
+                className="w-full p-3 rounded-lg bg-white border-2 border-gray-200 hover:border-gray-300 focus:border-green-400 focus:ring-2 focus:ring-green-100 focus:outline-none transition-all duration-200"
+                value={JSON.stringify({ value: variation.color, code: variation.colorCode }) || ""}
+                onChange={(e) => {
+                  const selected = JSON.parse(e.target.value || '{}');
+                  handleVariationChange(index, "color", selected.value || "");
+                  handleVariationChange(index, "colorCode", selected.code || "");
+                }}
               >
                 <option value="">Select Color</option>
                 {colorOptions.map((color) => (
-                 <option
-  key={color.id}
-  value={JSON.stringify({ value: color.value, code: color.colorCode })}
->
-  {color.value}
-</option>
-
+                  <option
+                    key={color.id}
+                    value={JSON.stringify({ value: color.value, code: color.colorCode })}
+                  >
+                    {color.value}
+                  </option>
                 ))}
               </select>
+              {variation.color && variation.colorCode && (
+                <div className="flex items-center gap-3 p-0 w-28 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                  <div 
+                    className="w-10 h-10 rounded-lg border-4 border-white shadow-sm flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: variation.colorCode 
+                    }}
+                  >
+                    <span className="text-xs font-medium text-white drop-shadow-sm">
+                      {variation.color.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-gray-900 truncate" title={variation.color}>
+                      {variation.color}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Size Selection */}
@@ -292,7 +320,7 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
               );
             })}
 
-            {/* Gallery Image Section */}
+            {/* ✅ Gallery Image Section */}
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-700">
                 Variation Images
@@ -307,27 +335,35 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
 
               {/* Show selected images */}
               {variation.images?.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
-                  {variation.images.map((img) => (
-                    <div key={img.id} className="relative">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {variation.images.map((img, imgIndex) => (
+                    <div
+                      key={img.id}
+                      className="relative w-full border rounded overflow-hidden shadow cursor-pointer group"
+                    >
                       <img
-                        src={img.url}
-                        alt={img.name || "variation"}
-                        className="w-full h-24 object-cover rounded-md border border-gray-300"
+                        src={img.imageUrl}
+                        alt={img.name || `variation-${imgIndex}`}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition"
                       />
+                      <div className="p-2 text-xs text-gray-600 truncate">
+                        {img.name || `Image ${imgIndex + 1}`}
+                        {img.size && ` (${formatFileSize(img.size)})`}
+                      </div>
+
+                      {/* ✅ Delete button with X icon */}
                       <Popconfirm
-                        title="Remove this image?"
+                        title="Are you sure to delete this image?"
                         onConfirm={() => handleRemoveSelectedImage(index, img.id)}
                         okText="Yes"
                         cancelText="No"
                       >
-                        <Button
-                          size="small"
-                          danger
-                          className="absolute top-1 right-1"
+                        <button
+                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          Delete
-                        </Button>
+                          <CloseOutlined style={{ fontSize: 14 }} />
+                        </button>
                       </Popconfirm>
                     </div>
                   ))}
@@ -342,20 +378,47 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
       <div className="flex justify-center">
         <button
           onClick={handleAddVariation}
-          className="flex items-center gap-2 px-5 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition"
+          className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition"
         >
           <PlusOutlined /> Add Variation
         </button>
       </div>
 
-      {/* Gallery Modal */}
+      {/* ✅ FIXED Gallery Modal - Buttons at TOP-RIGHT */}
       <Modal
-        title="Select Images from Gallery"
+        title={
+          <div className="flex items-center justify-between w-full">
+            <span>Select Images from Gallery</span>
+            {/* ✅ Buttons at TOP-RIGHT - No scrolling needed */}
+            <div className="flex items-center gap-2">
+              <Button 
+                size="small"
+                onClick={() => {
+                  setSelectedGalleryImages([]);
+                  setShowGalleryModal(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                size="small"
+                onClick={applySelectedImages}
+                disabled={selectedGalleryImages.length === 0}
+                className="mr-5"
+              >
+                Add Selected ({selectedGalleryImages.length})
+                
+              </Button>
+            </div>
+          </div>
+        }
         open={showGalleryModal}
         onCancel={() => setShowGalleryModal(false)}
-        onOk={applySelectedImages}
-        okText="Add Selected"
         width={750}
+        footer={null}
+        bodyStyle={{ padding: "16px" }}
+        destroyOnClose
       >
         {loadingGallery ? (
           <div className="flex justify-center items-center py-10">
@@ -372,19 +435,21 @@ const ProductVariationTab: React.FC<ProductVariationTabProps> = ({
               return (
                 <div
                   key={image.id}
-                  className={`relative cursor-pointer border ${
-                    isSelected ? "border-green-500" : "border-transparent"
-                  } rounded-md`}
+                  className={`relative cursor-pointer border-2 p-1 rounded-md hover:shadow-md transition-all ${
+                    isSelected 
+                      ? "border-green-500 bg-green-50" 
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
                   onClick={() => toggleSelectGalleryImage(image)}
                 >
                   <img
-                    src={image.url}
+                    src={image.imageUrl}
                     alt={image.name}
-                    className="w-full h-24 object-cover rounded-md"
+                    className="w-full h-44 object-cover rounded-md"
                   />
                   {isSelected && (
-                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center text-white font-semibold">
-                      Selected
+                    <div className="absolute inset-0 bg-green-500 bg-opacity-20 flex items-center justify-center rounded-md">
+                      <span className="text-green-700 font-semibold text-sm">✓ Selected</span>
                     </div>
                   )}
                 </div>
