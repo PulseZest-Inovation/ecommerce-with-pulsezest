@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '@/config/firbeaseConfig';
 import {
@@ -7,9 +7,8 @@ import {
   deleteDocById,
 } from '@/services/FirestoreData/postFirestoreData';
 import { getAllDocsFromCollection } from '@/services/FirestoreData/getFirestoreData';
-import { X } from 'lucide-react';
-import { Add } from '@mui/icons-material';
-import { Popconfirm, message, Spin } from 'antd';
+import { X, Upload } from 'lucide-react';
+import { Popconfirm, message, Spin, Modal, Button } from 'antd';
 
 type GalleryDoc = {
   id?: string;
@@ -22,54 +21,79 @@ type GalleryDoc = {
 export default function Page() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<GalleryDoc[]>([]);
+  const [allGalleryImages, setAllGalleryImages] = useState<GalleryDoc[]>([]);
+  const [displayedImages, setDisplayedImages] = useState<GalleryDoc[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [loadingGallery, setLoadingGallery] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [pageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // ✅ Fetch gallery from Firestore
   const fetchGallery = async () => {
     try {
       setLoadingGallery(true);
       const data = await getAllDocsFromCollection<GalleryDoc>('gallery');
-      setGalleryImages(data);
+      // Sort by createdAt descending (newest first)
+      const sortedData = data.sort((a, b) => 
+        new Date(b.createdAt?.toDate?.() || b.createdAt).getTime() - 
+        new Date(a.createdAt?.toDate?.() || a.createdAt).getTime()
+      );
+      setAllGalleryImages(sortedData);
+      
+      // Load first page
+      setDisplayedImages(sortedData.slice(0, pageSize));
+      setCurrentPage(1);
     } catch (error: any) {
-      console.error('Error fetching gallery:', error);
-      if (error?.code === 'permission-denied') {
-        message.error('You do not have permission to view the gallery.');
-      } else {
-        message.error('Failed to load gallery.');
-      }
+      message.error('Failed to load gallery.');
     } finally {
       setLoadingGallery(false);
     }
   };
 
+  const loadMoreImages = useCallback(() => {
+    if (loadingMore || displayedImages.length >= allGalleryImages.length) return;
+    
+    setLoadingMore(true);
+    setTimeout(() => {
+      const nextPage = currentPage + 1;
+      const startIndex = nextPage * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, allGalleryImages.length);
+      
+      const newImages = allGalleryImages.slice(0, endIndex);
+      setDisplayedImages(newImages);
+      setCurrentPage(nextPage);
+      setLoadingMore(false);
+    }, 300); // Small delay for loading effect
+  }, [allGalleryImages, currentPage, displayedImages.length, loadingMore, pageSize]);
+
   useEffect(() => {
     fetchGallery();
   }, []);
 
-  // ✅ Handle file selection
+  const openUploadModal = () => {
+    setShowUploadModal(true);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setSelectedImages(Array.from(e.target.files));
     }
   };
 
-  // ✅ Remove selected file before upload
-  const handleRemoveSelected = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  // ✅ Upload files to Firebase Storage and Firestore
   const handleUpload = async () => {
     if (selectedImages.length === 0) {
-      message.warning('Please select images to upload.');
+      message.warning('Select images first');
       return;
     }
 
     setUploading(true);
     try {
-      const uploadTasks = selectedImages.map(async (file) => {
+      for (const file of selectedImages) {
         const storageRef = ref(storage, `gallery/${Date.now()}-${file.name}`);
         await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(storageRef);
@@ -80,30 +104,31 @@ export default function Page() {
           size: file.size,
           createdAt: new Date(),
         });
-      });
-
-      await Promise.all(uploadTasks);
-      message.success('✅ Images uploaded successfully!');
+      }
+      message.success('Uploaded successfully!');
       setSelectedImages([]);
-      fetchGallery();
+      setShowUploadModal(false);
+      // Refresh gallery after upload
+      await fetchGallery();
     } catch (error) {
-      console.error('Error uploading images:', error);
-      message.error('❌ Upload failed. Check permissions or network.');
+      message.error('Upload failed');
     } finally {
       setUploading(false);
     }
   };
 
-  // ✅ Delete gallery image
   const handleDeleteGalleryImage = async (img: GalleryDoc) => {
     try {
-      if (!img.id) throw new Error('No document ID found for this image');
+      if (!img.id) return;
       await deleteDocById('gallery', img.id);
-      setGalleryImages((prev) => prev.filter((i) => i.id !== img.id));
-      message.success('🗑️ Image deleted successfully');
+      
+      // Update both allGalleryImages and displayedImages
+      setAllGalleryImages(prev => prev.filter(i => i.id !== img.id));
+      setDisplayedImages(prev => prev.filter(i => i.id !== img.id));
+      
+      message.success('Deleted');
     } catch (error) {
-      console.error('Error deleting image:', error);
-      message.error('Failed to delete image');
+      message.error('Delete failed');
     }
   };
 
@@ -113,126 +138,159 @@ export default function Page() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const hasMoreImages = displayedImages.length < allGalleryImages.length;
+
   return (
-    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {/* Upload Section */}
-      <div>
-        <label
-          htmlFor="imageUpload"
-          className="flex items-center gap-2 cursor-pointer w-52 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          <Add className="w-4 h-4" /> Select Images
-        </label>
-        <input
-          type="file"
-          id="imageUpload"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-
-        {/* Preview Grid */}
-        {selectedImages.length > 0 && (
-          <>
-            <h2 className="text-lg font-semibold mt-6">Preview</h2>
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {selectedImages.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative w-full border rounded overflow-hidden shadow"
-                >
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`preview-${index}`}
-                    className="w-full h-28 object-cover"
-                  />
-                  <button
-                    onClick={() => handleRemoveSelected(index)}
-                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                  >
-                    <X size={14} />
-                  </button>
-                  <div className="p-2 text-xs text-gray-600">
-                    {image.name} ({formatFileSize(image.size)})
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={handleUpload}
-              disabled={uploading}
-              className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
-            >
-              {uploading ? 'Uploading...' : 'Upload to Gallery'}
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Gallery Section */}
-      <div>
-        <h2 className="text-lg font-semibold">Gallery</h2>
-
-        {loadingGallery ? (
-          <div className="flex justify-center items-center h-40">
-            <Spin size="large" />
-          </div>
-        ) : galleryImages.length === 0 ? (
-          <p className="text-gray-500 mt-2">No images in gallery.</p>
-        ) : (
-          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {galleryImages.map((img, index) => (
-              <div
-                key={index}
-                className="relative w-full border rounded overflow-hidden shadow cursor-pointer group"
-              >
-                <img
-                  src={img.imageUrl}
-                  alt={`gallery-${index}`}
-                  className="w-full h-28 object-cover group-hover:scale-105 transition"
-                  onClick={() => setPreviewImage(img.imageUrl)}
-                />
-                <div className="p-2 text-xs text-gray-600 truncate">{img.name}</div>
-
-                {/* Delete button */}
-                <Popconfirm
-                  title="Are you sure to delete this image?"
-                  onConfirm={() => handleDeleteGalleryImage(img)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <button
-                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <X size={14} />
-                  </button>
-                </Popconfirm>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Preview Modal */}
-      {previewImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <div className="relative">
-            <img
-              src={previewImage}
-              alt="preview"
-              className="max-h-[80vh] max-w-[90vw] rounded shadow-lg"
-            />
-            <button
-              onClick={() => setPreviewImage(null)}
-              className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-2 hover:bg-red-700"
-            >
-              <X size={20} />
-            </button>
-          </div>
+    <div className='text-center font-bold'>
+      <h3>Gallery</h3>
+      <div className="bg-gray-50 p-2">
+        {/* Upload Button */}
+        <div className="top-4 right-4 z-50 items-end flex justify-end pb-4">
+          <button
+            onClick={openUploadModal}
+            className="h-10 w-32 mr-5 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-blue-700 flex items-center gap-2 font-semibold"
+          >
+            <Upload className="w-5 h-5" />
+            Upload
+          </button>
         </div>
-      )}
+
+        {/* Gallery */}
+        <div className="pt-8">
+          {loadingGallery ? (
+            <div className="flex justify-center items-center h-64">
+              <Spin size="large" />
+            </div>
+          ) : displayedImages.length === 0 ? (
+            <div className="text-center py-32">
+              <div className="w-24 h-24 bg-gray-200 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+                <span className="text-3xl">🖼️</span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">No Images</h2>
+              <p className="text-gray-600">Click Upload button</p>
+            </div>
+          ) : (
+            <>
+              {/* Images Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-9 gap-2 mb-6">
+                {displayedImages.map((img, index) => (
+                  <div
+                    key={img.id || index}
+                    className="w-40 p-2 group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer border hover:border-blue-400 relative"
+                    onClick={() => setPreviewImage(img.imageUrl)}
+                  >
+                    <img
+                      src={img.imageUrl}
+                      alt={img.name}
+                      className="w-40 h-48 object-cover group-hover:scale-105 transition-transform rounded-lg"
+                      loading="lazy"
+                    />
+                    <Popconfirm 
+                      title="Delete this image?" 
+                      onConfirm={() => handleDeleteGalleryImage(img)}
+                    >
+                      <button
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <X size={14} />
+                      </button>
+                    </Popconfirm>
+                  </div>
+                ))}
+              </div>
+
+              {/* Load More Button */}
+              {hasMoreImages && (
+                <div className="flex justify-center pb-8">
+                  <Button
+                    onClick={loadMoreImages}
+                    loading={loadingMore}
+                    size="large"
+                    className="bg-blue-600 text-white hover:bg-blue-700 px-8 py-2 rounded-xl font-semibold shadow-lg"
+                  >
+                    {loadingMore ? 'Loading...' : `Load More (${allGalleryImages.length - displayedImages.length} remaining)`}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Upload Modal */}
+        <Modal
+          title="Upload Images"
+          open={showUploadModal}
+          onCancel={() => {
+            setSelectedImages([]);
+            setShowUploadModal(false);
+          }}
+          footer={null}
+          width={500}
+        >
+          <div className="space-y-4">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full p-2 border rounded-lg"
+            />
+            
+            {selectedImages.length > 0 && (
+              <>
+                <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
+                  {selectedImages.map((image, index) => (
+                    <div key={index} className="relative border rounded-lg overflow-hidden">
+                      <img
+                        src={URL.createObjectURL(image)}
+                        className="w-full h-24 object-cover"
+                      />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded p-1 hover:bg-red-600"
+                      >
+                        <X size={12} />
+                      </button>
+                      <div className="p-2 text-xs">
+                        <p className="truncate font-medium">{image.name}</p>
+                        <p className="text-gray-500">{formatFileSize(image.size)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 font-semibold"
+                >
+                  {uploading ? 'Uploading...' : `Upload ${selectedImages.length} images`}
+                </button>
+              </>
+            )}
+          </div>
+        </Modal>
+
+        {/* Preview Modal */}
+        {previewImage && (
+          <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4" onClick={() => setPreviewImage(null)}>
+            <div className="relative max-w-4xl max-h-[90vh] mx-auto" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="absolute -top-12 right-0 bg-white text-black rounded-xl p-3 shadow-lg hover:bg-gray-100"
+              >
+                <X size={24} />
+              </button>
+              <img
+                src={previewImage}
+                className="w-full h-auto max-h-[90vh] object-contain rounded-2xl"
+                alt="Preview"
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
